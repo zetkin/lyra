@@ -2,10 +2,11 @@
 
 import MessageForm from "@/components/MessageForm";
 import { MessageData } from "@/utils/readTypedMessages";
-import { Box, Textarea, Typography } from "@mui/joy";
+import { Box, Typography } from "@mui/joy";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function Home() {
+export default function Home({ params }: { params: { lang: string } }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
 
@@ -21,7 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     async function loadTranslations() {
-      const res = await fetch("/api/translations/en");
+      const res = await fetch(`/api/translations/${params.lang}`);
       const payload = await res.json();
       setTranslations(payload.translations);
     }
