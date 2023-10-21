@@ -1,5 +1,5 @@
 import { MessageData } from "@/utils/readTypedMessages";
-import { Box, Textarea, Typography } from "@mui/joy";
+import { Box, Grid, List, ListItem, Textarea, Typography } from "@mui/joy";
 import { FC } from "react";
 
 type Props = {
@@ -8,15 +8,37 @@ type Props = {
 
 const MessageForm: FC<Props> = ({ message }) => {
   return (
-    <Box key={message.id} display="flex" flexDirection="row" my={2}>
-      <Box flexBasis="50%" >
+    <Grid
+      container
+      key={message.id}
+      sx={{ width: "100%" }}
+      my={1}
+      py={1}
+      borderTop="1px solid silver"
+      spacing={2}
+    >
+      <Grid md={6} xs={12}>
         <code>{message.id}</code>
         <Typography>{message.defaultMessage}</Typography>
-      </Box>
-      <Box flexBasis="50%">
+      </Grid>
+      <Grid md={6} xs={12}>
         <Textarea value="" minRows={2} />
-      </Box>
-    </Box>
+        {!!message.params.length && (
+          <Box>
+            <Typography>You can use the following parameters:</Typography>
+            <List>
+              {message.params.map((param) => {
+                return (
+                  <ListItem key={param.name}>
+                    <code>{param.name}</code>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Box>
+        )}
+      </Grid>
+    </Grid>
   );
 };
 
