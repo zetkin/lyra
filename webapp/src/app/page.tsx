@@ -1,6 +1,8 @@
 "use client";
 
+import MessageForm from "@/components/MessageForm";
 import { MessageData } from "@/utils/readTypedMessages";
+import { Box, Textarea, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -18,17 +20,12 @@ export default function Home() {
 
   return (
     <main>
-      <h1>Messages</h1>
-      <ul>
+      <Typography level="h1">Messages</Typography>
+      <Box>
         {messages.map((msg) => {
-          return (
-            <li key={msg.id}>
-              <code>{msg.id}</code>
-              <p>{msg.defaultMessage}</p>
-            </li>
-          );
+          return <MessageForm key={msg.id} message={msg} />;
         })}
-      </ul>
+      </Box>
     </main>
   );
 }
