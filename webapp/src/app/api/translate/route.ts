@@ -21,6 +21,10 @@ export async function GET() {
   });
 }
 
+/**
+ * Filter only yaml files inside locale folder of xx.yaml or xx.yml
+ * @param dirPath
+ */
 async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
   const items = await fs.readdir(dirPath);
   for (const item of items) {
@@ -28,7 +32,7 @@ async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
     const stats = await fs.stat(itemPath);
     if (stats.isDirectory()) {
       yield* getMessageFiles(itemPath);
-    } else if (itemPath.match(/\/locale\/..\.yml$/g)) {
+    } else if (itemPath.match(/\/locale\/..\.(yml|yaml)$/g)) {
       yield itemPath;
     }
   }
