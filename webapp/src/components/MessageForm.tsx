@@ -48,6 +48,11 @@ const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
             sx={{ flexGrow: 1 }}
           />
           {edited && <Button onClick={() => onSave(text)}>Save</Button>}
+          {edited && (
+            <Button variant="outlined" onClick={() => setText(translation)}>
+              ↺
+            </Button>
+          )}
         </Box>
         {!!message.params.length && (
           <Box>
