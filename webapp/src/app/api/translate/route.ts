@@ -28,7 +28,7 @@ async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
     const stats = await fs.stat(itemPath);
     if (stats.isDirectory()) {
       yield* getMessageFiles(itemPath);
-    } else if (itemPath.endsWith(".yml")) {
+    } else if (itemPath.match(/\/locale\/..\.yml$/g)) {
       yield itemPath;
     }
   }
