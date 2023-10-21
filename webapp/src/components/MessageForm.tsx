@@ -1,12 +1,19 @@
 import { MessageData } from "@/utils/readTypedMessages";
 import { Box, Grid, List, ListItem, Textarea, Typography } from "@mui/joy";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
 type Props = {
   message: MessageData;
+  translation: string;
 };
 
-const MessageForm: FC<Props> = ({ message }) => {
+const MessageForm: FC<Props> = ({ message, translation }) => {
+  const [text, setText] = useState(translation);
+
+  useEffect(() => {
+    setText(translation);
+  }, [translation]);
+
   return (
     <Grid
       container
@@ -22,7 +29,12 @@ const MessageForm: FC<Props> = ({ message }) => {
         <Typography>{message.defaultMessage}</Typography>
       </Grid>
       <Grid md={6} xs={12}>
-        <Textarea value="" minRows={2} />
+        <Box display="flex" flexDirection="row" gap={1}>
+          <Textarea
+            value={text}
+            minRows={2}
+          />
+        </Box>
         {!!message.params.length && (
           <Box>
             <Typography>You can use the following parameters:</Typography>
