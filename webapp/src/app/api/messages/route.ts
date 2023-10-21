@@ -10,7 +10,7 @@ if (!REPO_PATH) {
 
 export async function GET() {
   const items: string[] = [];
-  for await (const item of getFiles(REPO_PATH + "/src")) {
+  for await (const item of getMessageFiles(REPO_PATH + "/src")) {
     items.push(item);
   }
 
@@ -19,14 +19,14 @@ export async function GET() {
   });
 }
 
-async function* getFiles(dirPath: string): AsyncGenerator<string> {
+async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
   const items = await fs.readdir(dirPath);
   for (const item of items) {
     const itemPath = path.join(dirPath, item);
     const stats = await fs.stat(itemPath);
     if (stats.isDirectory()) {
-      yield* getFiles(itemPath);
-    } else {
+      yield* getMessageFiles(itemPath);
+    } else if (itemPath.endsWith("messageIds.ts")) {
       yield itemPath;
     }
   }
