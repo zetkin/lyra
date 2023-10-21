@@ -39,6 +39,26 @@ export default function Home({ params }: { params: { lang: string } }) {
             <MessageForm
               key={msg.id}
               message={msg}
+              onSave={async (text) => {
+                const res = await fetch(
+                  `/api/translations/${params.lang}/${msg.id}`,
+                  {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      text,
+                    }),
+                  },
+                );
+
+                const payload = await res.json();
+                setTranslations((cur) => ({
+                  ...cur,
+                  [msg.id]: text,
+                }));
+              }}
               translation={translations[msg.id] || ""}
             />
           );
