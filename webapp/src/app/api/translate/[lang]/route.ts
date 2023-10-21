@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { parse, stringify } from "yaml";
 
 const { REPO_PATH } = process.env;
@@ -9,8 +9,11 @@ if (!REPO_PATH) {
   throw new Error("REPO_PATH variable not defined");
 }
 
-export async function GET() {
-  const lang = "en"; //TODO: read from path param
+export async function GET(
+  req: NextRequest,
+  context: { params: { lang: string; msgId: string } },
+) {
+  const lang = context.params.lang;
   const yamlFiles: string[] = [];
   const translatedArr: Record<string, string>[] = [];
   for await (const item of getMessageFiles(REPO_PATH + "/src", lang)) {
