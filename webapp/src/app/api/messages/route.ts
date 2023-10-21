@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
+import readTypedMessages, { MessageData } from "@/utils/readTypedMessages";
 
 const { REPO_PATH } = process.env;
 
@@ -10,12 +11,14 @@ if (!REPO_PATH) {
 
 export async function GET() {
   const items: string[] = [];
+  const messages: MessageData[] = [];
   for await (const item of getMessageFiles(REPO_PATH + "/src")) {
     items.push(item);
+    messages.push(...readTypedMessages(item));
   }
 
   return NextResponse.json({
-    data: items,
+    data: messages,
   });
 }
 
