@@ -1,18 +1,29 @@
 import { MessageData } from "@/utils/readTypedMessages";
-import { Box, Grid, List, ListItem, Textarea, Typography } from "@mui/joy";
+import {
+  Box,
+  Button,
+  Grid,
+  List,
+  ListItem,
+  Textarea,
+  Typography,
+} from "@mui/joy";
 import { FC, useEffect, useState } from "react";
 
 type Props = {
   message: MessageData;
+  onSave: (text: string) => void;
   translation: string;
 };
 
-const MessageForm: FC<Props> = ({ message, translation }) => {
+const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
   const [text, setText] = useState(translation);
 
   useEffect(() => {
     setText(translation);
   }, [translation]);
+
+  const edited = text != translation;
 
   return (
     <Grid
@@ -33,7 +44,15 @@ const MessageForm: FC<Props> = ({ message, translation }) => {
           <Textarea
             value={text}
             minRows={2}
+            onChange={(ev) => setText(ev.target.value)}
+            sx={{ flexGrow: 1 }}
           />
+          {edited && <Button onClick={() => onSave(text)}>Save</Button>}
+          {edited && (
+            <Button variant="outlined" onClick={() => setText(translation)}>
+              ↺
+            </Button>
+          )}
         </Box>
         {!!message.params.length && (
           <Box>
