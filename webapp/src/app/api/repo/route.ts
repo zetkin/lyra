@@ -28,13 +28,19 @@ export async function POST() {
     // TODO: skip check out and pull main to avoid conflict
     await git.checkout(MAIN_BRANCH);
     await git.pull();
-    // TODO: check if there is changes before checkout new branch
+    const status = await git.status();
+    if (status.files.length == 0) {
+      return NextResponse.json(
+        { message: "There are no changes in main branch" },
+        { status: 400 },
+      );
+    }
     // TODO: generate branch name
     const branchName = "delete_me_" + Date.now();
     await git.checkoutBranch(branchName, MAIN_BRANCH);
     await git.add(".");
     // TODO: generate commit message
-    await git.commit("a message");
+    await git.commit("commit message");
     await git.push(["-u", "origin", branchName]);
     // TODO: generate PR title and body in github
     await git.checkout(MAIN_BRANCH);
