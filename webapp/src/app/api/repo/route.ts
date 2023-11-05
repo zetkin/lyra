@@ -1,28 +1,36 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const { REPO_PATH } = process.env;
 if (!REPO_PATH) {
   throw new Error("REPO_PATH variable not defined");
 }
 const MAIN_BRANCH = "main";
+let syncLock = false;
 
 export async function POST() {
+  if (syncLock) {
+    return NextResponse.json(
+      { message: "Another Request in progress" },
+      { status: 400 },
+    );
+  }
+
   try {
+    syncLock = true;
     const options: Partial<SimpleGitOptions> = {
       baseDir: REPO_PATH,
       binary: "git",
       maxConcurrentProcesses: 6,
       trimmed: false,
     };
-    // TODO: create lock to prevent multiple call when this function is running
     const git: SimpleGit = simpleGit(options);
     // TODO: skip check out and pull main to avoid conflict
     await git.checkout(MAIN_BRANCH);
     await git.pull();
     // TODO: check if there is changes before checkout new branch
     // TODO: generate branch name
-    const branchName = "test" + Date.now();
+    const branchName = "delete_me_" + Date.now();
     await git.checkoutBranch(branchName, MAIN_BRANCH);
     await git.add(".");
     // TODO: generate commit message
@@ -37,5 +45,8 @@ export async function POST() {
     });
   } catch (e) {
     console.log(e);
+    throw e;
+  } finally {
+    syncLock = false;
   }
 }
