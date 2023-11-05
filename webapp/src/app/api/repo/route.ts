@@ -21,7 +21,7 @@ export async function POST() {
     const options: Partial<SimpleGitOptions> = {
       baseDir: REPO_PATH,
       binary: "git",
-      maxConcurrentProcesses: 6,
+      maxConcurrentProcesses: 1,
       trimmed: false,
     };
     const git: SimpleGit = simpleGit(options);
