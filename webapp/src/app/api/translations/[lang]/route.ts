@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
-import { parse, stringify } from "yaml";
+import { parse } from "yaml";
 
 const { REPO_PATH } = process.env;
 
