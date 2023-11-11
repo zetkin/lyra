@@ -2,7 +2,8 @@ import fs from "fs/promises";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { parse } from "yaml";
-import * as state from "../../state";
+
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH")
 
 export async function GET(
   req: NextRequest,
@@ -11,7 +12,7 @@ export async function GET(
   const lang = context.params.lang;
   const yamlFiles: string[] = [];
   const translatedArr: Record<string, string>[] = [];
-  for await (const item of getMessageFiles(state.REPO_PATH + "/src", lang)) {
+  for await (const item of getMessageFiles(REPO_PATH + "/src", lang)) {
     yamlFiles.push(item);
     const parsed = parse(await fs.readFile(item, "utf-8"));
     translatedArr.push(flattenObject(parsed));
@@ -66,4 +67,8 @@ function flattenObject(
   }
 
   return result;
+}
+
+function envVarNotFound(varName: string): never {
+  throw new Error(`${varName} variable not defined`);
 }

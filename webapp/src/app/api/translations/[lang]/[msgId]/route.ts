@@ -1,7 +1,8 @@
 import { parse, stringify } from "yaml";
 import fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
-import * as state from "../../../state";
+
+const { REPO_PATH } = process.env;
 
 export async function PUT(
   req: NextRequest,
@@ -11,7 +12,7 @@ export async function PUT(
   const { lang, msgId } = context.params;
   const { text } = payload;
 
-  const yamlPath = state.REPO_PATH + `/src/locale/${lang}.yml`;
+  const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
 
   const yamlBuf = await fs.readFile(yamlPath);
   const translations = parse(yamlBuf.toString());
