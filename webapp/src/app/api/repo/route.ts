@@ -1,16 +1,13 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
 import { NextResponse } from "next/server";
 import { Octokit } from "@octokit/rest";
+import { OctokitResponse } from "@octokit/types";
 
-const { REPO_PATH } = process.env;
-if (!REPO_PATH) {
-  throw new Error("REPO_PATH variable not defined");
-}
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
+const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound("GITHUB_AUTH");
+const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound("GITHUB_REPO");
+const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound("GITHUB_OWNER");
 
-const { GITHUB_AUTH } = process.env;
-if (!GITHUB_AUTH) {
-  throw new Error("GITHUB_AUTH variable not defined");
-}
 const MAIN_BRANCH = "main";
 let syncLock = false;
 
@@ -62,7 +59,7 @@ export async function POST() {
     syncLock = false;
   }
 
-  async function createPR(branchName: string): Promise<void> {
+  async function createPR(branchName: string): Promise<OctokitResponse<any>> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
       userAgent: "myApp v1.2.3",
@@ -81,9 +78,9 @@ export async function POST() {
       },
     });
 
-    const response = await octokit.rest.pulls.create({
-      owner: "amerharb",
-      repo: "zetkin.app.zetkin.org",
+    return await octokit.rest.pulls.create({
+      owner: GITHUB_OWNER,
+      repo: GITHUB_REPO,
       // TODO: generate title and body
       title: "test title " + Date.now(),
       body: "test body " + Date.now(),
@@ -91,4 +88,8 @@ export async function POST() {
       base: MAIN_BRANCH,
     });
   }
+}
+
+function envVarNotFound(varName: string): never {
+  throw new Error(`${varName} variable not defined`);
 }
