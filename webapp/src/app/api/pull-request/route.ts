@@ -45,12 +45,12 @@ export async function POST() {
     // TODO: generate commit message
     await git.commit("commit message");
     await git.push(["-u", "origin", branchName]);
-    await createPR(branchName);
+    const pullRequestUrl = await createPR(branchName);
     await git.checkout(MAIN_BRANCH);
     await git.pull();
     return NextResponse.json({
       branchName,
-      // TODO: other info link to PR
+      pullRequestUrl
     });
   } catch (e) {
     console.log(e);
@@ -59,7 +59,7 @@ export async function POST() {
     syncLock = false;
   }
 
-  async function createPR(branchName: string): Promise<OctokitResponse<any>> {
+  async function createPR(branchName: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
       userAgent: "myApp v1.2.3",
@@ -78,7 +78,7 @@ export async function POST() {
       },
     });
 
-    return await octokit.rest.pulls.create({
+    const response = await octokit.rest.pulls.create({
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
       // TODO: generate title and body
@@ -87,6 +87,8 @@ export async function POST() {
       head: branchName,
       base: MAIN_BRANCH,
     });
+
+    return response.data.html_url
   }
 }
 
