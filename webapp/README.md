@@ -7,7 +7,7 @@ Lyra messages (`messageIds.ts` files) using an environment variable called
 
 ```
 REPO_PATH= <<local_path_to_repo>>
-GITHUB_AUTH= <<TOKER>>
+GITHUB_AUTH= <<TOKEN>>
 GITHUB_OWNER=zetkin
 GITHUB_REPO=app.zetkin.org
 ```
