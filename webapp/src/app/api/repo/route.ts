@@ -6,6 +6,13 @@ const { REPO_PATH } = process.env;
 if (!REPO_PATH) {
   throw new Error("REPO_PATH variable not defined");
 }
+
+// TODO: read from env
+// const { GITHUB_AUTH } = process.env;
+const GITHUB_AUTH = "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";
+if (!GITHUB_AUTH) {
+  throw new Error("GITHUB_AUTH variable not defined");
+}
 const MAIN_BRANCH = "main";
 let syncLock = false;
 
@@ -48,7 +55,7 @@ export async function POST() {
     await git.pull();
     return NextResponse.json({
       branchName,
-      // TODO: other info
+      // TODO: other info link to PR
     });
   } catch (e) {
     console.log(e);
@@ -59,8 +66,7 @@ export async function POST() {
 
   async function createPR(branchName: string): Promise<void> {
     const octokit = new Octokit({
-      /// TODO: get token from ??
-      auth: "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",
+      auth: GITHUB_AUTH,
       userAgent: "myApp v1.2.3",
       timeZone: "Europe/Stockholm",
       baseUrl: "https://api.github.com",
@@ -81,8 +87,8 @@ export async function POST() {
       owner: "amerharb",
       repo: "zetkin.app.zetkin.org",
       // TODO: generate title and body
-      title: "test title",
-      body: "test body",
+      title: "test title " + Date.now(),
+      body: "test body " + Date.now(),
       head: branchName,
       base: MAIN_BRANCH,
     });
