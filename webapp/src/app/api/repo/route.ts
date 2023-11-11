@@ -7,9 +7,7 @@ if (!REPO_PATH) {
   throw new Error("REPO_PATH variable not defined");
 }
 
-// TODO: read from env
-// const { GITHUB_AUTH } = process.env;
-const GITHUB_AUTH = "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";
+const { GITHUB_AUTH } = process.env;
 if (!GITHUB_AUTH) {
   throw new Error("GITHUB_AUTH variable not defined");
 }
