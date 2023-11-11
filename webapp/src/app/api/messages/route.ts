@@ -1,19 +1,18 @@
-import fs from "fs/promises";
-import path from "path";
+import * as fs from "fs/promises";
+import * as path from "path";
 import { NextResponse } from "next/server";
-import readTypedMessages, { MessageData } from "@/utils/readTypedMessages";
+import readTypedMessages, {
+  MessageData,
+} from "../../../utils/readTypedMessages";
 
 const { REPO_PATH } = process.env;
-
 if (!REPO_PATH) {
   throw new Error("REPO_PATH variable not defined");
 }
 
 export async function GET() {
-  const items: string[] = [];
   const messages: MessageData[] = [];
   for await (const item of getMessageFiles(REPO_PATH + "/src")) {
-    items.push(item);
     messages.push(...readTypedMessages(item));
   }
 

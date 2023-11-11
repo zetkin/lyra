@@ -1,9 +1,9 @@
-import fs from "fs/promises";
-import path from "path";
+import * as fs from "fs/promises";
+import * as path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { parse } from "yaml";
 
-const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH")
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
 
 export async function GET(
   req: NextRequest,
@@ -28,6 +28,7 @@ export async function GET(
 /**
  * Filter only yaml files inside locale folder of xx.yaml or xx.yml
  * @param dirPath
+ * @param lang
  */
 async function* getMessageFiles(
   dirPath: string,

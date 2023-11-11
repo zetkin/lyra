@@ -1,8 +1,11 @@
-import { parse, stringify } from "yaml";
-import fs from "fs/promises";
+import { parse } from "yaml";
+import * as fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 
 const { REPO_PATH } = process.env;
+if (!REPO_PATH) {
+  throw new Error("REPO_PATH variable not defined");
+}
 
 export async function PUT(
   req: NextRequest,
@@ -12,11 +15,23 @@ export async function PUT(
   const { lang, msgId } = context.params;
   const { text } = payload;
 
-  const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
+  let languages: Map<string, Record<string, unknown>>;
+  if (!(global as any).languages) {
+    languages = new Map<string, Record<string, unknown>>();
+    (global as any).languages = languages;
+  } else {
+    languages = (global as any).languages;
+  }
+  let translations: any;
+  if (!languages.has(lang)) {
+    const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
 
-  const yamlBuf = await fs.readFile(yamlPath);
-  const translations = parse(yamlBuf.toString());
-
+    const yamlBuf = await fs.readFile(yamlPath);
+    translations = parse(yamlBuf.toString());
+    languages.set(lang, translations);
+  } else {
+    translations = languages.get(lang);
+  }
   const objKeyPath = msgId.split(".");
   let curObj = translations;
   objKeyPath.forEach((key, index) => {
@@ -27,12 +42,6 @@ export async function PUT(
       curObj = curObj[key] as Record<string, unknown>;
     }
   });
-
-  const yamlOutput = stringify(translations, {
-    singleQuote: true,
-    doubleQuotedAsJSON: true,
-  });
-  await fs.writeFile(yamlPath, yamlOutput);
 
   return NextResponse.json({
     lang,

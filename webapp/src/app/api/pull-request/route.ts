@@ -1,7 +1,8 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
 import { NextResponse } from "next/server";
 import { Octokit } from "@octokit/rest";
-import { OctokitResponse } from "@octokit/types";
+import * as fs from "fs/promises";
+import { stringify } from "yaml";
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
 const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound("GITHUB_AUTH");
@@ -28,9 +29,20 @@ export async function POST() {
       trimmed: false,
     };
     const git: SimpleGit = simpleGit(options);
-    // TODO: skip check out and pull main to avoid conflict
-    // await git.checkout(MAIN_BRANCH);
-    // await git.pull();
+    await git.checkout(MAIN_BRANCH);
+    await git.pull();
+    const languages = (global as any).languages as Map<
+      string,
+      Record<string, unknown>
+    >;
+    for (const lang of languages.keys()) {
+      const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
+      const yamlOutput = stringify(languages.get(lang), {
+        singleQuote: true,
+        doubleQuotedAsJSON: true,
+      });
+      await fs.writeFile(yamlPath, yamlOutput);
+    }
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(
@@ -50,7 +62,7 @@ export async function POST() {
     await git.pull();
     return NextResponse.json({
       branchName,
-      pullRequestUrl
+      pullRequestUrl,
     });
   } catch (e) {
     console.log(e);
@@ -88,7 +100,7 @@ export async function POST() {
       base: MAIN_BRANCH,
     });
 
-    return response.data.html_url
+    return response.data.html_url;
   }
 }
 
