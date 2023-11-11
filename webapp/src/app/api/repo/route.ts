@@ -1,5 +1,6 @@
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
 import { NextResponse } from "next/server";
+import { Octokit } from "@octokit/rest";
 
 const { REPO_PATH } = process.env;
 if (!REPO_PATH) {
@@ -26,8 +27,8 @@ export async function POST() {
     };
     const git: SimpleGit = simpleGit(options);
     // TODO: skip check out and pull main to avoid conflict
-    await git.checkout(MAIN_BRANCH);
-    await git.pull();
+    // await git.checkout(MAIN_BRANCH);
+    // await git.pull();
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(
@@ -42,7 +43,7 @@ export async function POST() {
     // TODO: generate commit message
     await git.commit("commit message");
     await git.push(["-u", "origin", branchName]);
-    // TODO: generate PR title and body in github
+    await createPR(branchName);
     await git.checkout(MAIN_BRANCH);
     await git.pull();
     return NextResponse.json({
@@ -54,5 +55,36 @@ export async function POST() {
     throw e;
   } finally {
     syncLock = false;
+  }
+
+  async function createPR(branchName: string): Promise<void> {
+    const octokit = new Octokit({
+      /// TODO: get token from ??
+      auth: "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",
+      userAgent: "myApp v1.2.3",
+      timeZone: "Europe/Stockholm",
+      baseUrl: "https://api.github.com",
+      log: {
+        debug: () => {},
+        info: () => {},
+        warn: console.warn,
+        error: console.error,
+      },
+      request: {
+        agent: undefined,
+        fetch: undefined,
+        timeout: 0,
+      },
+    });
+
+    const response = await octokit.rest.pulls.create({
+      owner: "amerharb",
+      repo: "zetkin.app.zetkin.org",
+      // TODO: generate title and body
+      title: "test title",
+      body: "test body",
+      head: branchName,
+      base: MAIN_BRANCH,
+    });
   }
 }
