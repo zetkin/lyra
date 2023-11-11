@@ -3,11 +3,7 @@ import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { parse } from "yaml";
 
-const { REPO_PATH } = process.env;
-
-if (!REPO_PATH) {
-  throw new Error("REPO_PATH variable not defined");
-}
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH")
 
 export async function GET(
   req: NextRequest,
@@ -71,4 +67,8 @@ function flattenObject(
   }
 
   return result;
+}
+
+function envVarNotFound(varName: string): never {
+  throw new Error(`${varName} variable not defined`);
 }
