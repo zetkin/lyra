@@ -60,7 +60,7 @@ export async function POST() {
   async function createPR(branchName: string): Promise<void> {
     const octokit = new Octokit({
       /// TODO: get token from ??
-      auth: "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",
+      auth: "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",
       userAgent: "myApp v1.2.3",
       timeZone: "Europe/Stockholm",
       baseUrl: "https://api.github.com",
