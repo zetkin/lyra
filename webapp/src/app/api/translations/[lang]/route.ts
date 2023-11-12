@@ -1,6 +1,5 @@
 import { envVarNotFound } from "@/utils/util";
 import fs from "fs/promises";
-import path from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { parse } from "yaml";
 
@@ -11,43 +10,16 @@ export async function GET(
   context: { params: { lang: string; msgId: string } },
 ) {
   const lang = context.params.lang;
-  const yamlFiles: string[] = [];
   const translatedArr: Record<string, string>[] = [];
-  for await (const item of getMessageFiles(REPO_PATH + "/src", lang)) {
-    yamlFiles.push(item);
-    const parsed = parse(await fs.readFile(item, "utf-8"));
-    translatedArr.push(flattenObject(parsed));
-  }
+  const yamlFile = REPO_PATH + `/src/locale/${lang}.yml`;
+  const parsed = parse(await fs.readFile(yamlFile, "utf-8"));
+  translatedArr.push(flattenObject(parsed));
 
   return NextResponse.json({
     lang,
-    yamlFiles: yamlFiles,
+    yamlFile,
     translations: Object.assign({}, ...translatedArr),
   });
-}
-
-/**
- * Filter only yaml files inside locale folder of xx.yaml or xx.yml
- * @param dirPath
- * @param lang
- */
-async function* getMessageFiles(
-  dirPath: string,
-  lang: string,
-): AsyncGenerator<string> {
-  const items = await fs.readdir(dirPath);
-  for (const item of items) {
-    const itemPath = path.join(dirPath, item);
-    const stats = await fs.stat(itemPath);
-    if (stats.isDirectory()) {
-      yield* getMessageFiles(itemPath, lang);
-    } else if (
-      itemPath.endsWith(`locale/${lang}.yaml`) ||
-      itemPath.endsWith(`locale/${lang}.yml`)
-    ) {
-      yield itemPath;
-    }
-  }
 }
 
 function flattenObject(

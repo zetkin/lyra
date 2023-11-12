@@ -22,19 +22,23 @@ export async function PUT(
   let languages: LanguageMap;
 
   if (!globalThis.languages) {
+    console.debug("Initializing languages");
     languages = new Map<string, Record<string, unknown>>();
     globalThis.languages = languages;
   } else {
+    console.debug("read languages from globalThis");
     languages = globalThis.languages;
   }
   let translations: any;
   if (!languages.has(lang)) {
+    console.debug("read languages from file");
     const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
 
     const yamlBuf = await fs.readFile(yamlPath);
     translations = parse(yamlBuf.toString());
     languages.set(lang, translations);
   } else {
+    console.debug("read languages from Memory");
     translations = languages.get(lang);
   }
   const objKeyPath = msgId.split(".");
