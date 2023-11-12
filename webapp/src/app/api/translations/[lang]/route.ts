@@ -1,24 +1,17 @@
-import { envVarNotFound } from "@/utils/util";
-import fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
-import { parse } from "yaml";
-
-const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
+import { getLanguage } from "@/app/api/languages";
 
 export async function GET(
-  req: NextRequest,
+  req: NextRequest, // keep this here even if unused
   context: { params: { lang: string; msgId: string } },
 ) {
   const lang = context.params.lang;
-  const translatedArr: Record<string, string>[] = [];
-  const yamlFile = REPO_PATH + `/src/locale/${lang}.yml`;
-  const parsed = parse(await fs.readFile(yamlFile, "utf-8"));
-  translatedArr.push(flattenObject(parsed));
+  const langObj = await getLanguage(lang);
+  const flattenLangObj = flattenObject(langObj);
 
   return NextResponse.json({
     lang,
-    yamlFile,
-    translations: Object.assign({}, ...translatedArr),
+    translations: flattenLangObj,
   });
 }
 
