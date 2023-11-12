@@ -22,8 +22,7 @@ export default function readTypedMessages(fileName: string) {
     const makeMessagesCallNode = findMakeMessages(file);
 
     if (makeMessagesCallNode) {
-      const ir = inspectMessages(makeMessagesCallNode);
-      return ir;
+      return inspectMessages(makeMessagesCallNode);
     }
   }
 
@@ -116,9 +115,7 @@ function inspectMessages(node: ts.CallExpression): MessageData[] {
   }
 
   const prefixArg = node.arguments[0] as ts.StringLiteral;
-  const output = traverse(prefixArg.text, node.arguments[1]);
-
-  return output;
+  return traverse(prefixArg.text, node.arguments[1]);
 }
 
 function findMakeMessages(curNode: ts.Node): ts.CallExpression | undefined {
