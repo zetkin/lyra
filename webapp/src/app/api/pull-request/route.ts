@@ -31,10 +31,7 @@ export async function POST() {
     const git: SimpleGit = simpleGit(options);
     await git.checkout(MAIN_BRANCH);
     await git.pull();
-    const languages = (global as any).languages as Map<
-      string,
-      Record<string, unknown>
-    >;
+    const languages = globalThis.languages;
     for (const lang of languages.keys()) {
       const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
       const yamlOutput = stringify(languages.get(lang), {

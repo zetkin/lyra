@@ -1,6 +1,7 @@
 import { parse } from "yaml";
 import * as fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
+import { LanguageMap } from "@/types";
 
 const { REPO_PATH } = process.env;
 if (!REPO_PATH) {
@@ -9,18 +10,24 @@ if (!REPO_PATH) {
 
 export async function PUT(
   req: NextRequest,
-  context: { params: { lang: string; msgId: string } },
+  context: {
+    params: {
+      lang: string;
+      msgId: string;
+    };
+  },
 ) {
   const payload = await req.json();
   const { lang, msgId } = context.params;
   const { text } = payload;
 
-  let languages: Map<string, Record<string, unknown>>;
-  if (!(global as any).languages) {
+  let languages: LanguageMap;
+
+  if (!globalThis.languages) {
     languages = new Map<string, Record<string, unknown>>();
-    (global as any).languages = languages;
+    globalThis.languages = languages;
   } else {
-    languages = (global as any).languages;
+    languages = globalThis.languages;
   }
   let translations: any;
   if (!languages.has(lang)) {
