@@ -2,7 +2,7 @@
 
 import MessageForm from "@/components/MessageForm";
 import { MessageData } from "@/utils/readTypedMessages";
-import { Box, Typography } from "@mui/joy";
+import { Box, Button, Typography } from "@mui/joy";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -33,6 +33,15 @@ export default function Home({ params }: { params: { lang: string } }) {
   return (
     <main>
       <Typography level="h1">Messages</Typography>
+      <Button
+        onClick={async () => {
+          const res = await fetch(`/api/pull-request/`, {
+            method: "POST",
+          });
+        }}
+      >
+        Create Pull-Request
+      </Button>
       <Box>
         {messages.map((msg) => {
           return (
