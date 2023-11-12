@@ -1,3 +1,4 @@
+import { envVarNotFound } from "@/utils/util";
 import { parse } from "yaml";
 import fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
@@ -52,8 +53,4 @@ export async function PUT(
     msgId,
     text,
   });
-}
-
-function envVarNotFound(varName: string): never {
-  throw new Error(`${varName} variable not defined`);
 }

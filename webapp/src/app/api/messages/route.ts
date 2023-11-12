@@ -1,3 +1,4 @@
+import { envVarNotFound } from "@/utils/util";
 import fs from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
@@ -29,8 +30,4 @@ async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
       yield itemPath;
     }
   }
-}
-
-function envVarNotFound(varName: string): never {
-  throw new Error(`${varName} variable not defined`);
 }

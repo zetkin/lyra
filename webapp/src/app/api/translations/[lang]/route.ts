@@ -1,3 +1,4 @@
+import { envVarNotFound } from "@/utils/util";
 import fs from "fs/promises";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
@@ -68,8 +69,4 @@ function flattenObject(
   }
 
   return result;
-}
-
-function envVarNotFound(varName: string): never {
-  throw new Error(`${varName} variable not defined`);
 }
