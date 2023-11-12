@@ -3,7 +3,7 @@ import * as path from "path";
 import { NextResponse } from "next/server";
 import readTypedMessages, {
   MessageData,
-} from "../../../utils/readTypedMessages";
+} from "@/utils/readTypedMessages";
 
 const { REPO_PATH } = process.env;
 if (!REPO_PATH) {
