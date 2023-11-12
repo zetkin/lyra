@@ -1,12 +1,9 @@
 import { parse } from "yaml";
-import * as fs from "fs/promises";
+import fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { LanguageMap } from "@/types";
 
-const { REPO_PATH } = process.env;
-if (!REPO_PATH) {
-  throw new Error("REPO_PATH variable not defined");
-}
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
 
 export async function PUT(
   req: NextRequest,
@@ -55,4 +52,8 @@ export async function PUT(
     msgId,
     text,
   });
+}
+
+function envVarNotFound(varName: string): never {
+  throw new Error(`${varName} variable not defined`);
 }

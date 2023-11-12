@@ -1,14 +1,11 @@
-import * as fs from "fs/promises";
-import * as path from "path";
+import fs from "fs/promises";
+import path from "path";
 import { NextResponse } from "next/server";
 import readTypedMessages, {
   MessageData,
 } from "@/utils/readTypedMessages";
 
-const { REPO_PATH } = process.env;
-if (!REPO_PATH) {
-  throw new Error("REPO_PATH variable not defined");
-}
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
 
 export async function GET() {
   const messages: MessageData[] = [];
@@ -32,4 +29,8 @@ async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
       yield itemPath;
     }
   }
+}
+
+function envVarNotFound(varName: string): never {
+  throw new Error(`${varName} variable not defined`);
 }
