@@ -1,38 +1,29 @@
-import { parse, stringify } from "yaml";
-import fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
-
-const { REPO_PATH } = process.env;
+import { getLanguage } from "@/app/api/languages";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: { lang: string; msgId: string } },
+  context: {
+    params: {
+      lang: string;
+      msgId: string;
+    };
+  },
 ) {
   const payload = await req.json();
   const { lang, msgId } = context.params;
   const { text } = payload;
 
-  const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
-
-  const yamlBuf = await fs.readFile(yamlPath);
-  const translations = parse(yamlBuf.toString());
-
   const objKeyPath = msgId.split(".");
-  let curObj = translations;
+  let curObj = await getLanguage(lang);
   objKeyPath.forEach((key, index) => {
     if (index == objKeyPath.length - 1) {
       curObj[key] = text;
     } else {
-      curObj[key] = { ...curObj[key] };
+      curObj[key] = { ...curObj[key] as Record<string, unknown> };
       curObj = curObj[key] as Record<string, unknown>;
     }
   });
-
-  const yamlOutput = stringify(translations, {
-    singleQuote: true,
-    doubleQuotedAsJSON: true,
-  });
-  await fs.writeFile(yamlPath, yamlOutput);
 
   return NextResponse.json({
     lang,

@@ -1,55 +1,18 @@
-import fs from "fs/promises";
-import path from "path";
 import { NextRequest, NextResponse } from "next/server";
-import { parse, stringify } from "yaml";
-
-const { REPO_PATH } = process.env;
-
-if (!REPO_PATH) {
-  throw new Error("REPO_PATH variable not defined");
-}
+import { getLanguage } from "@/app/api/languages";
 
 export async function GET(
-  req: NextRequest,
+  req: NextRequest, // keep this here even if unused
   context: { params: { lang: string; msgId: string } },
 ) {
   const lang = context.params.lang;
-  const yamlFiles: string[] = [];
-  const translatedArr: Record<string, string>[] = [];
-  for await (const item of getMessageFiles(REPO_PATH + "/src", lang)) {
-    yamlFiles.push(item);
-    const parsed = parse(await fs.readFile(item, "utf-8"));
-    translatedArr.push(flattenObject(parsed));
-  }
+  const langObj = await getLanguage(lang);
+  const flattenLangObj = flattenObject(langObj);
 
   return NextResponse.json({
     lang,
-    yamlFiles: yamlFiles,
-    translations: Object.assign({}, ...translatedArr),
+    translations: flattenLangObj,
   });
-}
-
-/**
- * Filter only yaml files inside locale folder of xx.yaml or xx.yml
- * @param dirPath
- */
-async function* getMessageFiles(
-  dirPath: string,
-  lang: string,
-): AsyncGenerator<string> {
-  const items = await fs.readdir(dirPath);
-  for (const item of items) {
-    const itemPath = path.join(dirPath, item);
-    const stats = await fs.stat(itemPath);
-    if (stats.isDirectory()) {
-      yield* getMessageFiles(itemPath, lang);
-    } else if (
-      itemPath.endsWith(`locale/${lang}.yaml`) ||
-      itemPath.endsWith(`locale/${lang}.yml`)
-    ) {
-      yield itemPath;
-    }
-  }
 }
 
 function flattenObject(
