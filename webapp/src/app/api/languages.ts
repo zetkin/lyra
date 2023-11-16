@@ -1,13 +1,27 @@
 import { envVarNotFound } from "@/utils/util";
 import fs from "fs/promises";
 import { parse } from "yaml";
+import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
+const MAIN_BRANCH = "main";
 
 export async function getLanguage(lang: string) {
   let languages: Map<string, Record<string, unknown>>;
   if (!globalThis.languages) {
     console.debug("Initializing languages");
+    const options: Partial<SimpleGitOptions> = {
+      baseDir: REPO_PATH,
+      binary: "git",
+      maxConcurrentProcesses: 1,
+      trimmed: false,
+    };
+    const git: SimpleGit = simpleGit(options);
+    console.debug("git checkout main pull...");
+    await git.checkout(MAIN_BRANCH);
+    console.debug("git pull...");
+    await git.pull();
+    console.debug("git done checkout main branch and pull");
     languages = new Map<string, Record<string, unknown>>();
     globalThis.languages = languages;
   } else {
