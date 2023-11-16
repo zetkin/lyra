@@ -1,7 +1,8 @@
+import { envVarNotFound } from "@/utils/util";
 import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
 import { NextResponse } from "next/server";
 import { Octokit } from "@octokit/rest";
-import * as fs from "fs/promises";
+import fs from "fs/promises";
 import { stringify } from "yaml";
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
@@ -99,8 +100,4 @@ export async function POST() {
 
     return response.data.html_url;
   }
-}
-
-function envVarNotFound(varName: string): never {
-  throw new Error(`${varName} variable not defined`);
 }
