@@ -2,13 +2,14 @@
 
 import MessageForm from "@/components/MessageForm";
 import { MessageData } from "@/utils/readTypedMessages";
-import { Box, Typography } from "@mui/joy";
+import { Box, Button, Link, Typography } from "@mui/joy";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home({ params }: { params: { lang: string } }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [pullRequestUrl, setPullRequestUrl] = useState<string>("");
 
   useEffect(() => {
     async function loadMessages() {
@@ -33,6 +34,19 @@ export default function Home({ params }: { params: { lang: string } }) {
   return (
     <main>
       <Typography level="h1">Messages</Typography>
+      <Button
+        onClick={async () => {
+          const res = await fetch(`/api/pull-request/`, {
+            method: "POST",
+          });
+          const payload = await res.json();
+          const url = payload.pullRequestUrl;
+          setPullRequestUrl(url);
+        }}
+      >
+        Create Pull-Request
+      </Button>
+      {pullRequestUrl && <Link href={pullRequestUrl}> {pullRequestUrl} </Link>}
       <Box>
         {messages.map((msg) => {
           return (
