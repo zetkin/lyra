@@ -1,0 +1,48 @@
+@startuml caching-logic
+
+actor translator
+boundary frontend
+entity api
+collections "Cache" as cache
+database "Local repo" as repo
+database "GitHub repo" as github
+
+
+repo <- github: Admin checks out repo
+translator -> frontend: Visits web app
+frontend -> api: Requests messages and translations
+
+alt Last pull was more than 10 minutes ago
+  api -> github: Pull
+  repo <- github: New code
+end
+
+api -> cache: Checks if cache exists
+
+alt Cache exists and is valid
+  api <- cache: Cache is retrieved
+  note right
+    Cache is considered valid if the
+    git commit hash it was generated
+    from matches HEAD on local main.
+  end note
+else
+  api -> repo: Read and parse messageIds files
+  api <- repo: List of messages (A)
+  api -> repo: Read and parse YAML files
+  api <- repo: List of translations (B)
+  note over api
+    At this point API needs to "combine" the
+    data from the repo with existing cache.
+
+    Any messages in cache, that are not in the
+    repo (A) should be discarded.
+
+    When there are translation conflicts between
+    cache and YAML (B), the cache should be kept.
+  end note
+  api -> cache: Save cache
+end
+frontend <-- api: Return messages and translations
+
+@enduml
