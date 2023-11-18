@@ -11,6 +11,8 @@ const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound("GITHUB_REPO");
 const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound("GITHUB_OWNER");
 
 const MAIN_BRANCH = "main";
+
+/** used to prevent multiple requests from running at the same time */
 let syncLock = false;
 
 export async function POST() {
@@ -48,14 +50,14 @@ export async function POST() {
         { status: 400 },
       );
     }
-    // TODO: generate branch name
-    const branchName = "delete_me_" + Date.now();
+    const nowIso = new Date().toISOString().replace(/:/g, "");
+    const branchName = "lyra-translate-" + nowIso;
     await git.checkoutBranch(branchName, MAIN_BRANCH);
     await git.add(".");
     // TODO: generate commit message
-    await git.commit("commit message");
+    await git.commit("commit message here");
     await git.push(["-u", "origin", branchName]);
-    const pullRequestUrl = await createPR(branchName);
+    const pullRequestUrl = await createPR(branchName, nowIso);
     await git.checkout(MAIN_BRANCH);
     await git.pull();
     return NextResponse.json({
@@ -69,11 +71,11 @@ export async function POST() {
     syncLock = false;
   }
 
-  async function createPR(branchName: string): Promise<string> {
+  async function createPR(branchName: string, nowIso: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
-      userAgent: "myApp v1.2.3",
-      timeZone: "Europe/Stockholm",
+      userAgent: "myApp v1.2.3", // TODO: change this
+      timeZone: "Europe/Stockholm", //TODO: use local timezone
       baseUrl: "https://api.github.com",
       log: {
         debug: () => {},
@@ -92,8 +94,8 @@ export async function POST() {
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
       // TODO: generate title and body
-      title: "test title " + Date.now(),
-      body: "test body " + Date.now(),
+      title: "test title " + nowIso,
+      body: "test body " + nowIso,
       head: branchName,
       base: MAIN_BRANCH,
     });
