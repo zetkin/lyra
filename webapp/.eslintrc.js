@@ -5,6 +5,7 @@ module.exports = {
       files: ['**/*.ts', '**/*.tsx'],
       rules: {
         'quotes': ['error', 'single', { 'avoidEscape': true }],
+        'indent': ['error', 2],
       },
     },
   ],
