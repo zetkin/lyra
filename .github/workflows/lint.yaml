@@ -17,5 +17,10 @@ jobs:
         with:
           node-version: 18.x
           cache: 'yarn'
+          working-directory: ./webapp
       - run: yarn
+        with:
+          working-directory: ./webapp
       - run: yarn lint
+        with:
+          working-directory: ./webapp
