@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import MessageForm from "@/components/MessageForm";
-import { MessageData } from "@/utils/readTypedMessages";
-import { Box, Button, Link, Typography } from "@mui/joy";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import MessageForm from '@/components/MessageForm';
+import { MessageData } from '@/utils/readTypedMessages';
+import { Box, Button, Link, Typography } from '@mui/joy';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Home({ params }: { params: { lang: string } }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
-  const [pullRequestUrl, setPullRequestUrl] = useState<string>("");
+  const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
 
   useEffect(() => {
     async function loadMessages() {
-      const res = await fetch("/api/messages");
+      const res = await fetch('/api/messages');
       const payload = await res.json();
       setMessages(payload.data);
     }
@@ -36,8 +36,8 @@ export default function Home({ params }: { params: { lang: string } }) {
       <Typography level="h1">Messages</Typography>
       <Button
         onClick={async () => {
-          const res = await fetch(`/api/pull-request/`, {
-            method: "POST",
+          const res = await fetch('/api/pull-request/', {
+            method: 'POST',
           });
           const payload = await res.json();
           const url = payload.pullRequestUrl;
@@ -57,9 +57,9 @@ export default function Home({ params }: { params: { lang: string } }) {
                 const res = await fetch(
                   `/api/translations/${params.lang}/${msg.id}`,
                   {
-                    method: "PUT",
+                    method: 'PUT',
                     headers: {
-                      "Content-Type": "application/json",
+                      'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                       text,
@@ -73,7 +73,7 @@ export default function Home({ params }: { params: { lang: string } }) {
                   [msg.id]: text,
                 }));
               }}
-              translation={translations[msg.id] || ""}
+              translation={translations[msg.id] || ''}
             />
           );
         })}

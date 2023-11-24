@@ -1,4 +1,4 @@
-import { MessageData } from "@/utils/readTypedMessages";
+import { MessageData } from '@/utils/readTypedMessages';
 import {
   Box,
   Button,
@@ -7,8 +7,8 @@ import {
   ListItem,
   Textarea,
   Typography,
-} from "@mui/joy";
-import { FC, useEffect, useState } from "react";
+} from '@mui/joy';
+import { FC, useEffect, useState } from 'react';
 
 type Props = {
   message: MessageData;
@@ -29,7 +29,7 @@ const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
     <Grid
       container
       key={message.id}
-      sx={{ width: "100%" }}
+      sx={{ width: '100%' }}
       my={1}
       py={1}
       borderTop="1px solid silver"

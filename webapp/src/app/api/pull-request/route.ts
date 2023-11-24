@@ -1,17 +1,17 @@
-import { envVarNotFound } from "@/utils/util";
-import { simpleGit, SimpleGit, SimpleGitOptions } from "simple-git";
-import { NextResponse } from "next/server";
-import { Octokit } from "@octokit/rest";
-import fs from "fs/promises";
-import { stringify } from "yaml";
-import { version } from "@/../package.json";
+import { envVarNotFound } from '@/utils/util';
+import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+import { NextResponse } from 'next/server';
+import { Octokit } from '@octokit/rest';
+import fs from 'fs/promises';
+import { stringify } from 'yaml';
+import { version } from '@/../package.json';
 
-const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
-const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound("GITHUB_AUTH");
-const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound("GITHUB_REPO");
-const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound("GITHUB_OWNER");
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
+const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound('GITHUB_AUTH');
+const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound('GITHUB_REPO');
+const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound('GITHUB_OWNER');
 
-const MAIN_BRANCH = "main";
+const MAIN_BRANCH = 'main';
 
 /** used to prevent multiple requests from running at the same time */
 let syncLock = false;
@@ -19,7 +19,7 @@ let syncLock = false;
 export async function POST() {
   if (syncLock) {
     return NextResponse.json(
-      { message: "Another Request in progress" },
+      { message: 'Another Request in progress' },
       { status: 400 },
     );
   }
@@ -28,7 +28,7 @@ export async function POST() {
     syncLock = true;
     const options: Partial<SimpleGitOptions> = {
       baseDir: REPO_PATH,
-      binary: "git",
+      binary: 'git',
       maxConcurrentProcesses: 1,
       trimmed: false,
     };
@@ -47,16 +47,16 @@ export async function POST() {
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(
-        { message: "There are no changes in main branch" },
+        { message: 'There are no changes in main branch' },
         { status: 400 },
       );
     }
-    const nowIso = new Date().toISOString().replace(/:/g, "").split(".")[0];
-    const branchName = "lyra-translate-" + nowIso;
+    const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
+    const branchName = 'lyra-translate-' + nowIso;
     await git.checkoutBranch(branchName, MAIN_BRANCH);
-    await git.add(".");
-    await git.commit("Lyra Translate: " + nowIso);
-    await git.push(["-u", "origin", branchName]);
+    await git.add('.');
+    await git.commit('Lyra Translate: ' + nowIso);
+    await git.push(['-u', 'origin', branchName]);
     const pullRequestUrl = await createPR(branchName, nowIso);
     await git.checkout(MAIN_BRANCH);
     await git.pull();
@@ -74,9 +74,9 @@ export async function POST() {
   async function createPR(branchName: string, nowIso: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
-      userAgent: "Lyra v" + version,
+      userAgent: 'Lyra v' + version,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      baseUrl: "https://api.github.com",
+      baseUrl: 'https://api.github.com',
       log: {
         debug: () => {},
         info: () => {},
@@ -93,8 +93,8 @@ export async function POST() {
     const response = await octokit.rest.pulls.create({
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
-      title: "LYRA Translate PR: " + nowIso,
-      body: "Created by LYRA at: " + nowIso,
+      title: 'LYRA Translate PR: ' + nowIso,
+      body: 'Created by LYRA at: ' + nowIso,
       head: branchName,
       base: MAIN_BRANCH,
     });

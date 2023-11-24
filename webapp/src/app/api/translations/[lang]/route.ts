@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getLanguage } from "@/app/api/languages";
+import { NextRequest, NextResponse } from 'next/server';
+import { getLanguage } from '@/app/api/languages';
 
 export async function GET(
   req: NextRequest, // keep this here even if unused
@@ -17,7 +17,7 @@ export async function GET(
 
 function flattenObject(
   obj: Record<string, any>,
-  parentKey: string = "",
+  parentKey: string = '',
 ): Record<string, string> {
   const result: Record<string, any> = {};
 
@@ -25,7 +25,7 @@ function flattenObject(
     if (obj.hasOwnProperty(key)) {
       const newKey = parentKey ? `${parentKey}.${key}` : key;
 
-      if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+      if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
         Object.assign(result, flattenObject(obj[key], newKey));
       } else {
         result[newKey] = obj[key];
