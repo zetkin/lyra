@@ -11,7 +11,3 @@ GITHUB_AUTH= <<TOKEN>>
 GITHUB_OWNER=zetkin
 GITHUB_REPO=app.zetkin.org
 ```
-
-```
-REPO_PATH=/path/to/app.zetkin.org yarn dev
-```
