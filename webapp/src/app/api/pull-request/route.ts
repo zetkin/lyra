@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { Octokit } from "@octokit/rest";
 import fs from "fs/promises";
 import { stringify } from "yaml";
+import { version } from "@/../package.json";
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
 const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound("GITHUB_AUTH");
@@ -73,7 +74,7 @@ export async function POST() {
   async function createPR(branchName: string, nowIso: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
-      userAgent: "Lyra v0.1.0",
+      userAgent: "Lyra v" + version,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       baseUrl: "https://api.github.com",
       log: {
