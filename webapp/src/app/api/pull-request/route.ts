@@ -50,12 +50,11 @@ export async function POST() {
         { status: 400 },
       );
     }
-    const nowIso = new Date().toISOString().replace(/:/g, "");
+    const nowIso = new Date().toISOString().replace(/:/g, "").split(".")[0];
     const branchName = "lyra-translate-" + nowIso;
     await git.checkoutBranch(branchName, MAIN_BRANCH);
     await git.add(".");
-    // TODO: generate commit message
-    await git.commit("commit message here");
+    await git.commit("Lyra Translate: " + nowIso);
     await git.push(["-u", "origin", branchName]);
     const pullRequestUrl = await createPR(branchName, nowIso);
     await git.checkout(MAIN_BRANCH);
@@ -74,8 +73,8 @@ export async function POST() {
   async function createPR(branchName: string, nowIso: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
-      userAgent: "myApp v1.2.3", // TODO: change this
-      timeZone: "Europe/Stockholm", //TODO: use local timezone
+      userAgent: "Lyra v0.1.0",
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       baseUrl: "https://api.github.com",
       log: {
         debug: () => {},
@@ -93,9 +92,8 @@ export async function POST() {
     const response = await octokit.rest.pulls.create({
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
-      // TODO: generate title and body
-      title: "test title " + nowIso,
-      body: "test body " + nowIso,
+      title: "LYRA Translate PR: " + nowIso,
+      body: "Created by LYRA at: " + nowIso,
       head: branchName,
       base: MAIN_BRANCH,
     });

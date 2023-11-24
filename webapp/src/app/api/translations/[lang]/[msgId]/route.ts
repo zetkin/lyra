@@ -20,7 +20,7 @@ export async function PUT(
     if (index == objKeyPath.length - 1) {
       curObj[key] = text;
     } else {
-      curObj[key] = { ...curObj[key] as Record<string, unknown> };
+      curObj[key] = { ...(curObj[key] as Record<string, unknown>) };
       curObj = curObj[key] as Record<string, unknown>;
     }
   });
