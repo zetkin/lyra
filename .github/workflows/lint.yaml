@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 18.x
           cache: 'yarn'
+      - run: yarn
         working-directory: ./webapp
-        run: yarn
       - run: yarn lint
         working-directory: ./webapp
