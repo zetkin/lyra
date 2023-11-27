@@ -1,7 +1,7 @@
 import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
-import path from 'path';
 import { NextResponse } from 'next/server';
+import path from 'path';
 import readTypedMessages, {
   MessageData,
 } from '@/utils/readTypedMessages';

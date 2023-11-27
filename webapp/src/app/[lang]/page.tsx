@@ -1,9 +1,8 @@
 'use client';
 
-import MessageForm from '@/components/MessageForm';
 import { MessageData } from '@/utils/readTypedMessages';
+import MessageForm from '@/components/MessageForm';
 import { Box, Button, Link, Typography } from '@mui/joy';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Home({ params }: { params: { lang: string } }) {
@@ -57,17 +56,17 @@ export default function Home({ params }: { params: { lang: string } }) {
                 const res = await fetch(
                   `/api/translations/${params.lang}/${msg.id}`,
                   {
-                    method: 'PUT',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
                     body: JSON.stringify({
                       text,
                     }),
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'PUT',
                   },
                 );
 
-                const payload = await res.json();
+                await res.json();
                 setTranslations((cur) => ({
                   ...cur,
                   [msg.id]: text,

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getLanguage } from '@/app/api/languages';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   req: NextRequest, // keep this here even if unused
@@ -22,6 +22,7 @@ function flattenObject(
   const result: Record<string, any> = {};
 
   for (const key in obj) {
+    // eslint-disable-next-line no-prototype-builtins
     if (obj.hasOwnProperty(key)) {
       const newKey = parentKey ? `${parentKey}.${key}` : key;
 

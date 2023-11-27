@@ -1,10 +1,11 @@
-import { envVarNotFound } from '@/utils/util';
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+/* global globalThis */
+import fs from 'fs/promises';
 import { NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
-import fs from 'fs/promises';
 import { stringify } from 'yaml';
 import { version } from '@/../package.json';
+import { envVarNotFound, logError, logWarn } from '@/utils/util';
+import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound('GITHUB_AUTH');
@@ -39,8 +40,8 @@ export async function POST() {
     for (const lang of languages.keys()) {
       const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
       const yamlOutput = stringify(languages.get(lang), {
-        singleQuote: true,
         doubleQuotedAsJSON: true,
+        singleQuote: true,
       });
       await fs.writeFile(yamlPath, yamlOutput);
     }
@@ -65,7 +66,7 @@ export async function POST() {
       pullRequestUrl,
     });
   } catch (e) {
-    console.log(e);
+    logError(e);
     throw e;
   } finally {
     syncLock = false;
@@ -74,29 +75,29 @@ export async function POST() {
   async function createPR(branchName: string, nowIso: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
-      userAgent: 'Lyra v' + version,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       baseUrl: 'https://api.github.com',
       log: {
         debug: () => {},
+        error: logError,
         info: () => {},
-        warn: console.warn,
-        error: console.error,
+        warn: logWarn,
       },
       request: {
         agent: undefined,
         fetch: undefined,
         timeout: 0,
       },
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      userAgent: 'Lyra v' + version,
     });
 
     const response = await octokit.rest.pulls.create({
+      base: MAIN_BRANCH,
+      body: 'Created by LYRA at: ' + nowIso,
+      head: branchName,
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
       title: 'LYRA Translate PR: ' + nowIso,
-      body: 'Created by LYRA at: ' + nowIso,
-      head: branchName,
-      base: MAIN_BRANCH,
     });
 
     return response.data.html_url;

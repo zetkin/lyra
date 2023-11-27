@@ -12,6 +12,7 @@ import { FC, useEffect, useState } from 'react';
 
 type Props = {
   message: MessageData;
+  // eslint-disable-next-line no-unused-vars
   onSave: (text: string) => void;
   translation: string;
 };

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getLanguage } from '@/app/api/languages';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   req: NextRequest,
