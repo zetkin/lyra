@@ -7,7 +7,7 @@ export default function readTypedMessages(fileName: string) {
       ...ts.sys,
       readFile: (path, encoding) => {
         // Skip anything in node_modules, as clearly not app code
-        if (path.includes('node_modules')) return '';
+        if (path.includes('node_modules')) {return '';}
         return ts.sys.readFile(path, encoding);
       },
     },
