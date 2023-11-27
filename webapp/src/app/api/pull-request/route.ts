@@ -39,6 +39,7 @@ export async function POST() {
     const languages = globalThis.languages;
     for (const lang of languages.keys()) {
       const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
+      // TODO: when language obj become a map of key to value, then it need to be converted to object before stringify
       const yamlOutput = stringify(languages.get(lang), {
         doubleQuotedAsJSON: true,
         singleQuote: true,

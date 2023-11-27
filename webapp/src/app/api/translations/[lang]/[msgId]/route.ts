@@ -1,4 +1,4 @@
-import { getLanguage } from '@/app/api/languages';
+import { Store } from '@/app/api/Store';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
@@ -15,7 +15,7 @@ export async function PUT(
   const { text } = payload;
 
   const objKeyPath = msgId.split('.');
-  let curObj = await getLanguage(lang);
+  let curObj = await Store.getLanguage(lang);
   objKeyPath.forEach((key, index) => {
     if (index == objKeyPath.length - 1) {
       curObj[key] = text;
