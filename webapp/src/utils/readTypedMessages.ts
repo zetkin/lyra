@@ -32,8 +32,8 @@ export default function readTypedMessages(fileName: string) {
 type TypeID = string;
 
 export type MessageData = {
-  id: string;
   defaultMessage: string;
+  id: string;
   params: {
     name: string;
     types: TypeID[];

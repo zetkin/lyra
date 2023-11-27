@@ -12,6 +12,7 @@ export function logInfo(msg: string) {
   console.info(msg);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function logError(msg: any) {
   // eslint-disable-next-line no-console
   console.error(msg)

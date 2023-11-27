@@ -24,7 +24,7 @@ module.exports = {
         es6: true,
       },
       extends: [
-        // 'plugin:@typescript-eslint/recommended', // TypeScript rules
+        'plugin:@typescript-eslint/recommended', // TypeScript rules
         'plugin:react-hooks/recommended', // React hooks rules
         'plugin:jsx-a11y/recommended', // Accessibility rules
       ],

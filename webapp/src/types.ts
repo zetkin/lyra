@@ -1,6 +1,6 @@
 export type LanguageMap = Map<string, Record<string, unknown>>;
 
 declare global {
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line
   var languages: LanguageMap;
 }

@@ -16,9 +16,11 @@ export async function GET(
 }
 
 function flattenObject(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   obj: Record<string, any>,
   parentKey: string = '',
 ): Record<string, string> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: Record<string, any> = {};
 
   for (const key in obj) {
