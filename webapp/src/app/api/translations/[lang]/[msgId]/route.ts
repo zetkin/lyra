@@ -14,16 +14,9 @@ export async function PUT(
   const { lang, msgId } = context.params;
   const { text } = payload;
 
-  const objKeyPath = msgId.split('.');
-  let curObj = await Store.getLanguage(lang);
-  objKeyPath.forEach((key, index) => {
-    if (index == objKeyPath.length - 1) {
-      curObj[key] = text;
-    } else {
-      curObj[key] = { ...(curObj[key] as Record<string, unknown>) };
-      curObj = curObj[key] as Record<string, unknown>;
-    }
-  });
+  const translations = await Store.getLanguage(lang);
+  // TODO: in case msgId is not found ?!
+  translations[msgId] = text;
 
   return NextResponse.json({
     lang,
