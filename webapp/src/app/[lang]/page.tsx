@@ -66,7 +66,6 @@ export default function Home({ params }: { params: { lang: string } }) {
                   },
                 );
 
-                await res.json();
                 setTranslations((cur) => ({
                   ...cur,
                   [msg.id]: text,
