@@ -1,3 +1,4 @@
+import { LanguageNotFound } from '@/app/api/Errors';
 import { Store } from '@/app/api/Store';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -6,10 +7,19 @@ export async function GET(
   context: { params: { lang: string; msgId: string } },
 ) {
   const lang = context.params.lang;
-  const translations = await Store.getLanguage(lang);
-
-  return NextResponse.json({
-    lang,
-    translations,
-  });
+  try {
+    const translations = await Store.getLanguage(lang);
+    return NextResponse.json({
+      lang,
+      translations,
+    });
+  } catch (e) {
+    if (e instanceof LanguageNotFound) {
+      return NextResponse.json(
+        { message: 'language [' + lang + '] not found' },
+        { status: 404 }
+      );
+    }
+    throw e;
+  }
 }

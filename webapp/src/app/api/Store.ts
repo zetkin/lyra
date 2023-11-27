@@ -2,6 +2,7 @@
 
 import { flatten } from 'flat';
 import fs from 'fs/promises';
+import { LanguageNotFound } from '@/app/api/Errors';
 import { parse } from 'yaml';
 import { envVarNotFound, logDebug } from '@/utils/util';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
@@ -51,6 +52,6 @@ export class Store {
   }
 
   private static throwLangNotFound(lang: string): never {
-    throw new Error(`Language ${lang} not found`);
+    throw new LanguageNotFound(`Language ${lang} not found`);
   }
 }
