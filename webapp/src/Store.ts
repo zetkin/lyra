@@ -2,7 +2,7 @@
 
 import { flatten } from 'flat';
 import fs from 'fs/promises';
-import { LanguageNotFound } from '@/app/api/Errors';
+import { LanguageNotFound } from '@/errors';
 import { parse } from 'yaml';
 import { envVarNotFound, logDebug } from '@/utils/util';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';

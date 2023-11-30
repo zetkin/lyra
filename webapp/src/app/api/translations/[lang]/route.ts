@@ -1,5 +1,5 @@
-import { LanguageNotFound } from '@/app/api/Errors';
-import { Store } from '@/app/api/Store';
+import { LanguageNotFound } from '@/errors';
+import { Store } from '@/Store';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
