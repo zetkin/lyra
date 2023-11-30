@@ -1,4 +1,4 @@
-import ts from "typescript";
+import ts from 'typescript';
 
 export default function readTypedMessages(fileName: string) {
   const host = ts.createIncrementalCompilerHost(
@@ -7,7 +7,7 @@ export default function readTypedMessages(fileName: string) {
       ...ts.sys,
       readFile: (path, encoding) => {
         // Skip anything in node_modules, as clearly not app code
-        if (path.includes("node_modules")) return "";
+        if (path.includes('node_modules')) {return '';}
         return ts.sys.readFile(path, encoding);
       },
     },
@@ -32,8 +32,8 @@ export default function readTypedMessages(fileName: string) {
 type TypeID = string;
 
 export type MessageData = {
-  id: string;
   defaultMessage: string;
+  id: string;
   params: {
     name: string;
     types: TypeID[];
@@ -43,21 +43,21 @@ export type MessageData = {
 function inspectMessages(node: ts.CallExpression): MessageData[] {
   function typeIdFromNode(typeNode?: ts.Node): string {
     if (typeNode?.kind == ts.SyntaxKind.BooleanKeyword) {
-      return "boolean";
+      return 'boolean';
     } else if (typeNode?.kind == ts.SyntaxKind.NumberKeyword) {
-      return "number";
+      return 'number';
     } else if (typeNode?.kind == ts.SyntaxKind.StringKeyword) {
-      return "string";
+      return 'string';
     } else if (typeNode?.kind == ts.SyntaxKind.NullKeyword) {
-      return "null";
+      return 'null';
     } else if (typeNode?.kind == ts.SyntaxKind.UndefinedKeyword) {
-      return "undefined";
+      return 'undefined';
     } else if (typeNode?.kind == ts.SyntaxKind.TypeReference) {
       const refNode = typeNode as ts.TypeReferenceNode;
       const idNode = refNode.typeName as ts.Identifier;
       return idNode.text;
     } else {
-      return "unknown";
+      return 'unknown';
     }
   }
 
@@ -122,7 +122,7 @@ function findMakeMessages(curNode: ts.Node): ts.CallExpression | undefined {
   if (curNode.kind == ts.SyntaxKind.CallExpression) {
     const callNode = curNode as ts.CallExpression;
     const expr = callNode.expression as ts.Identifier;
-    if (expr.escapedText == "makeMessages") {
+    if (expr.escapedText == 'makeMessages') {
       return callNode;
     }
   }

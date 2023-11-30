@@ -1,4 +1,4 @@
-import { MessageData } from "@/utils/readTypedMessages";
+import { MessageData } from '@/utils/readTypedMessages';
 import {
   Box,
   Button,
@@ -7,11 +7,12 @@ import {
   ListItem,
   Textarea,
   Typography,
-} from "@mui/joy";
-import { FC, useEffect, useState } from "react";
+} from '@mui/joy';
+import { FC, useEffect, useState } from 'react';
 
 type Props = {
   message: MessageData;
+  // eslint-disable-next-line no-unused-vars
   onSave: (text: string) => void;
   translation: string;
 };
@@ -27,13 +28,13 @@ const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
 
   return (
     <Grid
-      container
       key={message.id}
-      sx={{ width: "100%" }}
+      borderTop="1px solid silver"
+      container
       my={1}
       py={1}
-      borderTop="1px solid silver"
       spacing={2}
+      sx={{ width: '100%' }}
     >
       <Grid md={6} xs={12}>
         <code>{message.id}</code>
@@ -42,14 +43,14 @@ const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
       <Grid md={6} xs={12}>
         <Box display="flex" flexDirection="row" gap={1}>
           <Textarea
-            value={text}
             minRows={2}
             onChange={(ev) => setText(ev.target.value)}
             sx={{ flexGrow: 1 }}
+            value={text}
           />
           {edited && <Button onClick={() => onSave(text)}>Save</Button>}
           {edited && (
-            <Button variant="outlined" onClick={() => setText(translation)}>
+            <Button onClick={() => setText(translation)} variant="outlined">
               ↺
             </Button>
           )}

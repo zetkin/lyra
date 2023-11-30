@@ -1,16 +1,16 @@
-import { envVarNotFound } from "@/utils/util";
-import fs from "fs/promises";
-import path from "path";
-import { NextResponse } from "next/server";
+import { envVarNotFound } from '@/utils/util';
+import fs from 'fs/promises';
+import { NextResponse } from 'next/server';
+import path from 'path';
 import readTypedMessages, {
   MessageData,
-} from "@/utils/readTypedMessages";
+} from '@/utils/readTypedMessages';
 
-const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound("REPO_PATH");
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
 export async function GET() {
   const messages: MessageData[] = [];
-  for await (const item of getMessageFiles(REPO_PATH + "/src")) {
+  for await (const item of getMessageFiles(REPO_PATH + '/src')) {
     messages.push(...readTypedMessages(item));
   }
 
@@ -26,7 +26,7 @@ async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
     const stats = await fs.stat(itemPath);
     if (stats.isDirectory()) {
       yield* getMessageFiles(itemPath);
-    } else if (itemPath.endsWith("messageIds.ts")) {
+    } else if (itemPath.endsWith('messageIds.ts')) {
       yield itemPath;
     }
   }

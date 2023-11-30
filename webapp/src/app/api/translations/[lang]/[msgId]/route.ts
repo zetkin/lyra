@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getLanguage } from "@/app/api/languages";
+import { getLanguage } from '@/app/api/languages';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   req: NextRequest,
@@ -14,7 +14,7 @@ export async function PUT(
   const { lang, msgId } = context.params;
   const { text } = payload;
 
-  const objKeyPath = msgId.split(".");
+  const objKeyPath = msgId.split('.');
   let curObj = await getLanguage(lang);
   objKeyPath.forEach((key, index) => {
     if (index == objKeyPath.length - 1) {
