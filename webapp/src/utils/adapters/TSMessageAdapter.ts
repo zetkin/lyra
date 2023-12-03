@@ -1,9 +1,9 @@
 import readTypedMessages from '../readTypedMessages';
 import fs from 'fs/promises';
 import path from 'path';
-import { MessageData } from '.';
+import { IMessageAdapter, MessageData } from '.';
 
-export default class TSMessageAdapter {
+export default class TSMessageAdapter implements IMessageAdapter {
   private basePath: string;
 
   constructor(basePath: string = 'src') {

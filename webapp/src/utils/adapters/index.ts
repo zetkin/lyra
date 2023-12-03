@@ -8,3 +8,7 @@ export type MessageData = {
     types: TypeID[];
   }[];
 };
+
+export interface IMessageAdapter {
+  getMessages(): Promise<MessageData[]>;
+}
