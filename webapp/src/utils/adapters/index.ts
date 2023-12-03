@@ -9,6 +9,17 @@ export type MessageData = {
   }[];
 };
 
+export type TranslationMap = Record<
+  string,
+  Record<
+    string,
+    {
+      text: string;
+      sourceFile: string;
+    }
+  >
+>;
+
 export interface IMessageAdapter {
   getMessages(): Promise<MessageData[]>;
 }
