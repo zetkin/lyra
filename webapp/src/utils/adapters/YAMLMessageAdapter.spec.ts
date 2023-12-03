@@ -130,5 +130,22 @@ describe('YAMLMessageAdapter', () => {
         },
       ]);
     });
+
+    it('finds YAML files in absolute path', async () => {
+      mock({
+        '/path/to/locale/en.yml': 'role: Activist',
+      });
+
+      const msgAdapter = new YAMLMessageAdapter('/path/to/locale');
+      const messages = await msgAdapter.getMessages();
+
+      expect(messages).toEqual(<MessageData[]>[
+        {
+          defaultMessage: 'Activist',
+          id: 'role',
+          params: [],
+        },
+      ]);
+    });
   });
 });
