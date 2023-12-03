@@ -1,11 +1,11 @@
 /* global globalThis */
-import fs from 'fs/promises';
-import { parse } from 'yaml';
 import { envVarNotFound, logDebug } from '@/utils/util';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+import LyraConfig from '@/utils/config';
+import YAMLTranslationAdapter from '@/utils/adapters/YAMLTranslationAdapter';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
-const MAIN_BRANCH = 'main';
+const MAIN_BRANCH = process.env.MAIN_BRANCH ?? envVarNotFound('MAIN_BRANCH');
 
 export async function getLanguage(lang: string) {
   let languages: Map<string, Record<string, unknown>>;
@@ -33,11 +33,19 @@ export async function getLanguage(lang: string) {
   let translations: Record<string, unknown>;
   if (!languages.has(lang)) {
     logDebug('read languages from file');
-    const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
+    const config = await LyraConfig.readFromDir(REPO_PATH);
+    const adapter = new YAMLTranslationAdapter(config.translationsPath);
+    const translationsForAllLanguages = await adapter.getTranslations();
 
-    const yamlBuf = await fs.readFile(yamlPath);
-    translations = parse(yamlBuf.toString()) as Record<string, unknown>;
-    languages.set(lang, translations);
+    // TODO: Don't reshape this, but change how it's used elsewhere instead
+    const reshaped: Record<string, string> = {};
+    Object.entries(translationsForAllLanguages[lang]).forEach(([id, obj]) => {
+      reshaped[id] = obj.text;
+    });
+
+    languages.set(lang, reshaped);
+
+    translations = reshaped;
   } else {
     logDebug('read languages from Memory');
     translations = languages.get(lang) ?? throwLangNotFound(lang);
