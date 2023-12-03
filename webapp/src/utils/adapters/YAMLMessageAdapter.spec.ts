@@ -107,5 +107,28 @@ describe('YAMLMessageAdapter', () => {
 
       expect(messages).toHaveLength(2);
     });
+
+    it('finds YAML files in non-standard paths', async () => {
+      mock({
+        'path/to/locale/en.yml': 'role: Activist',
+        'path/to/locale/feature/en.yml': 'title: Zetkin',
+      });
+
+      const msgAdapter = new YAMLMessageAdapter('path/to/locale');
+      const messages = await msgAdapter.getMessages();
+
+      expect(messages).toEqual(<MessageData[]>[
+        {
+          defaultMessage: 'Activist',
+          id: 'role',
+          params: [],
+        },
+        {
+          defaultMessage: 'Zetkin',
+          id: 'feature.title',
+          params: [],
+        },
+      ]);
+    });
   });
 });
