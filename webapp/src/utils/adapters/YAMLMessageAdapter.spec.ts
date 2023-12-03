@@ -1,8 +1,8 @@
-import { afterEach, describe, it, expect } from '@jest/globals';
 import mock from 'mock-fs';
+import { afterEach, describe, expect, it } from '@jest/globals';
 
-import YAMLMessageAdapter from './YAMLMessageAdapter';
 import { MessageData } from '.';
+import YAMLMessageAdapter from './YAMLMessageAdapter';
 
 describe('YAMLMessageAdapter', () => {
   describe('getMessages()', () => {
@@ -98,8 +98,8 @@ describe('YAMLMessageAdapter', () => {
 
     it('includes yml and yaml suffixes', async () => {
       mock({
-        'locale/en.yml': 'role: Activist',
         'locale/en.yaml': 'title: Zetkin',
+        'locale/en.yml': 'role: Activist',
       });
 
       const msgAdapter = new YAMLMessageAdapter();

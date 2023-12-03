@@ -14,8 +14,8 @@ export type TranslationMap = Record<
   Record<
     string,
     {
-      text: string;
       sourceFile: string;
+      text: string;
     }
   >
 >;

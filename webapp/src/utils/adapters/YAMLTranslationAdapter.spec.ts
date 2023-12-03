@@ -1,6 +1,6 @@
-import { describe, expect, it } from '@jest/globals';
 import mock from 'mock-fs';
 import YAMLTranslationAdapter from './YAMLTranslationAdapter';
+import { describe, expect, it } from '@jest/globals';
 
 describe('YAMLTranslationAdapter', () => {
   describe('getTranslations()', () => {
@@ -16,14 +16,14 @@ describe('YAMLTranslationAdapter', () => {
       expect(translations).toEqual({
         de: {
           no: {
-            text: 'Nein',
             sourceFile: 'de.yml',
+            text: 'Nein',
           },
         },
         sv: {
           no: {
-            text: 'Nej',
             sourceFile: 'sv.yml',
+            text: 'Nej',
           },
         },
       });
@@ -40,8 +40,8 @@ describe('YAMLTranslationAdapter', () => {
       expect(translations).toEqual({
         de: {
           no: {
-            text: 'Nein',
             sourceFile: 'de.yml',
+            text: 'Nein',
           },
         },
       });
@@ -62,8 +62,8 @@ describe('YAMLTranslationAdapter', () => {
       expect(translations).toEqual({
         de: {
           'options.no': {
-            text: 'Nein',
             sourceFile: 'de.yml',
+            text: 'Nein',
           },
         },
       });
@@ -84,8 +84,8 @@ describe('YAMLTranslationAdapter', () => {
       expect(translations).toEqual({
         de: {
           'my.feature.options.no': {
-            text: 'Nein',
             sourceFile: 'my/feature/de.yml',
+            text: 'Nein',
           },
         },
       });

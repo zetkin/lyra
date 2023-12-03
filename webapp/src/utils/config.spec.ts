@@ -1,6 +1,6 @@
+import mock from 'mock-fs';
 import { describe, expect, it } from '@jest/globals';
 import LyraConfig, { MessageKind } from './config';
-import mock from 'mock-fs';
 
 describe('LyraConfig', () => {
   describe('readFromDir()', () => {

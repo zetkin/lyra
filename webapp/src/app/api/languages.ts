@@ -1,8 +1,8 @@
 /* global globalThis */
-import { envVarNotFound, logDebug } from '@/utils/util';
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 import LyraConfig from '@/utils/config';
 import YAMLTranslationAdapter from '@/utils/adapters/YAMLTranslationAdapter';
+import { envVarNotFound, logDebug } from '@/utils/util';
+import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 const MAIN_BRANCH = process.env.MAIN_BRANCH ?? envVarNotFound('MAIN_BRANCH');

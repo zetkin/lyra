@@ -16,11 +16,11 @@ const KIND_BY_FORMAT_VALUE: Record<'yaml' | 'ts', MessageKind> = {
 const configSchema = z.object({
   projects: z.array(
     z.object({
-      path: z.string(),
       messages: z.object({
-        path: z.string(),
         format: z.enum(['ts', 'yaml']),
+        path: z.string(),
       }),
+      path: z.string(),
       translations: z.object({
         path: z.string(),
       }),

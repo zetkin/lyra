@@ -1,8 +1,8 @@
+import flattenObject from '../flattenObject';
 import fs from 'fs/promises';
+import { parse } from 'yaml';
 import path from 'path';
 import { TranslationMap } from '.';
-import { parse } from 'yaml';
-import flattenObject from '../flattenObject';
 
 export default class YAMLTranslationAdapter {
   private basePath: string;
@@ -27,7 +27,7 @@ export default class YAMLTranslationAdapter {
       const flattened = flattenObject(data);
 
       const lang = fileName.split('.')[0];
-      if (!map.hasOwnProperty(lang)) {
+      if (!map[lang]) {
         map[lang] = {};
       }
 
@@ -40,8 +40,8 @@ export default class YAMLTranslationAdapter {
         const id = elements.join('.');
 
         map[lang][id] = {
-          text: value,
           sourceFile: sourceFilePath,
+          text: value,
         };
       });
     }

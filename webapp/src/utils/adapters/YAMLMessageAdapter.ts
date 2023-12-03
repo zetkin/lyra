@@ -1,7 +1,7 @@
-import path from 'path';
+import flattenObject from '../flattenObject';
 import fs from 'fs/promises';
 import { parse } from 'yaml';
-import flattenObject from '../flattenObject';
+import path from 'path';
 import { IMessageAdapter, MessageData } from '.';
 
 export default class YAMLMessageAdapter implements IMessageAdapter {
@@ -24,8 +24,8 @@ export default class YAMLMessageAdapter implements IMessageAdapter {
 
       Object.keys(flattened).forEach((key) => {
         messages.push({
-          id: [...prefixPath, key].join('.'),
           defaultMessage: flattened[key],
+          id: [...prefixPath, key].join('.'),
           params: [],
         });
       });

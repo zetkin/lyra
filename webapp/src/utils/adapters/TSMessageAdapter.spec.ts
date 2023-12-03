@@ -1,7 +1,7 @@
-import { describe, expect, it } from '@jest/globals';
+import { MessageData } from '.';
 import mock from 'mock-fs';
 import TSMessageAdapter from './TSMessageAdapter';
-import { MessageData } from '.';
+import { describe, expect, it } from '@jest/globals';
 
 describe('TSMessageAdapter', () => {
   describe('getMessages()', () => {
@@ -34,16 +34,16 @@ describe('TSMessageAdapter', () => {
 
     it('Finds multiple messageIds files', async () => {
       mock({
-        'src/features/something/messageIds.ts': [
-          `import { m, makeMessages } from 'core/i18n';`,
-          `export default makeMessages('feat.something', {`,
-          `  label: m<{ adjective: string }>('My {adjective} feature'),`,
-          `});`,
-        ].join('\n'),
         'src/features/other/messageIds.ts': [
           `import { m, makeMessages } from 'core/i18n';`,
           `export default makeMessages('feat.other', {`,
           `  label: m('My other feature'),`,
+          `});`,
+        ].join('\n'),
+        'src/features/something/messageIds.ts': [
+          `import { m, makeMessages } from 'core/i18n';`,
+          `export default makeMessages('feat.something', {`,
+          `  label: m<{ adjective: string }>('My {adjective} feature'),`,
           `});`,
         ].join('\n'),
       });
