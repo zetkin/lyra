@@ -1,33 +1,16 @@
 import { envVarNotFound } from '@/utils/util';
-import fs from 'fs/promises';
 import { NextResponse } from 'next/server';
-import path from 'path';
-import readTypedMessages, {
-  MessageData,
-} from '@/utils/readTypedMessages';
+import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
+import LyraConfig from '@/utils/config';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
 export async function GET() {
-  const messages: MessageData[] = [];
-  for await (const item of getMessageFiles(REPO_PATH + '/src')) {
-    messages.push(...readTypedMessages(item));
-  }
+  const config = await LyraConfig.readFromDir(REPO_PATH);
+  const msgAdapter = MessageAdapterFactory.createAdapter(config);
+  const messages = await msgAdapter.getMessages();
 
   return NextResponse.json({
     data: messages,
   });
-}
-
-async function* getMessageFiles(dirPath: string): AsyncGenerator<string> {
-  const items = await fs.readdir(dirPath);
-  for (const item of items) {
-    const itemPath = path.join(dirPath, item);
-    const stats = await fs.stat(itemPath);
-    if (stats.isDirectory()) {
-      yield* getMessageFiles(itemPath);
-    } else if (itemPath.endsWith('messageIds.ts')) {
-      yield itemPath;
-    }
-  }
 }
