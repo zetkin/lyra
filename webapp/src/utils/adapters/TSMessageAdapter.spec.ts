@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import mock from 'mock-fs';
 import TSMessageAdapter from './TSMessageAdapter';
-import { MessageData } from '../readTypedMessages';
+import { MessageData } from '.';
 
 describe('TSMessageAdapter', () => {
   describe('getMessages()', () => {

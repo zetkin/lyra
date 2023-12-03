@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import { MessageData } from './adapters';
 
 export default function readTypedMessages(fileName: string) {
   const host = ts.createIncrementalCompilerHost(
@@ -29,16 +30,6 @@ export default function readTypedMessages(fileName: string) {
   return [];
 }
 
-type TypeID = string;
-
-export type MessageData = {
-  defaultMessage: string;
-  id: string;
-  params: {
-    name: string;
-    types: TypeID[];
-  }[];
-};
 
 function inspectMessages(node: ts.CallExpression): MessageData[] {
   function typeIdFromNode(typeNode?: ts.Node): string {

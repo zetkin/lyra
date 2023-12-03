@@ -1,8 +1,8 @@
-import { MessageData } from '../readTypedMessages';
 import path from 'path';
 import fs from 'fs/promises';
 import { parse } from 'yaml';
 import flattenObject from '../flattenObject';
+import { MessageData } from '.';
 
 export default class YAMLMessageAdapter {
   private basePath: string;

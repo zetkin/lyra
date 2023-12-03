@@ -1,6 +1,7 @@
-import readTypedMessages, { MessageData } from '../readTypedMessages';
+import readTypedMessages from '../readTypedMessages';
 import fs from 'fs/promises';
 import path from 'path';
+import { MessageData } from '.';
 
 export default class TSMessageAdapter {
   private basePath: string;
