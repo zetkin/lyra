@@ -21,6 +21,9 @@ const configSchema = z.object({
         path: z.string(),
         format: z.enum(['ts', 'yaml']),
       }),
+      translations: z.object({
+        path: z.string(),
+      }),
     })
   ),
 });
@@ -28,10 +31,16 @@ const configSchema = z.object({
 export default class LyraConfig {
   public messageKind: MessageKind;
   public messagesPath: string;
+  public translationsPath: string;
 
-  constructor(messageKind = MessageKind.YAML, path = 'locale') {
+  constructor(
+    messageKind = MessageKind.YAML,
+    messagesPath = 'locale',
+    translationsPath = 'locale'
+  ) {
     this.messageKind = messageKind;
-    this.messagesPath = path;
+    this.messagesPath = messagesPath;
+    this.translationsPath = translationsPath;
   }
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
@@ -47,6 +56,11 @@ export default class LyraConfig {
         repoPath,
         parsed.projects[0].path,
         parsed.projects[0].messages.path
+      ),
+      path.join(
+        repoPath,
+        parsed.projects[0].path,
+        parsed.projects[0].translations.path
       )
     );
   }

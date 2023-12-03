@@ -12,11 +12,15 @@ describe('LyraConfig', () => {
           '  messages:',
           '    format: yaml',
           '    path: locale',
+          '  translations:',
+          '    format: yaml',
+          '    path: locale',
         ].join('\n'),
       });
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.messageKind).toEqual(MessageKind.YAML);
       expect(config.messagesPath).toEqual('/path/to/repo/locale');
+      expect(config.translationsPath).toEqual('/path/to/repo/locale');
     });
 
     it('combines project path with messages path', async () => {
@@ -27,11 +31,17 @@ describe('LyraConfig', () => {
           '  messages:',
           '    format: yaml',
           '    path: locale',
+          '  translations:',
+          '    format: yaml',
+          '    path: locale',
         ].join('\n'),
       });
 
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.messagesPath).toEqual('/path/to/repo/subproject/locale');
+      expect(config.translationsPath).toEqual(
+        '/path/to/repo/subproject/locale'
+      );
     });
   });
 });
