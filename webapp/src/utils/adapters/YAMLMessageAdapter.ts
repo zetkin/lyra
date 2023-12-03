@@ -31,11 +31,14 @@ export default class YAMLMessageAdapter {
 async function* findYMLFiles(dir: string): AsyncIterable<string> {
   const dirEnts = await fs.readdir(dir, { withFileTypes: true });
   for (const dirEnt of dirEnts) {
-    const res = path.resolve(dir, dirEnt.name);
+    const fullFilePath = path.resolve(dir, dirEnt.name);
     if (dirEnt.isDirectory()) {
-      yield* findYMLFiles(res);
-    } else if (res.slice(-4) == '.yml') {
-      yield res;
+      yield* findYMLFiles(fullFilePath);
+    } else if (
+      fullFilePath.endsWith('en.yml') ||
+      fullFilePath.endsWith('en.yaml')
+    ) {
+      yield fullFilePath;
     }
   }
 }

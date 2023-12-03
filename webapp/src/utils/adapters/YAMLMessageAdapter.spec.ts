@@ -84,5 +84,28 @@ describe('YAMLMessageAdapter', () => {
         },
       ]);
     });
+
+    it('ignores non-English YAML files', async () => {
+      mock({
+        'locale/sv.yml': 'role: Aktivist',
+      });
+
+      const msgAdapter = new YAMLMessageAdapter();
+      const messages = await msgAdapter.getMessages();
+
+      expect(messages).toEqual([]);
+    });
+
+    it('includes yml and yaml suffixes', async () => {
+      mock({
+        'locale/en.yml': 'role: Activist',
+        'locale/en.yaml': 'title: Zetkin',
+      });
+
+      const msgAdapter = new YAMLMessageAdapter();
+      const messages = await msgAdapter.getMessages();
+
+      expect(messages).toHaveLength(2);
+    });
   });
 });
