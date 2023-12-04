@@ -1,4 +1,5 @@
-import { getLanguage } from '@/app/api/languages';
+import { LanguageNotFound } from '@/errors';
+import { Store } from '@/Store';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -6,35 +7,19 @@ export async function GET(
   context: { params: { lang: string; msgId: string } },
 ) {
   const lang = context.params.lang;
-  const langObj = await getLanguage(lang);
-  const flattenLangObj = flattenObject(langObj);
-
-  return NextResponse.json({
-    lang,
-    translations: flattenLangObj,
-  });
-}
-
-function flattenObject(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  obj: Record<string, any>,
-  parentKey: string = '',
-): Record<string, string> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result: Record<string, any> = {};
-
-  for (const key in obj) {
-    // eslint-disable-next-line no-prototype-builtins
-    if (obj.hasOwnProperty(key)) {
-      const newKey = parentKey ? `${parentKey}.${key}` : key;
-
-      if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-        Object.assign(result, flattenObject(obj[key], newKey));
-      } else {
-        result[newKey] = obj[key];
-      }
+  try {
+    const translations = await Store.getLanguage(lang);
+    return NextResponse.json({
+      lang,
+      translations,
+    });
+  } catch (e) {
+    if (e instanceof LanguageNotFound) {
+      return NextResponse.json(
+        { message: 'language [' + lang + '] not found' },
+        { status: 404 }
+      );
     }
+    throw e;
   }
-
-  return result;
 }
