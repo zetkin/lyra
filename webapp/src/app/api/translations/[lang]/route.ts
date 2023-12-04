@@ -1,5 +1,5 @@
-import flattenObject from '@/utils/flattenObject';
-import { getLanguage } from '@/app/api/languages';
+import { LanguageNotFound } from '@/errors';
+import { Store } from '@/Store';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -7,11 +7,19 @@ export async function GET(
   context: { params: { lang: string; msgId: string } }
 ) {
   const lang = context.params.lang;
-  const langObj = await getLanguage(lang);
-  const flattenLangObj = flattenObject(langObj);
-
-  return NextResponse.json({
-    lang,
-    translations: flattenLangObj,
-  });
+  try {
+    const translations = await Store.getLanguage(lang);
+    return NextResponse.json({
+      lang,
+      translations,
+    });
+  } catch (e) {
+    if (e instanceof LanguageNotFound) {
+      return NextResponse.json(
+        { message: 'language [' + lang + '] not found' },
+        { status: 404 }
+      );
+    }
+    throw e;
+  }
 }

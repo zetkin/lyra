@@ -1,7 +1,7 @@
 import { MessageData } from './adapters';
 import ts from 'typescript';
 
-export default function readTypedMessages(fileName: string) {
+export default function readTypedMessages(fileName: string): MessageData[] {
   const host = ts.createIncrementalCompilerHost(
     {},
     {
@@ -79,9 +79,8 @@ function inspectMessages(node: ts.CallExpression): MessageData[] {
             defaultMessage: argNode.text,
             id: id,
             params:
-              callNode.typeArguments?.map((typeArg) => {
-                const typeNode = typeArg as ts.TypeLiteralNode;
-                const memberNode = typeNode.members[0] as ts.PropertySignature;
+              (callNode.typeArguments?.[0] as ts.TypeLiteralNode)?.members.map((member) => {
+                const memberNode = member as ts.PropertySignature;
                 const typeIdNode = memberNode.name as ts.Identifier;
                 if (memberNode.type?.kind == ts.SyntaxKind.UnionType) {
                   const unionNode = memberNode.type as ts.UnionTypeNode;

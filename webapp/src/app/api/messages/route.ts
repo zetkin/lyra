@@ -10,6 +10,9 @@ export async function GET() {
   const msgAdapter = MessageAdapterFactory.createAdapter(config);
   const messages = await msgAdapter.getMessages();
 
+  // TODO: change data instruction to be a map of key to value, instead of object
+  //       message id is the key, and value is an object with default and params
+  //       example: { 'key1.key2.key3': { default: 'default text', params: [] }}
   return NextResponse.json({
     data: messages,
   });
