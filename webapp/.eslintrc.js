@@ -37,7 +37,7 @@ module.exports = {
           'error',
           {
             default: { memberTypes: 'never', order: 'alphabetically' },
-            classes: ['field', 'constructor', "method"],
+            classes: ['field', 'constructor', 'method'],
             interfaces: ['signature', 'method', 'constructor', 'field'],
           },
         ],
