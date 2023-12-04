@@ -1,3 +1,4 @@
+import { MessageData } from './adapters';
 import ts from 'typescript';
 
 export default function readTypedMessages(fileName: string): MessageData[] {
@@ -29,16 +30,6 @@ export default function readTypedMessages(fileName: string): MessageData[] {
   return [];
 }
 
-type TypeID = string;
-
-export type MessageData = {
-  defaultMessage: string;
-  id: string;
-  params: {
-    name: string;
-    types: TypeID[];
-  }[];
-};
 
 function inspectMessages(node: ts.CallExpression): MessageData[] {
   function typeIdFromNode(typeNode?: ts.Node): string {

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   req: NextRequest, // keep this here even if unused
-  context: { params: { lang: string; msgId: string } },
+  context: { params: { lang: string; msgId: string } }
 ) {
   const lang = context.params.lang;
   try {

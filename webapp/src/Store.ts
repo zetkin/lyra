@@ -1,14 +1,13 @@
 /* global globalThis */
 
-import { flatten } from 'flat';
-import fs from 'fs/promises';
 import { LanguageNotFound } from '@/errors';
-import { parse } from 'yaml';
+import LyraConfig from './utils/config';
+import YAMLTranslationAdapter from './utils/adapters/YAMLTranslationAdapter';
 import { envVarNotFound, logDebug } from '@/utils/util';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
-const MAIN_BRANCH = 'main';
+const MAIN_BRANCH = process.env.MAIN_BRANCH ?? envVarNotFound('MAIN_BRANCH');
 
 export class Store {
   public static async getLanguage(lang: string) {
@@ -34,14 +33,18 @@ export class Store {
       languages = globalThis.languages;
     }
 
-    let translation: Record<string, string>;
+    let translation: Record<string, string> = {};
+
     if (!languages.has(lang)) {
       logDebug('read language[' + lang + '] from file');
-      // TODO: read this from .lyra.yml setting file in client repo
-      const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
+      const config = await LyraConfig.readFromDir(REPO_PATH);
+      const adapter = new YAMLTranslationAdapter(config.translationsPath);
+      const translationsForAllLanguages = await adapter.getTranslations();
 
-      const yamlBuf = await fs.readFile(yamlPath);
-      translation = flatten(parse(yamlBuf.toString()));
+      Object.entries(translationsForAllLanguages[lang]).forEach(([id, obj]) => {
+        translation[id] = obj.text;
+      });
+
       languages.set(lang, translation);
     } else {
       logDebug('read language [' + lang + '] from Memory');
