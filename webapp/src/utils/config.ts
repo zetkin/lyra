@@ -29,19 +29,7 @@ const configSchema = z.object({
 });
 
 export default class LyraConfig {
-  public messageKind: MessageKind;
-  public messagesPath: string;
-  public translationsPath: string;
-
-  constructor(
-    messageKind = MessageKind.YAML,
-    messagesPath = 'locale',
-    translationsPath = 'locale'
-  ) {
-    this.messageKind = messageKind;
-    this.messagesPath = messagesPath;
-    this.translationsPath = translationsPath;
-  }
+  private constructor(public readonly projects: LyraProjectConfig[]) {}
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
     const ymlBuf = await fs.readFile(path.join(repoPath, 'lyra.yml'));
@@ -49,19 +37,22 @@ export default class LyraConfig {
 
     const parsed = configSchema.parse(configData);
 
-    // TODO: Generate multiple "project configs" per LyraConfig
     return new LyraConfig(
-      KIND_BY_FORMAT_VALUE[parsed.projects[0].messages.format],
-      path.join(
-        repoPath,
-        parsed.projects[0].path,
-        parsed.projects[0].messages.path
-      ),
-      path.join(
-        repoPath,
-        parsed.projects[0].path,
-        parsed.projects[0].translations.path
-      )
+      parsed.projects.map((project) => {
+        return new LyraProjectConfig(
+          KIND_BY_FORMAT_VALUE[project.messages.format],
+          path.join(repoPath, project.path, project.messages.path),
+          path.join(repoPath, project.path, project.translations.path)
+        );
+      })
     );
   }
+}
+
+class LyraProjectConfig {
+  constructor(
+    public readonly messageKind: string,
+    public readonly messagesPath: string,
+    public readonly translationsPath: string
+  ) {}
 }

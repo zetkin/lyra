@@ -38,7 +38,8 @@ export class Store {
     if (!languages.has(lang)) {
       logDebug('read language[' + lang + '] from file');
       const config = await LyraConfig.readFromDir(REPO_PATH);
-      const adapter = new YAMLTranslationAdapter(config.translationsPath);
+      // TODO: make it multi projects
+      const adapter = new YAMLTranslationAdapter(config.projects[0].translationsPath);
       const translationsForAllLanguages = await adapter.getTranslations();
 
       Object.entries(translationsForAllLanguages[lang]).forEach(([id, obj]) => {
