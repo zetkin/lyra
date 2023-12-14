@@ -1,4 +1,4 @@
-import { MessageData } from '.';
+import { type MessageData } from '.';
 import mock from 'mock-fs';
 import TSMessageAdapter from './TSMessageAdapter';
 import { describe, expect, it } from '@jest/globals';
