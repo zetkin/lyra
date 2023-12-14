@@ -13,8 +13,7 @@ const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound('GITHUB_AUTH');
 const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound('GITHUB_REPO');
 const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound('GITHUB_OWNER');
-
-const MAIN_BRANCH = 'main';
+const MAIN_BRANCH = process.env.MAIN_BRANCH ?? envVarNotFound('MAIN_BRANCH');
 
 /** used to prevent multiple requests from running at the same time */
 let syncLock = false;
