@@ -3,9 +3,9 @@
 import fs from 'fs/promises';
 import { NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
+import packageJson from '@/../package.json';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
-import { version } from '@/../package.json';
 import { envVarNotFound, logError, logWarn } from '@/utils/util';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
@@ -90,7 +90,7 @@ export async function POST() {
         timeout: 0,
       },
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      userAgent: 'Lyra v' + version,
+      userAgent: 'Lyra v' + packageJson.version,
     });
 
     const response = await octokit.rest.pulls.create({
