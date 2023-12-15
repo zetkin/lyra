@@ -5,6 +5,8 @@
 ### Added
 - Run build and test in GitHub action
 - Base Branch config to lyra.yml
+### Changed
+- Rename classes name YAMLTranslate to YamlTranslate and TSMessage to TsMessage to follow naming convention
 
 ## [0.2.0]  2023-12-04
 ### Added
