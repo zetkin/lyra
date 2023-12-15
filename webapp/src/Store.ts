@@ -4,7 +4,7 @@ import { debug } from '@/utils/log';
 import { envVarNotFound } from '@/utils/util';
 import { LanguageNotFound } from '@/errors';
 import LyraConfig from './utils/config';
-import YAMLTranslationAdapter from './utils/adapters/YAMLTranslationAdapter';
+import YamlTranslationAdapter from './utils/adapters/YamlTranslationAdapter';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -40,7 +40,7 @@ export class Store {
     if (!languages.has(lang)) {
       debug('read language[' + lang + '] from file');
       // TODO: make it multi projects
-      const adapter = new YAMLTranslationAdapter(lyraConfig.projects[0].translationsPath);
+      const adapter = new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath);
       const translationsForAllLanguages = await adapter.getTranslations();
 
       Object.entries(translationsForAllLanguages[lang]).forEach(([id, obj]) => {

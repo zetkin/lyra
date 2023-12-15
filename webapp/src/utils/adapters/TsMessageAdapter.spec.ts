@@ -1,9 +1,9 @@
 import { type MessageData } from '.';
 import mock from 'mock-fs';
-import TsMessageAdapter from './TSMessageAdapter';
+import TsMessageAdapter from './TsMessageAdapter';
 import { describe, expect, it } from '@jest/globals';
 
-describe('TSMessageAdapter', () => {
+describe('TsMessageAdapter', () => {
   describe('getMessages()', () => {
     it('Finds messageIds.ts file and parses it', async () => {
       mock({

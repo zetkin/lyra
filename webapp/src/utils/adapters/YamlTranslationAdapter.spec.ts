@@ -1,8 +1,8 @@
 import mock from 'mock-fs';
-import YAMLTranslationAdapter from './YAMLTranslationAdapter';
+import YamlTranslationAdapter from './YamlTranslationAdapter';
 import { describe, expect, it } from '@jest/globals';
 
-describe('YAMLTranslationAdapter', () => {
+describe('YamlTranslationAdapter', () => {
   describe('getTranslations()', () => {
     it('Reads translations for multiple languages', async () => {
       mock({
@@ -10,7 +10,7 @@ describe('YAMLTranslationAdapter', () => {
         '/path/to/repo/locale/sv.yml': 'no: Nej',
       });
 
-      const adapter = new YAMLTranslationAdapter('/path/to/repo/locale');
+      const adapter = new YamlTranslationAdapter('/path/to/repo/locale');
       const translations = await adapter.getTranslations();
 
       expect(translations).toEqual({
@@ -34,7 +34,7 @@ describe('YAMLTranslationAdapter', () => {
         '/path/to/repo/locale/de.yml': 'no: Nein',
       });
 
-      const adapter = new YAMLTranslationAdapter('/path/to/repo/locale');
+      const adapter = new YamlTranslationAdapter('/path/to/repo/locale');
       const translations = await adapter.getTranslations();
 
       expect(translations).toEqual({
@@ -56,7 +56,7 @@ describe('YAMLTranslationAdapter', () => {
         ].join('\n'),
       });
 
-      const adapter = new YAMLTranslationAdapter('/path/to/repo/locale');
+      const adapter = new YamlTranslationAdapter('/path/to/repo/locale');
       const translations = await adapter.getTranslations();
 
       expect(translations).toEqual({
@@ -78,7 +78,7 @@ describe('YAMLTranslationAdapter', () => {
         ].join('\n'),
       });
 
-      const adapter = new YAMLTranslationAdapter('/path/to/repo/locale');
+      const adapter = new YamlTranslationAdapter('/path/to/repo/locale');
       const translations = await adapter.getTranslations();
 
       expect(translations).toEqual({
