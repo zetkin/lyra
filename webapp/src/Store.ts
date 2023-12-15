@@ -8,11 +8,12 @@ import YAMLTranslationAdapter from './utils/adapters/YAMLTranslationAdapter';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
-const MAIN_BRANCH = process.env.MAIN_BRANCH ?? envVarNotFound('MAIN_BRANCH');
 
 export class Store {
   public static async getLanguage(lang: string) {
     let languages: Map<string, Record<string, string>>;
+    debug('read lyra.yml from project root...');
+    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
     if (!globalThis.languages) {
       debug('Initializing languages');
       const options: Partial<SimpleGitOptions> = {
@@ -23,7 +24,7 @@ export class Store {
       };
       const git: SimpleGit = simpleGit(options);
       debug('git checkout main pull...');
-      await git.checkout(MAIN_BRANCH);
+      await git.checkout(lyraConfig.baseBranch);
       debug('git pull...');
       await git.pull();
       debug('git done checkout main branch and pull');
@@ -38,9 +39,8 @@ export class Store {
 
     if (!languages.has(lang)) {
       debug('read language[' + lang + '] from file');
-      const config = await LyraConfig.readFromDir(REPO_PATH);
       // TODO: make it multi projects
-      const adapter = new YAMLTranslationAdapter(config.projects[0].translationsPath);
+      const adapter = new YAMLTranslationAdapter(lyraConfig.projects[0].translationsPath);
       const translationsForAllLanguages = await adapter.getTranslations();
 
       Object.entries(translationsForAllLanguages[lang]).forEach(([id, obj]) => {

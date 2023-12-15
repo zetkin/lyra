@@ -15,7 +15,6 @@ env:
   GITHUB_AUTH: "any value"
   GITHUB_REPO: "any value"
   GITHUB_OWNER: "any value"
-  MAIN_BRANCH: "any value"
 
 jobs:
   lint:

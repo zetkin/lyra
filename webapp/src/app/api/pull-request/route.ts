@@ -2,6 +2,7 @@
 
 import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
+import LyraConfig from '@/utils/config';
 import { NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
@@ -14,7 +15,6 @@ const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound('GITHUB_AUTH');
 const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound('GITHUB_REPO');
 const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound('GITHUB_OWNER');
-const MAIN_BRANCH = process.env.MAIN_BRANCH ?? envVarNotFound('MAIN_BRANCH');
 
 /** used to prevent multiple requests from running at the same time */
 let syncLock = false;
@@ -29,6 +29,7 @@ export async function POST() {
 
   try {
     syncLock = true;
+    const lyraconfig = await LyraConfig.readFromDir(REPO_PATH);
     const options: Partial<SimpleGitOptions> = {
       baseDir: REPO_PATH,
       binary: 'git',
@@ -36,11 +37,13 @@ export async function POST() {
       trimmed: false,
     };
     const git: SimpleGit = simpleGit(options);
-    await git.checkout(MAIN_BRANCH);
+    await git.checkout(lyraconfig.baseBranch);
     await git.pull();
     const languages = globalThis.languages;
     for (const lang of languages.keys()) {
-      const yamlPath = REPO_PATH + `/src/locale/${lang}.yml`;
+      // TODO: 1. make it multi projects
+      //       2. use path to avoid double slash
+      const yamlPath = REPO_PATH + lyraconfig.projects[0].translationsPath + `/${lang}.yml`;
       const yamlOutput = stringify(unflatten(languages.get(lang)), {
         doubleQuotedAsJSON: true,
         singleQuote: true,
@@ -56,12 +59,12 @@ export async function POST() {
     }
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
     const branchName = 'lyra-translate-' + nowIso;
-    await git.checkoutBranch(branchName, MAIN_BRANCH);
+    await git.checkoutBranch(branchName, lyraconfig.baseBranch);
     await git.add('.');
     await git.commit('Lyra Translate: ' + nowIso);
     await git.push(['-u', 'origin', branchName]);
-    const pullRequestUrl = await createPR(branchName, nowIso);
-    await git.checkout(MAIN_BRANCH);
+    const pullRequestUrl = await createPR(branchName, lyraconfig.baseBranch, nowIso);
+    await git.checkout(lyraconfig.baseBranch);
     await git.pull();
     return NextResponse.json({
       branchName,
@@ -74,7 +77,7 @@ export async function POST() {
     syncLock = false;
   }
 
-  async function createPR(branchName: string, nowIso: string): Promise<string> {
+  async function createPR(branchName: string, baseBranch: string, nowIso: string): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
       baseUrl: 'https://api.github.com',
@@ -94,7 +97,7 @@ export async function POST() {
     });
 
     const response = await octokit.rest.pulls.create({
-      base: MAIN_BRANCH,
+      base: baseBranch,
       body: 'Created by LYRA at: ' + nowIso,
       head: branchName,
       owner: GITHUB_OWNER,
