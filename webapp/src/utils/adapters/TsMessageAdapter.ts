@@ -3,7 +3,7 @@ import path from 'path';
 import readTypedMessages from '../readTypedMessages';
 import { IMessageAdapter, type MessageData } from '.';
 
-export default class TSMessageAdapter implements IMessageAdapter {
+export default class TsMessageAdapter implements IMessageAdapter {
   private basePath: string;
 
   constructor(basePath: string = 'src') {

@@ -1,6 +1,6 @@
 import { type MessageData } from '.';
 import mock from 'mock-fs';
-import TSMessageAdapter from './TSMessageAdapter';
+import TsMessageAdapter from './TSMessageAdapter';
 import { describe, expect, it } from '@jest/globals';
 
 describe('TSMessageAdapter', () => {
@@ -15,7 +15,7 @@ describe('TSMessageAdapter', () => {
         ].join('\n'),
       });
 
-      const msgAdapter = new TSMessageAdapter();
+      const msgAdapter = new TsMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
@@ -48,7 +48,7 @@ describe('TSMessageAdapter', () => {
         ].join('\n'),
       });
 
-      const msgAdapter = new TSMessageAdapter();
+      const msgAdapter = new TsMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
@@ -75,7 +75,7 @@ describe('TSMessageAdapter', () => {
         ].join('\n'),
       });
 
-      const msgAdapter = new TSMessageAdapter('/path/to/src');
+      const msgAdapter = new TsMessageAdapter('/path/to/src');
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
