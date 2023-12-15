@@ -16,6 +16,7 @@ const KIND_BY_FORMAT_VALUE: Record<'ts' | 'yaml', MessageKind> = {
 };
 
 const configSchema = z.object({
+  baseBranch: z.optional(z.string()),
   projects: z.array(
     z.object({
       messages: z.object({
@@ -28,7 +29,6 @@ const configSchema = z.object({
       }),
     })
   ),
-  baseBranch: z.optional(z.string()),
 });
 
 export default class LyraConfig {
