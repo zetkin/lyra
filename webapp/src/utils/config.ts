@@ -1,5 +1,5 @@
+import { err } from '@/utils/log';
 import fs from 'fs/promises';
-import { logError } from '@/utils/util';
 import { LyraConfigReadingError } from '@/errors';
 import { parse } from 'yaml';
 import path from 'path';
@@ -51,7 +51,7 @@ export default class LyraConfig {
         })
       );
     } catch (e) {
-      logError(`error reading ${filename} file`);
+      err(`error reading ${filename} file`);
       throw new LyraConfigReadingError(filename);
     }
   }

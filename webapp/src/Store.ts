@@ -1,9 +1,10 @@
 /* global globalThis */
 
+import { debug } from '@/utils/log';
+import { envVarNotFound } from '@/utils/util';
 import { LanguageNotFound } from '@/errors';
 import LyraConfig from './utils/config';
 import YAMLTranslationAdapter from './utils/adapters/YAMLTranslationAdapter';
-import { envVarNotFound, logDebug } from '@/utils/util';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -13,7 +14,7 @@ export class Store {
   public static async getLanguage(lang: string) {
     let languages: Map<string, Record<string, string>>;
     if (!globalThis.languages) {
-      logDebug('Initializing languages');
+      debug('Initializing languages');
       const options: Partial<SimpleGitOptions> = {
         baseDir: REPO_PATH,
         binary: 'git',
@@ -21,22 +22,22 @@ export class Store {
         trimmed: false,
       };
       const git: SimpleGit = simpleGit(options);
-      logDebug('git checkout main pull...');
+      debug('git checkout main pull...');
       await git.checkout(MAIN_BRANCH);
-      logDebug('git pull...');
+      debug('git pull...');
       await git.pull();
-      logDebug('git done checkout main branch and pull');
+      debug('git done checkout main branch and pull');
       languages = new Map<string, Record<string, string>>();
       globalThis.languages = languages;
     } else {
-      logDebug('find languages in Memory');
+      debug('find languages in Memory');
       languages = globalThis.languages;
     }
 
     let translation: Record<string, string> = {};
 
     if (!languages.has(lang)) {
-      logDebug('read language[' + lang + '] from file');
+      debug('read language[' + lang + '] from file');
       const config = await LyraConfig.readFromDir(REPO_PATH);
       // TODO: make it multi projects
       const adapter = new YAMLTranslationAdapter(config.projects[0].translationsPath);
@@ -48,7 +49,7 @@ export class Store {
 
       languages.set(lang, translation);
     } else {
-      logDebug('read language [' + lang + '] from Memory');
+      debug('read language [' + lang + '] from Memory');
       translation = languages.get(lang) ?? Store.throwLangNotFound(lang);
     }
 

@@ -1,12 +1,13 @@
 /* global globalThis */
 
+import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
 import { NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
-import { envVarNotFound, logError, logWarn } from '@/utils/util';
+import { err, warn } from '@/utils/log';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -67,7 +68,7 @@ export async function POST() {
       pullRequestUrl,
     });
   } catch (e) {
-    logError(e);
+    err(e);
     throw e;
   } finally {
     syncLock = false;
@@ -79,9 +80,9 @@ export async function POST() {
       baseUrl: 'https://api.github.com',
       log: {
         debug: () => {},
-        error: logError,
+        error: err,
         info: () => {},
-        warn: logWarn,
+        warn: warn,
       },
       request: {
         agent: undefined,
