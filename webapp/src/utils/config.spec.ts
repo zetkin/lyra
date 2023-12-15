@@ -1,3 +1,4 @@
+import { LyraConfigReadingError } from '@/errors';
 import mock from 'mock-fs';
 import { describe, expect, it } from '@jest/globals';
 import LyraConfig, { MessageKind } from './config';
@@ -47,7 +48,7 @@ describe('LyraConfig', () => {
       );
     });
 
-    it('read baseBranch', async () => {
+    it('reads baseBranch', async () => {
       mock({
         '/path/to/repo/lyra.yml': [
           'baseBranch: branch1',
@@ -65,7 +66,7 @@ describe('LyraConfig', () => {
       expect(config.baseBranch).toEqual('branch1');
     });
 
-    it('read more than one projects', async () => {
+    it('reads more than one projects', async () => {
       mock({
         '/path/to/repo/lyra.yml': [
           'projects:',
@@ -99,6 +100,51 @@ describe('LyraConfig', () => {
         '/path/to/repo/subproject2/trans_locale2'
       );
       expect(config.projects[1].messageKind).toEqual(MessageKind.TS);
+    });
+
+    describe('throw LyraConfigReadingError for invalid content or file not found', () => {
+      it('throws for empty file', async () => {
+        expect.assertions(1);
+        mock({ '/path/to/repo/lyra.yml': '' });
+
+        const readFromDirFunc = () => LyraConfig.readFromDir('/path/to/repo');
+        await expect(readFromDirFunc()).rejects.toThrow(LyraConfigReadingError);
+      });
+
+      it('throws for missing messages path', async () => {
+        expect.assertions(1);
+        mock({
+          '/path/to/repo/lyra.yml': [
+            'baseBranch: branch1',
+            'projects:',
+            '- path: subproject',
+            '  messages:',
+            '    format: ts',
+            '  translations:',
+            '    path: anyValue',
+          ].join('\n'),
+        });
+        const readFromDirFunc = () => LyraConfig.readFromDir('/path/to/repo');
+        await expect(readFromDirFunc()).rejects.toThrow(LyraConfigReadingError);
+      });
+
+      it('throws for file not found', async () => {
+        expect.assertions(1);
+        mock({
+          '/path/to/repo/xxx.yml': [
+            'baseBranch: branch1',
+            'projects:',
+            '- path: subproject',
+            '  messages:',
+            '    format: ts',
+            '    path: anyValue',
+            '  translations:',
+            '    path: anyValue',
+          ].join('\n'),
+        });
+        const readFromDirFunc = () => LyraConfig.readFromDir('/path/to/repo');
+        await expect(readFromDirFunc()).rejects.toThrow(LyraConfigReadingError);
+      });
     });
   });
 });
