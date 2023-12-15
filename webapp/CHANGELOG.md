@@ -3,7 +3,8 @@
 
 ## [0.2.1]  2023-12-05
 ### Added
-- Run test in CI
+- Run build and test in GitHub action
+- Base Branch config to lyra.yml
 
 ## [0.2.0]  2023-12-04
 ### Added
