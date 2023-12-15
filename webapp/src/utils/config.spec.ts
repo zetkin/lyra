@@ -13,7 +13,6 @@ describe('LyraConfig', () => {
           '    format: yaml',
           '    path: locale',
           '  translations:',
-          '    format: yaml',
           '    path: locale',
         ].join('\n'),
       });
@@ -23,6 +22,7 @@ describe('LyraConfig', () => {
       expect(config.projects[0].translationsPath).toEqual(
         '/path/to/repo/locale'
       );
+      expect(config.baseBranch).toEqual('main'); // default value
     });
 
     it('combines project path with messages path', async () => {
@@ -34,7 +34,6 @@ describe('LyraConfig', () => {
           '    format: yaml',
           '    path: locale',
           '  translations:',
-          '    format: yaml',
           '    path: locale',
         ].join('\n'),
       });
@@ -48,7 +47,25 @@ describe('LyraConfig', () => {
       );
     });
 
-    it('rad more than one projects', async () => {
+    it('read baseBranch', async () => {
+      mock({
+        '/path/to/repo/lyra.yml': [
+          'baseBranch: branch1',
+          'projects:',
+          '- path: subproject',
+          '  messages:',
+          '    format: ts',
+          '    path: anyValue',
+          '  translations:',
+          '    path: anyValue',
+        ].join('\n'),
+      });
+
+      const config = await LyraConfig.readFromDir('/path/to/repo');
+      expect(config.baseBranch).toEqual('branch1');
+    });
+
+    it('read more than one projects', async () => {
       mock({
         '/path/to/repo/lyra.yml': [
           'projects:',
@@ -57,14 +74,12 @@ describe('LyraConfig', () => {
           '    format: yaml',
           '    path: locale1',
           '  translations:',
-          '    format: yaml',
           '    path: locale1',
           '- path: subproject2',
           '  messages:',
           '    format: ts',
           '    path: msg_locale2',
           '  translations:',
-          '    format: ts',
           '    path: trans_locale2',
         ].join('\n'),
       });

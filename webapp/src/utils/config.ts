@@ -28,10 +28,14 @@ const configSchema = z.object({
       }),
     })
   ),
+  baseBranch: z.optional(z.string()),
 });
 
 export default class LyraConfig {
-  private constructor(public readonly projects: LyraProjectConfig[]) {}
+  private constructor(
+    public readonly projects: LyraProjectConfig[],
+    public readonly baseBranch: string, // following GitHub terminology target branch called base branch
+  ) {}
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
     const filename = path.join(repoPath, 'lyra.yml');
@@ -48,7 +52,8 @@ export default class LyraConfig {
             path.join(repoPath, project.path, project.messages.path),
             path.join(repoPath, project.path, project.translations.path)
           );
-        })
+        }),
+        parsed.baseBranch ?? 'main',
       );
     } catch (e) {
       err(`error reading ${filename} file`);
