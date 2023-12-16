@@ -1,5 +1,5 @@
 import { LanguageNotFound } from '@/errors';
-import { Store } from '@/Store';
+import { Cache } from '@/Cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
@@ -16,7 +16,7 @@ export async function PUT(
   const { text } = payload;
 
   try {
-    const translations = await Store.getLanguage(lang);
+    const translations = await Cache.getLanguage(lang);
     if (translations[msgId] === undefined) {
       return NextResponse.json(
         { message: 'message id [' + msgId + '] not found' },

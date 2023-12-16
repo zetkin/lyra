@@ -9,7 +9,7 @@ import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
-export class Store {
+export class Cache {
   public static async getLanguage(lang: string) {
     let languages: Map<string, Record<string, string>>;
     debug('read lyra.yml from project root...');
@@ -39,7 +39,7 @@ export class Store {
 
     if (languages.has(lang)) {
       debug('read language [' + lang + '] from Memory');
-      translation = languages.get(lang) ?? Store.throwLangNotFound(lang);
+      translation = languages.get(lang) ?? Cache.throwLangNotFound(lang);
     } else {
       debug('read language[' + lang + '] from file');
       // TODO: make it multi projects

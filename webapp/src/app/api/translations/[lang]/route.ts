@@ -1,5 +1,5 @@
 import { LanguageNotFound } from '@/errors';
-import { Store } from '@/Store';
+import { Cache } from '@/Cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -8,7 +8,7 @@ export async function GET(
 ) {
   const lang = context.params.lang;
   try {
-    const translations = await Store.getLanguage(lang);
+    const translations = await Cache.getLanguage(lang);
     return NextResponse.json({
       lang,
       translations,
