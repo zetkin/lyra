@@ -1,5 +1,5 @@
-import { LanguageNotFound } from '@/errors';
 import { ITranslationAdapter, TranslationMap } from '@/utils/adapters';
+import { LanguageNotFound, MessageNotFound } from '@/errors';
 
 type StoreData = {
   languages: TranslationMap;
@@ -38,6 +38,10 @@ export default class Store {
 
     if (!this.data.languages[lang]) {
       throw new LanguageNotFound(lang);
+    }
+
+    if (!this.data.languages[lang][id]) {
+      throw new MessageNotFound(lang, id);
     }
 
     this.data.languages[lang][id].text = text;

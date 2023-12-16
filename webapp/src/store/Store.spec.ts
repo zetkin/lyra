@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { LanguageNotFound } from '@/errors';
 import Store from './Store';
+import { LanguageNotFound, MessageNotFound } from '@/errors';
 
 describe('Store', () => {
   it('returns empty object when empty', async () => {
@@ -105,5 +105,21 @@ describe('Store', () => {
     );
 
     expect(promise).rejects.toThrowError(LanguageNotFound);
+  });
+
+  it('throws exception for unknown message ID', async () => {
+    const store = new Store({
+      getTranslations: async () => ({
+        de: {},
+      }),
+    });
+
+    const promise = store.updateTranslation(
+      'de',
+      'greeting.headline',
+      'Hallo!'
+    );
+
+    expect(promise).rejects.toThrowError(MessageNotFound);
   });
 });
