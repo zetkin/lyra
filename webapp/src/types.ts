@@ -4,8 +4,5 @@ export type LanguageMap = Map<string, Record<string, string>>;
 
 declare global {
   // eslint-disable-next-line
-  var hasPulled: boolean;
-
-  // eslint-disable-next-line
   var store: Store;
 }
