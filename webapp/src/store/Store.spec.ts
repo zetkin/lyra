@@ -35,4 +35,29 @@ describe('Store', () => {
       'greeting.headline': 'Hallo',
     });
   });
+
+  it('returns updated translations', async () => {
+    const store = new Store({
+      getTranslations: async () => ({
+        de: {
+          'greeting.headline': {
+            sourceFile: '',
+            text: 'Hallo',
+          },
+        },
+      }),
+    });
+
+    const before = await store.getTranslations('de');
+    await store.updateTranslation('de', 'greeting.headline', 'Hallo!');
+    const after = await store.getTranslations('de');
+
+    expect(before).toEqual({
+      'greeting.headline': 'Hallo',
+    });
+
+    expect(after).toEqual({
+      'greeting.headline': 'Hallo!',
+    });
+  });
 });
