@@ -17,6 +17,17 @@ export default class Store {
     this.translationAdapter = translationAdapter;
   }
 
+  async getLanguageData(): Promise<Record<string, Record<string, string>>> {
+    await this.initIfNecessary();
+
+    const output: Record<string, Record<string, string>> = {};
+    for await (const lang of Object.keys(this.data.languages)) {
+      output[lang] = await this.getTranslations(lang);
+    }
+
+    return output;
+  }
+
   async getTranslations(lang: string): Promise<Record<string, string>> {
     await this.initIfNecessary();
 

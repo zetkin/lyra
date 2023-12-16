@@ -122,4 +122,33 @@ describe('Store', () => {
 
     expect(promise).rejects.toThrowError(MessageNotFound);
   });
+
+  it('gives full access to all languages', async () => {
+    const store = new Store({
+      getTranslations: async () => ({
+        de: {
+          'greeting.headline': {
+            sourceFile: '',
+            text: 'Hallo',
+          },
+        },
+        sv: {
+          'greeting.headline': {
+            sourceFile: '',
+            text: 'Hej',
+          },
+        },
+      }),
+    });
+
+    const languages = await store.getLanguageData();
+    expect(languages).toEqual({
+      de: {
+        'greeting.headline': 'Hallo',
+      },
+      sv: {
+        'greeting.headline': 'Hej',
+      },
+    });
+  });
 });
