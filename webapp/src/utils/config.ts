@@ -1,4 +1,6 @@
+import { err } from '@/utils/log';
 import fs from 'fs/promises';
+import { LyraConfigReadingError } from '@/errors';
 import { parse } from 'yaml';
 import path from 'path';
 import { z } from 'zod';
@@ -8,12 +10,13 @@ export enum MessageKind {
   YAML = 'yaml',
 }
 
-const KIND_BY_FORMAT_VALUE: Record<'yaml' | 'ts', MessageKind> = {
+const KIND_BY_FORMAT_VALUE: Record<'ts' | 'yaml', MessageKind> = {
   ts: MessageKind.TS,
   yaml: MessageKind.YAML,
 };
 
 const configSchema = z.object({
+  baseBranch: z.optional(z.string()),
   projects: z.array(
     z.object({
       messages: z.object({
@@ -29,39 +32,40 @@ const configSchema = z.object({
 });
 
 export default class LyraConfig {
-  public messageKind: MessageKind;
-  public messagesPath: string;
-  public translationsPath: string;
-
-  constructor(
-    messageKind = MessageKind.YAML,
-    messagesPath = 'locale',
-    translationsPath = 'locale'
-  ) {
-    this.messageKind = messageKind;
-    this.messagesPath = messagesPath;
-    this.translationsPath = translationsPath;
-  }
+  private constructor(
+    public readonly projects: LyraProjectConfig[],
+    public readonly baseBranch: string, // following GitHub terminology target branch called base branch
+  ) {}
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
-    const ymlBuf = await fs.readFile(path.join(repoPath, 'lyra.yml'));
-    const configData = parse(ymlBuf.toString());
+    const filename = path.join(repoPath, 'lyra.yml');
+    try {
+      const ymlBuf = await fs.readFile(filename);
+      const configData = parse(ymlBuf.toString());
 
-    const parsed = configSchema.parse(configData);
+      const parsed = configSchema.parse(configData);
 
-    // TODO: Generate multiple "project configs" per LyraConfig
-    return new LyraConfig(
-      KIND_BY_FORMAT_VALUE[parsed.projects[0].messages.format],
-      path.join(
-        repoPath,
-        parsed.projects[0].path,
-        parsed.projects[0].messages.path
-      ),
-      path.join(
-        repoPath,
-        parsed.projects[0].path,
-        parsed.projects[0].translations.path
-      )
-    );
+      return new LyraConfig(
+        parsed.projects.map((project) => {
+          return new LyraProjectConfig(
+            KIND_BY_FORMAT_VALUE[project.messages.format],
+            path.join(repoPath, project.path, project.messages.path),
+            path.join(repoPath, project.path, project.translations.path)
+          );
+        }),
+        parsed.baseBranch ?? 'main',
+      );
+    } catch (e) {
+      err(`error reading ${filename} file`);
+      throw new LyraConfigReadingError(filename);
+    }
   }
+}
+
+class LyraProjectConfig {
+  constructor(
+    public readonly messageKind: string,
+    public readonly messagesPath: string,
+    public readonly translationsPath: string
+  ) {}
 }

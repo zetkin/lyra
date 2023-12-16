@@ -9,6 +9,13 @@ on:
 permissions:
   contents: read
 
+env:
+  # temporary workaround until move those value to API call or lyra.yml
+  REPO_PATH: "any value"
+  GITHUB_AUTH: "any value"
+  GITHUB_REPO: "any value"
+  GITHUB_OWNER: "any value"
+
 jobs:
   lint:
     name: Lint
@@ -25,3 +32,5 @@ jobs:
           cache-dependency-path: ./webapp/yarn.lock
       - run: yarn
       - run: yarn lint
+      - run: yarn build
+      - run: yarn test

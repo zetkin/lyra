@@ -11,3 +11,15 @@ GITHUB_AUTH= <<TOKEN>>
 GITHUB_OWNER=zetkin
 GITHUB_REPO=app.zetkin.org
 ```
+
+also the project reposotory needs to be cloned locally. and has in the root folder config file `lyra.yml` with the example content:
+```yaml
+baseBranch: main
+projects:
+- path: .
+  messages:
+    format: yaml
+    path: locale
+  translations:
+    path: locale
+```

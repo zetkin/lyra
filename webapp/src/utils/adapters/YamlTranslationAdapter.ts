@@ -2,9 +2,9 @@ import flattenObject from '../flattenObject';
 import fs from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
-import { TranslationMap } from '.';
+import { type TranslationMap } from '.';
 
-export default class YAMLTranslationAdapter {
+export default class YamlTranslationAdapter {
   private basePath: string;
 
   constructor(basePath: string) {

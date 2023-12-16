@@ -1,4 +1,4 @@
-import { MessageData } from '@/utils/readTypedMessages';
+import { type MessageData } from '@/utils/adapters';
 import {
   Box,
   Button,

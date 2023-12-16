@@ -1,10 +1,10 @@
 import mock from 'mock-fs';
 import { afterEach, describe, expect, it } from '@jest/globals';
 
-import { MessageData } from '.';
-import YAMLMessageAdapter from './YAMLMessageAdapter';
+import { type MessageData } from '.';
+import YamlMessageAdapter from './YamlMessageAdapter';
 
-describe('YAMLMessageAdapter', () => {
+describe('YamlMessageAdapter', () => {
   describe('getMessages()', () => {
     afterEach(() => {
       mock.restore();
@@ -20,7 +20,7 @@ describe('YAMLMessageAdapter', () => {
         ].join('\n'),
       });
 
-      const msgAdapter = new YAMLMessageAdapter();
+      const msgAdapter = new YamlMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
@@ -46,7 +46,7 @@ describe('YAMLMessageAdapter', () => {
         ].join('\n'),
       });
 
-      const msgAdapter = new YAMLMessageAdapter();
+      const msgAdapter = new YamlMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
@@ -68,7 +68,7 @@ describe('YAMLMessageAdapter', () => {
         'locale/my/other/feature/en.yml': 'title: Clara',
       });
 
-      const msgAdapter = new YAMLMessageAdapter();
+      const msgAdapter = new YamlMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
@@ -90,7 +90,7 @@ describe('YAMLMessageAdapter', () => {
         'locale/sv.yml': 'role: Aktivist',
       });
 
-      const msgAdapter = new YAMLMessageAdapter();
+      const msgAdapter = new YamlMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual([]);
@@ -102,7 +102,7 @@ describe('YAMLMessageAdapter', () => {
         'locale/en.yml': 'role: Activist',
       });
 
-      const msgAdapter = new YAMLMessageAdapter();
+      const msgAdapter = new YamlMessageAdapter();
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toHaveLength(2);
@@ -114,7 +114,7 @@ describe('YAMLMessageAdapter', () => {
         'path/to/locale/feature/en.yml': 'title: Zetkin',
       });
 
-      const msgAdapter = new YAMLMessageAdapter('path/to/locale');
+      const msgAdapter = new YamlMessageAdapter('path/to/locale');
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[
@@ -136,7 +136,7 @@ describe('YAMLMessageAdapter', () => {
         '/path/to/locale/en.yml': 'role: Activist',
       });
 
-      const msgAdapter = new YAMLMessageAdapter('/path/to/locale');
+      const msgAdapter = new YamlMessageAdapter('/path/to/locale');
       const messages = await msgAdapter.getMessages();
 
       expect(messages).toEqual(<MessageData[]>[

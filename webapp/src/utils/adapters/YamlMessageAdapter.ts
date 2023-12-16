@@ -2,9 +2,9 @@ import flattenObject from '../flattenObject';
 import fs from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
-import { IMessageAdapter, MessageData } from '.';
+import { IMessageAdapter, type MessageData } from '.';
 
-export default class YAMLMessageAdapter implements IMessageAdapter {
+export default class YamlMessageAdapter implements IMessageAdapter {
   private basePath: string;
 
   constructor(basePath: string = 'locale') {

@@ -3,3 +3,9 @@ export class LanguageNotFound extends Error {
         super(`Language ${lang} not found`);
     }
 }
+
+export class LyraConfigReadingError extends Error {
+    constructor(filename: string) {
+        super(`Error reading file: [${filename}]`);
+    }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageData } from '@/utils/readTypedMessages';
+import { type MessageData } from '@/utils/adapters';
 import MessageForm from '@/components/MessageForm';
 import { Box, Button, Link, Typography } from '@mui/joy';
 import { useEffect, useState } from 'react';
