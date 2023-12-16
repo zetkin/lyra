@@ -1,3 +1,4 @@
+import { LanguageNotFound } from '@/errors';
 import { ITranslationAdapter, TranslationMap } from '@/utils/adapters';
 
 type StoreData = {
@@ -19,7 +20,10 @@ export default class Store {
   async getTranslations(lang: string): Promise<Record<string, string>> {
     await this.initIfNecessary();
 
-    const language = this.data.languages[lang] || {};
+    const language = this.data.languages[lang];
+    if (!language) {
+      throw new LanguageNotFound(lang);
+    }
 
     const output: Record<string, string> = {};
     Object.entries(language).forEach(([key, value]) => {
@@ -31,6 +35,10 @@ export default class Store {
 
   async updateTranslation(lang: string, id: string, text: string) {
     await this.initIfNecessary();
+
+    if (!this.data.languages[lang]) {
+      throw new LanguageNotFound(lang);
+    }
 
     this.data.languages[lang][id].text = text;
   }

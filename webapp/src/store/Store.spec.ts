@@ -1,11 +1,14 @@
 import { describe, expect, it } from '@jest/globals';
 
+import { LanguageNotFound } from '@/errors';
 import Store from './Store';
 
 describe('Store', () => {
   it('returns empty object when empty', async () => {
     const store = new Store({
-      getTranslations: async () => ({}),
+      getTranslations: async () => ({
+        sv: {},
+      }),
     });
 
     const translations = await store.getTranslations('sv');
@@ -34,6 +37,15 @@ describe('Store', () => {
     expect(translations).toEqual({
       'greeting.headline': 'Hallo',
     });
+  });
+
+  it('throws exception for missing language', async () => {
+    const store = new Store({
+      getTranslations: async () => ({}),
+    });
+
+    const promise = store.getTranslations('fi');
+    expect(promise).rejects.toThrowError(LanguageNotFound);
   });
 
   it('returns updated translations', async () => {
@@ -79,5 +91,19 @@ describe('Store', () => {
     expect(after).toEqual({
       'greeting.headline': 'Hallo!',
     });
+  });
+
+  it('throws exception for missing language', async () => {
+    const store = new Store({
+      getTranslations: async () => ({}),
+    });
+
+    const promise = store.updateTranslation(
+      'de',
+      'greeting.headline',
+      'Hallo!'
+    );
+
+    expect(promise).rejects.toThrowError(LanguageNotFound);
   });
 });
