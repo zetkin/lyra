@@ -1,5 +1,4 @@
-/* global globalThis */
-
+import { Cache } from '@/Cache';
 import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
 import LyraConfig from '@/utils/config';
@@ -23,7 +22,7 @@ export async function POST() {
   if (syncLock) {
     return NextResponse.json(
       { message: 'Another Request in progress' },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -39,12 +38,13 @@ export async function POST() {
     const git: SimpleGit = simpleGit(options);
     await git.checkout(lyraconfig.baseBranch);
     await git.pull();
-    const languages = globalThis.languages;
-    for (const lang of languages.keys()) {
+    const store = await Cache.getStore();
+    const languages = await store.getLanguageData();
+    for (const lang of Object.keys(languages)) {
       // TODO: 1. make it multi projects
       //       2. use path to avoid double slash
-      const yamlPath = REPO_PATH + lyraconfig.projects[0].translationsPath + `/${lang}.yml`;
-      const yamlOutput = stringify(unflatten(languages.get(lang)), {
+      const yamlPath = lyraconfig.projects[0].translationsPath + `/${lang}.yml`;
+      const yamlOutput = stringify(unflatten(languages[lang]), {
         doubleQuotedAsJSON: true,
         singleQuote: true,
       });
@@ -54,7 +54,7 @@ export async function POST() {
     if (status.files.length == 0) {
       return NextResponse.json(
         { message: 'There are no changes in main branch' },
-        { status: 400 },
+        { status: 400 }
       );
     }
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
@@ -63,7 +63,11 @@ export async function POST() {
     await git.add('.');
     await git.commit('Lyra Translate: ' + nowIso);
     await git.push(['-u', 'origin', branchName]);
-    const pullRequestUrl = await createPR(branchName, lyraconfig.baseBranch, nowIso);
+    const pullRequestUrl = await createPR(
+      branchName,
+      lyraconfig.baseBranch,
+      nowIso
+    );
     await git.checkout(lyraconfig.baseBranch);
     await git.pull();
     return NextResponse.json({
@@ -77,7 +81,11 @@ export async function POST() {
     syncLock = false;
   }
 
-  async function createPR(branchName: string, baseBranch: string, nowIso: string): Promise<string> {
+  async function createPR(
+    branchName: string,
+    baseBranch: string,
+    nowIso: string
+  ): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,
       baseUrl: 'https://api.github.com',

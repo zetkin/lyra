@@ -10,11 +10,12 @@ import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
 export class Cache {
+  private static hasPulled: boolean = false;
+
   public static async getLanguage(lang: string) {
-    let languages: Map<string, Record<string, string>>;
     debug('read lyra.yml from project root...');
     const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
-    if (!globalThis.languages) {
+    if (!Cache.hasPulled) {
       debug('Initializing languages');
       const options: Partial<SimpleGitOptions> = {
         baseDir: REPO_PATH,
@@ -28,11 +29,7 @@ export class Cache {
       debug('git pull...');
       await git.pull();
       debug('git done checkout main branch and pull');
-      languages = new Map<string, Record<string, string>>();
-      globalThis.languages = languages;
-    } else {
-      debug('find languages in Memory');
-      languages = globalThis.languages;
+      Cache.hasPulled = true;
     }
 
     const store = await Cache.getStore();
