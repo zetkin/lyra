@@ -37,7 +37,10 @@ export class Store {
 
     let translation: Record<string, string> = {};
 
-    if (!languages.has(lang)) {
+    if (languages.has(lang)) {
+      debug('read language [' + lang + '] from Memory');
+      translation = languages.get(lang) ?? Store.throwLangNotFound(lang);
+    } else {
       debug('read language[' + lang + '] from file');
       // TODO: make it multi projects
       const adapter = new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath);
@@ -48,9 +51,6 @@ export class Store {
       });
 
       languages.set(lang, translation);
-    } else {
-      debug('read language [' + lang + '] from Memory');
-      translation = languages.get(lang) ?? Store.throwLangNotFound(lang);
     }
 
     return translation;

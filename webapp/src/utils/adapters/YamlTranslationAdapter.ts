@@ -13,8 +13,7 @@ export default class YamlTranslationAdapter {
 
   async getTranslations(): Promise<TranslationMap> {
     const matcher = (path: string) =>
-      (path.endsWith('.yml') && !path.endsWith('en.yml')) ||
-      (path.endsWith('.yaml') && !path.endsWith('en.yaml'));
+      path.endsWith('.yml') || path.endsWith('.yaml');
 
     const map: TranslationMap = {};
 
