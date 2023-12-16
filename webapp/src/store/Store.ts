@@ -17,9 +17,7 @@ export default class Store {
   }
 
   async getTranslations(lang: string): Promise<Record<string, string>> {
-    if (Object.keys(this.data.languages).length == 0) {
-      this.data.languages = await this.translationAdapter.getTranslations();
-    }
+    await this.initIfNecessary();
 
     const language = this.data.languages[lang] || {};
 
@@ -32,6 +30,14 @@ export default class Store {
   }
 
   async updateTranslation(lang: string, id: string, text: string) {
+    await this.initIfNecessary();
+
     this.data.languages[lang][id].text = text;
+  }
+
+  private async initIfNecessary() {
+    if (Object.keys(this.data.languages).length == 0) {
+      this.data.languages = await this.translationAdapter.getTranslations();
+    }
   }
 }

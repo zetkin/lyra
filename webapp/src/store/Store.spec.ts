@@ -60,4 +60,24 @@ describe('Store', () => {
       'greeting.headline': 'Hallo!',
     });
   });
+
+  it('can update translations before getTranslations()', async () => {
+    const store = new Store({
+      getTranslations: async () => ({
+        de: {
+          'greeting.headline': {
+            sourceFile: '',
+            text: 'Hallo',
+          },
+        },
+      }),
+    });
+
+    await store.updateTranslation('de', 'greeting.headline', 'Hallo!');
+    const after = await store.getTranslations('de');
+
+    expect(after).toEqual({
+      'greeting.headline': 'Hallo!',
+    });
+  });
 });
