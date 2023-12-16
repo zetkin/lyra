@@ -2,8 +2,8 @@
 
 import { debug } from '@/utils/log';
 import { envVarNotFound } from '@/utils/util';
-import { LanguageNotFound } from '@/errors';
 import LyraConfig from './utils/config';
+import Store from './store/Store';
 import YamlTranslationAdapter from './utils/adapters/YamlTranslationAdapter';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
@@ -35,28 +35,18 @@ export class Cache {
       languages = globalThis.languages;
     }
 
-    let translation: Record<string, string> = {};
-
-    if (languages.has(lang)) {
-      debug('read language [' + lang + '] from Memory');
-      translation = languages.get(lang) ?? Cache.throwLangNotFound(lang);
-    } else {
-      debug('read language[' + lang + '] from file');
-      // TODO: make it multi projects
-      const adapter = new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath);
-      const translationsForAllLanguages = await adapter.getTranslations();
-
-      Object.entries(translationsForAllLanguages[lang]).forEach(([id, obj]) => {
-        translation[id] = obj.text;
-      });
-
-      languages.set(lang, translation);
-    }
-
-    return translation;
+    const store = await Cache.getStore();
+    return store.getTranslations(lang);
   }
 
-  private static throwLangNotFound(lang: string): never {
-    throw new LanguageNotFound(`Language ${lang} not found`);
+  public static async getStore(): Promise<Store> {
+    if (!globalThis.store) {
+      const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
+      globalThis.store = new Store(
+        new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath)
+      );
+    }
+
+    return globalThis.store;
   }
 }
