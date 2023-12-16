@@ -40,6 +40,7 @@ export async function POST() {
     await git.pull();
     const store = await Cache.getStore();
     const languages = await store.getLanguageData();
+    const pathsToAdd: string[] = [];
     for (const lang of Object.keys(languages)) {
       // TODO: 1. make it multi projects
       //       2. use path to avoid double slash
@@ -48,6 +49,7 @@ export async function POST() {
         doubleQuotedAsJSON: true,
         singleQuote: true,
       });
+      pathsToAdd.push(yamlPath);
       await fs.writeFile(yamlPath, yamlOutput);
     }
     const status = await git.status();
@@ -60,7 +62,7 @@ export async function POST() {
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
     const branchName = 'lyra-translate-' + nowIso;
     await git.checkoutBranch(branchName, lyraconfig.baseBranch);
-    await git.add('.');
+    await git.add(pathsToAdd);
     await git.commit('Lyra Translate: ' + nowIso);
     await git.push(['-u', 'origin', branchName]);
     const pullRequestUrl = await createPR(
