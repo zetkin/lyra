@@ -23,3 +23,7 @@ export type TranslationMap = Record<
 export interface IMessageAdapter {
   getMessages(): Promise<MessageData[]>;
 }
+
+export interface ITranslationAdapter {
+  getTranslations(): Promise<TranslationMap>;
+}
