@@ -2,9 +2,9 @@
 
 import { debug } from '@/utils/log';
 import { envVarNotFound } from '@/utils/util';
-import LyraConfig from './utils/config';
-import Store from './store/Store';
-import YamlTranslationAdapter from './utils/adapters/YamlTranslationAdapter';
+import LyraConfig from '@/utils/config';
+import Store from '@/store/Store';
+import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -38,6 +38,7 @@ export class Cache {
 
   public static async getStore(): Promise<Store> {
     if (!globalThis.store) {
+      // TODO: Implement differently for multi-repo/multi-project support
       const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
       globalThis.store = new Store(
         new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath)
