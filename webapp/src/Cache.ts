@@ -41,7 +41,7 @@ export class Cache {
       // TODO: Implement differently for multi-repo/multi-project support
       const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
       globalThis.store = new Store(
-        new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath)
+        new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath),
       );
     }
 

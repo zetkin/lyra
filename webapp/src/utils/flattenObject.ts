@@ -1,7 +1,7 @@
 export default function flattenObject(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   obj: Record<string, any>,
-  parentKey: string = ''
+  parentKey: string = '',
 ): Record<string, string> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: Record<string, any> = {};

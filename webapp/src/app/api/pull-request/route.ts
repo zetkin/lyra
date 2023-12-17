@@ -22,7 +22,7 @@ export async function POST() {
   if (syncLock) {
     return NextResponse.json(
       { message: 'Another Request in progress' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -56,7 +56,7 @@ export async function POST() {
     if (status.files.length == 0) {
       return NextResponse.json(
         { message: 'There are no changes in main branch' },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
@@ -68,7 +68,7 @@ export async function POST() {
     const pullRequestUrl = await createPR(
       branchName,
       lyraconfig.baseBranch,
-      nowIso
+      nowIso,
     );
     await git.checkout(lyraconfig.baseBranch);
     await git.pull();
@@ -86,7 +86,7 @@ export async function POST() {
   async function createPR(
     branchName: string,
     baseBranch: string,
-    nowIso: string
+    nowIso: string,
   ): Promise<string> {
     const octokit = new Octokit({
       auth: GITHUB_AUTH,

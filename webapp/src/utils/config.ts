@@ -27,7 +27,7 @@ const configSchema = z.object({
       translations: z.object({
         path: z.string(),
       }),
-    })
+    }),
   ),
 });
 
@@ -50,7 +50,7 @@ export default class LyraConfig {
           return new LyraProjectConfig(
             KIND_BY_FORMAT_VALUE[project.messages.format],
             path.join(repoPath, project.path, project.messages.path),
-            path.join(repoPath, project.path, project.translations.path)
+            path.join(repoPath, project.path, project.translations.path),
           );
         }),
         parsed.baseBranch ?? 'main',
@@ -66,6 +66,6 @@ class LyraProjectConfig {
   constructor(
     public readonly messageKind: string,
     public readonly messagesPath: string,
-    public readonly translationsPath: string
+    public readonly translationsPath: string,
   ) {}
 }

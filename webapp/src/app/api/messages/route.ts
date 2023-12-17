@@ -22,7 +22,7 @@ export async function GET() {
       // TODO: error message include e which contain a local path which is not of consumer interest
       //       remove it later, leave it for now for debugging purpose
       { message: `error reading messages error: ${e}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

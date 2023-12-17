@@ -21,7 +21,7 @@ describe('LyraConfig', () => {
       expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
       expect(config.projects[0].messagesPath).toEqual('/path/to/repo/locale');
       expect(config.projects[0].translationsPath).toEqual(
-        '/path/to/repo/locale'
+        '/path/to/repo/locale',
       );
       expect(config.baseBranch).toEqual('main'); // default value
     });
@@ -41,10 +41,10 @@ describe('LyraConfig', () => {
 
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.projects[0].messagesPath).toEqual(
-        '/path/to/repo/subproject/locale'
+        '/path/to/repo/subproject/locale',
       );
       expect(config.projects[0].translationsPath).toEqual(
-        '/path/to/repo/subproject/locale'
+        '/path/to/repo/subproject/locale',
       );
     });
 
@@ -87,17 +87,17 @@ describe('LyraConfig', () => {
 
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.projects[0].messagesPath).toEqual(
-        '/path/to/repo/subproject1/locale1'
+        '/path/to/repo/subproject1/locale1',
       );
       expect(config.projects[0].translationsPath).toEqual(
-        '/path/to/repo/subproject1/locale1'
+        '/path/to/repo/subproject1/locale1',
       );
       expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
       expect(config.projects[1].messagesPath).toEqual(
-        '/path/to/repo/subproject2/msg_locale2'
+        '/path/to/repo/subproject2/msg_locale2',
       );
       expect(config.projects[1].translationsPath).toEqual(
-        '/path/to/repo/subproject2/trans_locale2'
+        '/path/to/repo/subproject2/trans_locale2',
       );
       expect(config.projects[1].messageKind).toEqual(MessageKind.TS);
     });

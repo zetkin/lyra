@@ -9,7 +9,7 @@ export async function PUT(
       lang: string;
       msgId: string;
     };
-  }
+  },
 ) {
   const payload = await req.json();
   const { lang, msgId } = context.params;

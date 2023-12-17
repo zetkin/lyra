@@ -101,7 +101,7 @@ describe('Store', () => {
     const promise = store.updateTranslation(
       'de',
       'greeting.headline',
-      'Hallo!'
+      'Hallo!',
     );
 
     expect(promise).rejects.toThrowError(LanguageNotFound);
@@ -117,7 +117,7 @@ describe('Store', () => {
     const promise = store.updateTranslation(
       'de',
       'greeting.headline',
-      'Hallo!'
+      'Hallo!',
     );
 
     expect(promise).rejects.toThrowError(MessageNotFound);
