@@ -1,4 +1,3 @@
-import { err } from '@/utils/log';
 import fs from 'fs/promises';
 import { LyraConfigReadingError } from '@/errors';
 import { parse } from 'yaml';
@@ -27,7 +26,7 @@ const configSchema = z.object({
       translations: z.object({
         path: z.string(),
       }),
-    })
+    }),
   ),
 });
 
@@ -50,13 +49,12 @@ export default class LyraConfig {
           return new LyraProjectConfig(
             KIND_BY_FORMAT_VALUE[project.messages.format],
             path.join(repoPath, project.path, project.messages.path),
-            path.join(repoPath, project.path, project.translations.path)
+            path.join(repoPath, project.path, project.translations.path),
           );
         }),
         parsed.baseBranch ?? 'main',
       );
     } catch (e) {
-      err(`error reading ${filename} file`);
       throw new LyraConfigReadingError(filename);
     }
   }
@@ -66,6 +64,6 @@ class LyraProjectConfig {
   constructor(
     public readonly messageKind: string,
     public readonly messagesPath: string,
-    public readonly translationsPath: string
+    public readonly translationsPath: string,
   ) {}
 }

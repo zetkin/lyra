@@ -51,7 +51,7 @@ export default class YamlTranslationAdapter implements ITranslationAdapter {
 
 async function* findFiles(
   dir: string,
-  matches: (fullFilePath: string) => boolean
+  matches: (fullFilePath: string) => boolean,
 ): AsyncIterable<string> {
   const dirEnts = await fs.readdir(dir, { withFileTypes: true });
   for (const dirEnt of dirEnts) {
