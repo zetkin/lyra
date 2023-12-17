@@ -1,5 +1,5 @@
-import { LanguageNotFound } from '@/errors';
-import { Store } from '@/Store';
+import { Cache } from '@/Cache';
+import { LanguageNotFound, MessageNotFound } from '@/errors';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
@@ -16,20 +16,11 @@ export async function PUT(
   const { text } = payload;
 
   try {
-    const translations = await Store.getLanguage(lang);
-    if (translations[msgId] === undefined) {
-      return NextResponse.json(
-        { message: 'message id [' + msgId + '] not found' },
-        { status: 404 },
-      );
-    }
-    translations[msgId] = text;
+    const store = await Cache.getStore();
+    await store.updateTranslation(lang, msgId, text);
   } catch (e) {
-    if (e instanceof LanguageNotFound) {
-      return NextResponse.json(
-        { message: 'language [' + lang + '] not found' },
-        { status: 404 },
-      );
+    if (e instanceof LanguageNotFound || e instanceof MessageNotFound) {
+      return NextResponse.json({ message: e.message }, { status: 404 });
     }
     throw e;
   }

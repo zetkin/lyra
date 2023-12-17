@@ -2,9 +2,9 @@ import flattenObject from '../flattenObject';
 import fs from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
-import { type TranslationMap } from '.';
+import { ITranslationAdapter, type TranslationMap } from '.';
 
-export default class YamlTranslationAdapter {
+export default class YamlTranslationAdapter implements ITranslationAdapter {
   private basePath: string;
 
   constructor(basePath: string) {
@@ -51,7 +51,7 @@ export default class YamlTranslationAdapter {
 
 async function* findFiles(
   dir: string,
-  matches: (fullFilePath: string) => boolean
+  matches: (fullFilePath: string) => boolean,
 ): AsyncIterable<string> {
   const dirEnts = await fs.readdir(dir, { withFileTypes: true });
   for (const dirEnt of dirEnts) {

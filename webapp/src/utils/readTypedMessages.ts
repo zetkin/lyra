@@ -8,7 +8,9 @@ export default function readTypedMessages(fileName: string): MessageData[] {
       ...ts.sys,
       readFile: (path, encoding) => {
         // Skip anything in node_modules, as clearly not app code
-        if (path.includes('node_modules')) {return '';}
+        if (path.includes('node_modules')) {
+          return '';
+        }
         return ts.sys.readFile(path, encoding);
       },
     },
@@ -29,7 +31,6 @@ export default function readTypedMessages(fileName: string): MessageData[] {
 
   return [];
 }
-
 
 function inspectMessages(node: ts.CallExpression): MessageData[] {
   function typeIdFromNode(typeNode?: ts.Node): string {
@@ -79,24 +80,26 @@ function inspectMessages(node: ts.CallExpression): MessageData[] {
             defaultMessage: argNode.text,
             id: id,
             params:
-              (callNode.typeArguments?.[0] as ts.TypeLiteralNode)?.members.map((member) => {
-                const memberNode = member as ts.PropertySignature;
-                const typeIdNode = memberNode.name as ts.Identifier;
-                if (memberNode.type?.kind == ts.SyntaxKind.UnionType) {
-                  const unionNode = memberNode.type as ts.UnionTypeNode;
-                  return {
-                    name: typeIdNode.text,
-                    types: unionNode.types.map((typeNode) =>
-                      typeIdFromNode(typeNode),
-                    ),
-                  };
-                } else {
-                  return {
-                    name: typeIdNode.text,
-                    types: [typeIdFromNode(memberNode.type)],
-                  };
-                }
-              }) ?? [],
+              (callNode.typeArguments?.[0] as ts.TypeLiteralNode)?.members.map(
+                (member) => {
+                  const memberNode = member as ts.PropertySignature;
+                  const typeIdNode = memberNode.name as ts.Identifier;
+                  if (memberNode.type?.kind == ts.SyntaxKind.UnionType) {
+                    const unionNode = memberNode.type as ts.UnionTypeNode;
+                    return {
+                      name: typeIdNode.text,
+                      types: unionNode.types.map((typeNode) =>
+                        typeIdFromNode(typeNode),
+                      ),
+                    };
+                  } else {
+                    return {
+                      name: typeIdNode.text,
+                      types: [typeIdFromNode(memberNode.type)],
+                    };
+                  }
+                },
+              ) ?? [],
           });
         }
       });

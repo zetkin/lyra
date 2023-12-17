@@ -53,18 +53,15 @@ export default function Home({ params }: { params: { lang: string } }) {
               key={msg.id}
               message={msg}
               onSave={async (text) => {
-                await fetch(
-                  `/api/translations/${params.lang}/${msg.id}`,
-                  {
-                    body: JSON.stringify({
-                      text,
-                    }),
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    method: 'PUT',
+                await fetch(`/api/translations/${params.lang}/${msg.id}`, {
+                  body: JSON.stringify({
+                    text,
+                  }),
+                  headers: {
+                    'Content-Type': 'application/json',
                   },
-                );
+                  method: 'PUT',
+                });
 
                 setTranslations((cur) => ({
                   ...cur,
