@@ -1,4 +1,3 @@
-import { err } from '@/utils/log';
 import fs from 'fs/promises';
 import { LyraConfigReadingError } from '@/errors';
 import { parse } from 'yaml';
@@ -56,7 +55,6 @@ export default class LyraConfig {
         parsed.baseBranch ?? 'main',
       );
     } catch (e) {
-      err(`error reading ${filename} file`);
       throw new LyraConfigReadingError(filename);
     }
   }
