@@ -75,21 +75,27 @@ export default function Home({ params }: { params: { lang: string } }) {
           );
         })}
       </Box>
-      <Button
-        onClick={() => {
-          setOffset((prevOffset) => prevOffset + LIMIT);
-        }}
-      >
-        Next
-      </Button>
-      <text>{offset}</text>
-      <Button
-        onClick={() => {
-          setOffset((prevOffset) => Math.max(0, prevOffset - LIMIT));
-        }}
-      >
-        Previous
-      </Button>
+      <Box>
+        <Button
+          onClick={() => {
+            setOffset((prevOffset) => Math.max(0, prevOffset - LIMIT));
+          }}
+        >
+          Previous
+        </Button>
+        <text>
+          From: {offset} to: {offset + LIMIT}
+        </text>
+        <Button
+          onClick={() => {
+            setOffset((prevOffset) =>
+              Math.min(messages.length - LIMIT, prevOffset + LIMIT),
+            );
+          }}
+        >
+          Next
+        </Button>
+      </Box>
     </main>
   );
 }
