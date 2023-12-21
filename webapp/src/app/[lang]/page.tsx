@@ -22,7 +22,10 @@ export default function Home({ params }: { params: { lang: string } }) {
       setMessages(payload.data);
       setOffset((prevMsgOffset) => ({
         from: 0,
-        to: Math.min(prevMsgOffset.from + MESSAGES_PER_PAGE, payload.data.length),
+        to: Math.min(
+          prevMsgOffset.from + MESSAGES_PER_PAGE,
+          payload.data.length,
+        ),
       }));
     }
 
@@ -71,7 +74,8 @@ export default function Home({ params }: { params: { lang: string } }) {
           Previous
         </Button>
         <text>
-          From: {msgOffset.from + 1} to: {msgOffset.to} of total: {messages.length}
+          From: {msgOffset.from + 1} to: {msgOffset.to} of total:{' '}
+          {messages.length}
         </text>
         <Button
           onClick={() => {
