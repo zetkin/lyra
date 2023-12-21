@@ -8,7 +8,7 @@
 
 - Support for multi project within one repository
 
-## [0.2.5] 2023-12-20
+## [0.2.5] 2023-12-21
 
 ### Changed
 
