@@ -86,6 +86,9 @@ describe('LyraConfig', () => {
       });
 
       const config = await LyraConfig.readFromDir('/path/to/repo');
+      expect(config.projects.length).toEqual(2);
+
+      expect(config.projects[0].path).toEqual('subproject1');
       expect(config.projects[0].messagesPath).toEqual(
         '/path/to/repo/subproject1/locale1',
       );
@@ -93,6 +96,8 @@ describe('LyraConfig', () => {
         '/path/to/repo/subproject1/locale1',
       );
       expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
+
+      expect(config.projects[1].path).toEqual('subproject2');
       expect(config.projects[1].messagesPath).toEqual(
         '/path/to/repo/subproject2/msg_locale2',
       );

@@ -47,6 +47,7 @@ export default class LyraConfig {
       return new LyraConfig(
         parsed.projects.map((project) => {
           return new LyraProjectConfig(
+            project.path,
             KIND_BY_FORMAT_VALUE[project.messages.format],
             path.join(repoPath, project.path, project.messages.path),
             path.join(repoPath, project.path, project.translations.path),
@@ -62,6 +63,7 @@ export default class LyraConfig {
 
 export class LyraProjectConfig {
   constructor(
+    public readonly path: string,
     public readonly messageKind: string,
     public readonly messagesPath: string,
     public readonly translationsPath: string,
