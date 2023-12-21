@@ -2,6 +2,12 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## [0.3.0] 2023-12-21
+
+### Added
+
+- Support for multi project within one repository
+
 ## [0.2.5] 2023-12-20
 
 ### Changed
