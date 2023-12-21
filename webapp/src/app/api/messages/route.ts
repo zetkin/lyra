@@ -9,7 +9,8 @@ const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 export async function GET() {
   try {
     const config = await LyraConfig.readFromDir(REPO_PATH);
-    const msgAdapter = MessageAdapterFactory.createAdapter(config);
+    // TODO: make it multi projects
+    const msgAdapter = MessageAdapterFactory.createAdapter(config.projects[0]);
     const messages = await msgAdapter.getMessages();
 
     return NextResponse.json({

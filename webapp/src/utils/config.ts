@@ -60,7 +60,7 @@ export default class LyraConfig {
   }
 }
 
-class LyraProjectConfig {
+export class LyraProjectConfig {
   constructor(
     public readonly messageKind: string,
     public readonly messagesPath: string,
