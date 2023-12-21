@@ -9,6 +9,8 @@ export default function Home({ params }: { params: { lang: string } }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
+  const [offset, setOffset] = useState(0);
+  const LIMIT = 100; // number of messages to show per page
 
   useEffect(() => {
     async function loadMessages() {
@@ -47,13 +49,13 @@ export default function Home({ params }: { params: { lang: string } }) {
       </Button>
       {pullRequestUrl && <Link href={pullRequestUrl}> {pullRequestUrl} </Link>}
       <Box>
-        {messages.map((msg) => {
+        {messages.slice(offset, offset + LIMIT).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
               message={msg}
               onSave={async (text) => {
-                await fetch(`/api/translations/${params.lang}/${msg.id}`, {
+                await fetch(`/api/translations/sv/${msg.id}`, {
                   body: JSON.stringify({
                     text,
                   }),
@@ -73,6 +75,21 @@ export default function Home({ params }: { params: { lang: string } }) {
           );
         })}
       </Box>
+      <Button
+        onClick={() => {
+          setOffset((prevOffset) => prevOffset + LIMIT);
+        }}
+      >
+        Next
+      </Button>
+      <text>{offset}</text>
+      <Button
+        onClick={() => {
+          setOffset((prevOffset) => Math.max(0, prevOffset - LIMIT));
+        }}
+      >
+        Previous
+      </Button>
     </main>
   );
 }
