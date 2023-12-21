@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
-import { LyraConfigReadingError } from '@/errors';
 import { parse } from 'yaml';
 import path from 'path';
 import { z } from 'zod';
+import { LyraConfigReadingError, ProjectPathNotFoundError } from '@/errors';
 
 export enum MessageKind {
   TS = 'ts',
@@ -35,6 +35,14 @@ export default class LyraConfig {
     public readonly projects: LyraProjectConfig[],
     public readonly baseBranch: string, // following GitHub terminology target branch called base branch
   ) {}
+
+  public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
+    const projectConfig = this.projects.find((project) => project.path === projectPath);
+    if (projectConfig) {
+      return projectConfig;
+    }
+    throw new ProjectPathNotFoundError(projectPath);
+  }
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
     const filename = path.join(repoPath, 'lyra.yml');

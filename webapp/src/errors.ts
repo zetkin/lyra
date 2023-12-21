@@ -15,3 +15,9 @@ export class LyraConfigReadingError extends Error {
     super(`Error reading file: [${filename}]`);
   }
 }
+
+export class ProjectPathNotFoundError extends Error {
+  constructor(projectPath: string) {
+    super(`Project with path [${projectPath}] not found`);
+  }
+}

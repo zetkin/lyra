@@ -1,7 +1,7 @@
-import { LyraConfigReadingError } from '@/errors';
 import mock from 'mock-fs';
 import { describe, expect, it } from '@jest/globals';
 import LyraConfig, { MessageKind } from './config';
+import { LyraConfigReadingError, ProjectPathNotFoundError } from '@/errors';
 
 describe('LyraConfig', () => {
   describe('readFromDir()', () => {
@@ -112,8 +112,8 @@ describe('LyraConfig', () => {
         expect.assertions(1);
         mock({ '/path/to/repo/lyra.yml': '' });
 
-        const readFromDirFunc = () => LyraConfig.readFromDir('/path/to/repo');
-        await expect(readFromDirFunc()).rejects.toThrow(LyraConfigReadingError);
+        const promise = () => LyraConfig.readFromDir('/path/to/repo');
+        await expect(promise).rejects.toThrow(LyraConfigReadingError);
       });
 
       it('throws for missing messages path', async () => {
@@ -129,8 +129,8 @@ describe('LyraConfig', () => {
             '    path: anyValue',
           ].join('\n'),
         });
-        const readFromDirFunc = () => LyraConfig.readFromDir('/path/to/repo');
-        await expect(readFromDirFunc()).rejects.toThrow(LyraConfigReadingError);
+        const promise = () => LyraConfig.readFromDir('/path/to/repo');
+        await expect(promise).rejects.toThrow(LyraConfigReadingError);
       });
 
       it('throws for file not found', async () => {
@@ -147,8 +147,53 @@ describe('LyraConfig', () => {
             '    path: anyValue',
           ].join('\n'),
         });
-        const readFromDirFunc = () => LyraConfig.readFromDir('/path/to/repo');
-        await expect(readFromDirFunc()).rejects.toThrow(LyraConfigReadingError);
+        const promise = () => LyraConfig.readFromDir('/path/to/repo');
+        await expect(promise).rejects.toThrow(LyraConfigReadingError);
+      });
+    });
+  });
+
+  describe('getProjectConfigByPath()', () => {
+    it('reads message kind and path from lyra.yml', async () => {
+      mock({
+        '/path/to/repo/lyra.yml': [
+          'projects:',
+          '- path: foo',
+          '  messages:',
+          '    format: yaml',
+          '    path: locale',
+          '  translations:',
+          '    path: locale',
+        ].join('\n'),
+      });
+      const config = await LyraConfig.readFromDir('/path/to/repo');
+      const projectConfig = config.getProjectConfigByPath('foo');
+      expect(projectConfig.messageKind).toEqual(MessageKind.YAML);
+      expect(projectConfig.messagesPath).toEqual('/path/to/repo/foo/locale');
+      expect(projectConfig.translationsPath).toEqual(
+        '/path/to/repo/foo/locale',
+      );
+      expect(config.baseBranch).toEqual('main'); // default value
+    });
+
+    describe('throw ProjectPathNotFoundError for invalid project path', () => {
+      it('throws for wrong path', async () => {
+        expect.assertions(1);
+        mock({
+          '/path/to/repo/lyra.yml': [
+            'baseBranch: branch1',
+            'projects:',
+            '- path: subproject',
+            '  messages:',
+            '    format: yaml',
+            '    path: locale',
+            '  translations:',
+            '    path: anyValue',
+          ].join('\n'),
+        });
+        const config = await LyraConfig.readFromDir('/path/to/repo');
+        const actual = () => config.getProjectConfigByPath('wrongPath');
+        expect(actual).toThrow(ProjectPathNotFoundError);
       });
     });
   });
