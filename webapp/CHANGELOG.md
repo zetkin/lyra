@@ -2,6 +2,12 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## [0.2.4] 2023-12-20
+
+### Changed
+
+- Web page only load 50 messages at a time
+
 ## [0.2.3] 2023-12-19
 
 ### Changed
