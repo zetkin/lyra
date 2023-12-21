@@ -2,15 +2,21 @@ import { envVarNotFound } from '@/utils/util';
 import LyraConfig from '@/utils/config';
 import { LyraConfigReadingError } from '@/errors';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const config = await LyraConfig.readFromDir(REPO_PATH);
-    // TODO: make it multi projects
-    const msgAdapter = MessageAdapterFactory.createAdapter(config.projects[0]);
+    const body = await req.json();
+    const findIndex = config.projects.findIndex(
+      (it) => it.path === body?.project,
+    );
+    const index = findIndex === -1 ? 0 : findIndex;
+    const msgAdapter = MessageAdapterFactory.createAdapter(
+      config.projects[index],
+    );
     const messages = await msgAdapter.getMessages();
 
     return NextResponse.json({
