@@ -9,14 +9,21 @@ export default function Home({ params }: { params: { lang: string } }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
-  const [offset, setOffset] = useState(0);
-  const MESSAGES_PER_PAGE = 50; // number of messages to show per page
+  const MESSAGES_PER_PAGE = 100; // number of messages to show per page
+  const [msgOffset, setOffset] = useState<{ from: number; to: number }>({
+    from: 0,
+    to: MESSAGES_PER_PAGE,
+  });
 
   useEffect(() => {
     async function loadMessages() {
       const res = await fetch('/api/messages');
       const payload = await res.json();
       setMessages(payload.data);
+      setOffset((prevMsgOffset) => ({
+        from: 0,
+        to: Math.min(prevMsgOffset.from + MESSAGES_PER_PAGE, payload.data.length),
+      }));
     }
 
     loadMessages();
@@ -48,29 +55,43 @@ export default function Home({ params }: { params: { lang: string } }) {
         Create Pull-Request
       </Button>
       {pullRequestUrl && <Link href={pullRequestUrl}> {pullRequestUrl} </Link>}
+      <p />
       <Box>
         <Button
           onClick={() => {
-            setOffset((prevOffset) => Math.max(0, prevOffset - MESSAGES_PER_PAGE));
+            setOffset((prevMsgOffset) => {
+              const from = Math.max(0, prevMsgOffset.from - MESSAGES_PER_PAGE);
+              return {
+                from,
+                to: Math.min(from + MESSAGES_PER_PAGE, messages.length - 1),
+              };
+            });
           }}
         >
           Previous
         </Button>
         <text>
-          From: {offset} to: {offset + MESSAGES_PER_PAGE}
+          From: {msgOffset.from + 1} to: {msgOffset.to} of total: {messages.length}
         </text>
         <Button
           onClick={() => {
-            setOffset((prevOffset) =>
-              Math.min(messages.length - MESSAGES_PER_PAGE, prevOffset + MESSAGES_PER_PAGE),
-            );
+            setOffset((prevMsgOffset) => {
+              if (prevMsgOffset.to >= messages.length) {
+                return prevMsgOffset;
+              }
+              const from = Math.max(0, prevMsgOffset.from + MESSAGES_PER_PAGE);
+              return {
+                from,
+                to: Math.min(from + MESSAGES_PER_PAGE, messages.length),
+              };
+            });
           }}
         >
           Next
         </Button>
       </Box>
       <Box>
-        {messages.slice(offset, offset + MESSAGES_PER_PAGE).map((msg) => {
+        {messages.slice(msgOffset.from, msgOffset.to).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
