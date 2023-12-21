@@ -7,7 +7,7 @@ import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
-import { err, warn } from '@/utils/log';
+import { debug, info, warn } from '@/utils/log';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -76,9 +76,6 @@ export async function POST() {
       branchName,
       pullRequestUrl,
     });
-  } catch (e) {
-    err(e);
-    throw e;
   } finally {
     syncLock = false;
   }
@@ -92,9 +89,9 @@ export async function POST() {
       auth: GITHUB_AUTH,
       baseUrl: 'https://api.github.com',
       log: {
-        debug: () => {},
-        error: err,
-        info: () => {},
+        debug: debug,
+        error: () => {},
+        info: info,
         warn: warn,
       },
       request: {
