@@ -24,7 +24,7 @@ export default function Home({ params }: { params: { lang: string } }) {
         from: 0,
         to: Math.min(
           prevMsgOffset.from + MESSAGES_PER_PAGE,
-          payload.data.length,
+          payload.data.length - 1,
         ),
       }));
     }
@@ -65,7 +65,7 @@ export default function Home({ params }: { params: { lang: string } }) {
             setOffset(() => {
               return {
                 from: 0,
-                to: Math.min(MESSAGES_PER_PAGE, messages.length),
+                to: Math.min(MESSAGES_PER_PAGE, messages.length - 1),
               };
             });
           }}
@@ -79,7 +79,7 @@ export default function Home({ params }: { params: { lang: string } }) {
               const from = Math.max(0, prevMsgOffset.from - MESSAGES_PER_PAGE);
               return {
                 from,
-                to: Math.min(from + MESSAGES_PER_PAGE, messages.length),
+                to: Math.min(from + MESSAGES_PER_PAGE, messages.length - 1),
               };
             });
           }}
@@ -87,19 +87,19 @@ export default function Home({ params }: { params: { lang: string } }) {
           Previous
         </Button>
         <text>
-          From: {msgOffset.from + 1} to: {msgOffset.to} of total:{' '}
+          From: {msgOffset.from + 1} to: {msgOffset.to + 1} of total:{' '}
           {messages.length}
         </text>
         <Button
           onClick={() => {
             setOffset((prevMsgOffset) => {
-              if (prevMsgOffset.to >= messages.length) {
+              if (prevMsgOffset.to >= messages.length - 1) {
                 return prevMsgOffset;
               }
               const from = Math.max(0, prevMsgOffset.from + MESSAGES_PER_PAGE);
               return {
                 from,
-                to: Math.min(from + MESSAGES_PER_PAGE, messages.length),
+                to: Math.min(from + MESSAGES_PER_PAGE, messages.length - 1),
               };
             });
           }}
@@ -108,7 +108,7 @@ export default function Home({ params }: { params: { lang: string } }) {
         </Button>
       </Box>
       <Box>
-        {messages.slice(msgOffset.from, msgOffset.to).map((msg) => {
+        {messages.slice(msgOffset.from, msgOffset.to + 1).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
