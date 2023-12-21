@@ -10,7 +10,7 @@ export default function Home({ params }: { params: { lang: string } }) {
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
   const [offset, setOffset] = useState(0);
-  const LIMIT = 100; // number of messages to show per page
+  const MESSAGES_PER_PAGE = 50; // number of messages to show per page
 
   useEffect(() => {
     async function loadMessages() {
@@ -49,7 +49,28 @@ export default function Home({ params }: { params: { lang: string } }) {
       </Button>
       {pullRequestUrl && <Link href={pullRequestUrl}> {pullRequestUrl} </Link>}
       <Box>
-        {messages.slice(offset, offset + LIMIT).map((msg) => {
+        <Button
+          onClick={() => {
+            setOffset((prevOffset) => Math.max(0, prevOffset - MESSAGES_PER_PAGE));
+          }}
+        >
+          Previous
+        </Button>
+        <text>
+          From: {offset} to: {offset + MESSAGES_PER_PAGE}
+        </text>
+        <Button
+          onClick={() => {
+            setOffset((prevOffset) =>
+              Math.min(messages.length - MESSAGES_PER_PAGE, prevOffset + MESSAGES_PER_PAGE),
+            );
+          }}
+        >
+          Next
+        </Button>
+      </Box>
+      <Box>
+        {messages.slice(offset, offset + MESSAGES_PER_PAGE).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
@@ -74,27 +95,6 @@ export default function Home({ params }: { params: { lang: string } }) {
             />
           );
         })}
-      </Box>
-      <Box>
-        <Button
-          onClick={() => {
-            setOffset((prevOffset) => Math.max(0, prevOffset - LIMIT));
-          }}
-        >
-          Previous
-        </Button>
-        <text>
-          From: {offset} to: {offset + LIMIT}
-        </text>
-        <Button
-          onClick={() => {
-            setOffset((prevOffset) =>
-              Math.min(messages.length - LIMIT, prevOffset + LIMIT),
-            );
-          }}
-        >
-          Next
-        </Button>
       </Box>
     </main>
   );
