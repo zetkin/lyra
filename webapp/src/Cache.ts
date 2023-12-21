@@ -24,11 +24,11 @@ export class Cache {
         trimmed: false,
       };
       const git: SimpleGit = simpleGit(options);
-      debug('git checkout main pull...');
+      debug(`git checkout ${lyraConfig.baseBranch} branch...`);
       await git.checkout(lyraConfig.baseBranch);
       debug('git pull...');
       await git.pull();
-      debug('git done checkout main branch and pull');
+      debug(`git done checkout ${lyraConfig.baseBranch} branch and pull`);
       Cache.hasPulled = true;
     }
 

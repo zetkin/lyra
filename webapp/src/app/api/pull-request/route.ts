@@ -28,7 +28,7 @@ export async function POST() {
 
   try {
     syncLock = true;
-    const lyraconfig = await LyraConfig.readFromDir(REPO_PATH);
+    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
     const options: Partial<SimpleGitOptions> = {
       baseDir: REPO_PATH,
       binary: 'git',
@@ -36,7 +36,7 @@ export async function POST() {
       trimmed: false,
     };
     const git: SimpleGit = simpleGit(options);
-    await git.checkout(lyraconfig.baseBranch);
+    await git.checkout(lyraConfig.baseBranch);
     await git.pull();
     const store = await Cache.getStore();
     const languages = await store.getLanguageData();
@@ -44,7 +44,7 @@ export async function POST() {
     for (const lang of Object.keys(languages)) {
       // TODO: 1. make it multi projects
       //       2. use path to avoid double slash
-      const yamlPath = lyraconfig.projects[0].translationsPath + `/${lang}.yml`;
+      const yamlPath = lyraConfig.projects[0].translationsPath + `/${lang}.yml`;
       const yamlOutput = stringify(unflatten(languages[lang]), {
         doubleQuotedAsJSON: true,
         singleQuote: true,
@@ -55,22 +55,22 @@ export async function POST() {
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(
-        { message: 'There are no changes in main branch' },
+        { message: `There are no changes in ${lyraConfig.baseBranch} branch` },
         { status: 400 },
       );
     }
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
     const branchName = 'lyra-translate-' + nowIso;
-    await git.checkoutBranch(branchName, lyraconfig.baseBranch);
+    await git.checkoutBranch(branchName, lyraConfig.baseBranch);
     await git.add(pathsToAdd);
     await git.commit('Lyra Translate: ' + nowIso);
     await git.push(['-u', 'origin', branchName]);
     const pullRequestUrl = await createPR(
       branchName,
-      lyraconfig.baseBranch,
+      lyraConfig.baseBranch,
       nowIso,
     );
-    await git.checkout(lyraconfig.baseBranch);
+    await git.checkout(lyraConfig.baseBranch);
     await git.pull();
     return NextResponse.json({
       branchName,
