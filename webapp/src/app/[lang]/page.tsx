@@ -114,7 +114,7 @@ export default function Home({ params }: { params: { lang: string } }) {
               key={msg.id}
               message={msg}
               onSave={async (text) => {
-                await fetch(`/api/translations/sv/${msg.id}`, {
+                await fetch(`/api/translations/${params.lang}/${msg.id}`, {
                   body: JSON.stringify({
                     text,
                   }),
