@@ -9,7 +9,7 @@ export default function Home({ params }: { params: { lang: string } }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
-  const MESSAGES_PER_PAGE = 100; // number of messages to show per page
+  const MESSAGES_PER_PAGE = 50; // number of messages to show per page
   const [msgOffset, setOffset] = useState<{ from: number; to: number }>({
     from: 0,
     to: MESSAGES_PER_PAGE,
@@ -62,11 +62,24 @@ export default function Home({ params }: { params: { lang: string } }) {
       <Box>
         <Button
           onClick={() => {
+            setOffset(() => {
+              return {
+                from: 0,
+                to: Math.min(MESSAGES_PER_PAGE, messages.length),
+              };
+            });
+          }}
+        >
+          First
+        </Button>
+        <text> </text>
+        <Button
+          onClick={() => {
             setOffset((prevMsgOffset) => {
               const from = Math.max(0, prevMsgOffset.from - MESSAGES_PER_PAGE);
               return {
                 from,
-                to: Math.min(from + MESSAGES_PER_PAGE, messages.length - 1),
+                to: Math.min(from + MESSAGES_PER_PAGE, messages.length),
               };
             });
           }}
