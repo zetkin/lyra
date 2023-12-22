@@ -8,15 +8,12 @@ const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
 export async function GET(req: NextRequest) {
   try {
-    const config = await LyraConfig.readFromDir(REPO_PATH);
-    const body = await req.json();
-    const findIndex = config.projects.findIndex(
-      (it) => it.path === body?.project,
-    );
-    const index = findIndex === -1 ? 0 : findIndex;
-    const msgAdapter = MessageAdapterFactory.createAdapter(
-      config.projects[index],
-    );
+    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
+    const payload = await req.json();
+    const projectConfig = payload.project
+      ? lyraConfig.getProjectConfigByPath(payload.project)
+      : lyraConfig.projects[0];
+    const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
     const messages = await msgAdapter.getMessages();
 
     return NextResponse.json({
