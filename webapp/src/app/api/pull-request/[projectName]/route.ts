@@ -1,6 +1,5 @@
 import { Cache } from '@/Cache';
 import fs from 'fs/promises';
-import { NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import path from 'path';
@@ -8,12 +7,16 @@ import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
 import { LyraConfig, ServerConfig } from '@/utils/config';
+import { NextRequest, NextResponse } from 'next/server';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 /** used to prevent multiple requests from running at the same time */
 let syncLock = false;
 
-export async function POST(context: { params: { projectName: string } }) {
+export async function POST(
+  req: NextRequest,
+  context: { params: { projectName: string } },
+) {
   if (syncLock) {
     return NextResponse.json(
       { message: 'Another Request in progress' },
