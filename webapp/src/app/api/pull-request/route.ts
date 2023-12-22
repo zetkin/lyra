@@ -1,7 +1,7 @@
 import { Cache } from '@/Cache';
 import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
-import LyraConfig from '@/utils/config';
+import { LyraConfig } from '@/utils/config';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import path from 'path';

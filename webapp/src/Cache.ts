@@ -2,7 +2,7 @@
 
 import { debug } from '@/utils/log';
 import { envVarNotFound } from '@/utils/util';
-import LyraConfig from '@/utils/config';
+import { LyraConfig } from '@/utils/config';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { ProjectStore, Store } from '@/store/Store';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';

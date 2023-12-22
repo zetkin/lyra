@@ -1,7 +1,7 @@
 import { Cache } from '@/Cache';
 import { envVarNotFound } from '@/utils/util';
 import { LanguageNotFound } from '@/errors';
-import LyraConfig from '@/utils/config';
+import { LyraConfig } from '@/utils/config';
 import { NextRequest, NextResponse } from 'next/server';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');

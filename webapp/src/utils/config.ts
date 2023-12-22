@@ -30,7 +30,7 @@ const configSchema = z.object({
   ),
 });
 
-export default class LyraConfig {
+export class LyraConfig {
   private constructor(
     public readonly projects: LyraProjectConfig[],
     public readonly baseBranch: string, // following GitHub terminology target branch called base branch

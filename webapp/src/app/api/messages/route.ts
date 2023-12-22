@@ -1,5 +1,5 @@
 import { envVarNotFound } from '@/utils/util';
-import LyraConfig from '@/utils/config';
+import { LyraConfig } from '@/utils/config';
 import { LyraConfigReadingError } from '@/errors';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { NextRequest, NextResponse } from 'next/server';

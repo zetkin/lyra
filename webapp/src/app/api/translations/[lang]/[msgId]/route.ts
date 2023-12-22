@@ -1,6 +1,6 @@
 import { Cache } from '@/Cache';
 import { envVarNotFound } from '@/utils/util';
-import LyraConfig from '@/utils/config';
+import { LyraConfig } from '@/utils/config';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
 import { NextRequest, NextResponse } from 'next/server';
 
