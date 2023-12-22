@@ -4,16 +4,22 @@
 
 For the time being, you need to supply the path to a repository containing
 Lyra messages (`messageIds.ts` files) using an environment variable called
-`REPO_PATH, GITHUB_AUTH, GITHUB_OWNER, GITHUB_REPO`, like so:
+in config folder create file `projects.yaml` with example content:
+
+```yaml
+projects:
+  - name: example-unique-name
+    local_path: << local path to project >>
+    sub_project_path: .
+    host: github.com
+    owner: amerharb
+    repo: zetkin.app.zetkin.org
+    github_token: << github token >>
 
 ```
-REPO_PATH= <<local_path_to_repo>>
-GITHUB_AUTH= <<TOKEN>>
-GITHUB_OWNER=zetkin
-GITHUB_REPO=app.zetkin.org
-```
 
-also the project reposotory needs to be cloned locally. and has in the root folder config file `lyra.yml` with the example content:
+also the project repository needs to be cloned locally. and has in the root folder config file `lyra.yml` with the
+example content:
 
 ```yaml
 baseBranch: main

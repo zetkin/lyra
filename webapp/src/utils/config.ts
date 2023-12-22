@@ -114,6 +114,7 @@ export class ServerConfig {
   }
 
   static async read(): Promise<ServerConfig> {
+    // TODO: cache this call with TTL, it will be read on every request but only changes when admin changes it
     const filename = './config/projects.yaml';
     try {
       const ymlBuf = await fs.readFile(filename);

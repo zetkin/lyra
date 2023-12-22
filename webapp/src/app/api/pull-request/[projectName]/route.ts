@@ -1,25 +1,22 @@
 import { Cache } from '@/Cache';
-import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
-import { LyraConfig } from '@/utils/config';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import path from 'path';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
+import { LyraConfig, ServerConfig } from '@/utils/config';
 import { NextRequest, NextResponse } from 'next/server';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
-
-const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
-const GITHUB_AUTH = process.env.GITHUB_AUTH ?? envVarNotFound('GITHUB_AUTH');
-const GITHUB_REPO = process.env.GITHUB_REPO ?? envVarNotFound('GITHUB_REPO');
-const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound('GITHUB_OWNER');
 
 /** used to prevent multiple requests from running at the same time */
 let syncLock = false;
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  context: { params: { projectName: string } },
+) {
   if (syncLock) {
     return NextResponse.json(
       { message: 'Another Request in progress' },
@@ -29,9 +26,15 @@ export async function POST(req: NextRequest) {
 
   try {
     syncLock = true;
-    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
+    const projectName = context.params.projectName;
+    const serverConfig = await ServerConfig.read();
+    const serverProjectConfig =
+      serverConfig.getProjectConfigByName(projectName);
+    const lyraConfig = await LyraConfig.readFromDir(
+      serverProjectConfig.localPath,
+    );
     const options: Partial<SimpleGitOptions> = {
-      baseDir: REPO_PATH,
+      baseDir: serverProjectConfig.localPath,
       binary: 'git',
       maxConcurrentProcesses: 1,
       trimmed: false,
@@ -39,10 +42,7 @@ export async function POST(req: NextRequest) {
     const git: SimpleGit = simpleGit(options);
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
-    const payload = await req.json();
-    const projectConfig = payload.project
-      ? lyraConfig.getProjectConfigByPath(payload.project)
-      : lyraConfig.projects[0];
+    const projectConfig = lyraConfig.getProjectConfigByPath(projectName);
     const projectStore = await Cache.getProjectStore(projectConfig.path);
     const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
@@ -73,6 +73,9 @@ export async function POST(req: NextRequest) {
       branchName,
       lyraConfig.baseBranch,
       nowIso,
+      serverProjectConfig.owner,
+      serverProjectConfig.repo,
+      serverProjectConfig.githubToken,
     );
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
@@ -88,9 +91,12 @@ export async function POST(req: NextRequest) {
     branchName: string,
     baseBranch: string,
     nowIso: string,
+    githubOwner: string,
+    githubRepo: string,
+    githubToken: string,
   ): Promise<string> {
     const octokit = new Octokit({
-      auth: GITHUB_AUTH,
+      auth: githubToken,
       baseUrl: 'https://api.github.com',
       log: {
         debug: debug,
@@ -111,8 +117,8 @@ export async function POST(req: NextRequest) {
       base: baseBranch,
       body: 'Created by LYRA at: ' + nowIso,
       head: branchName,
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+      owner: githubOwner,
+      repo: githubRepo,
       title: 'LYRA Translate PR: ' + nowIso,
     });
 
