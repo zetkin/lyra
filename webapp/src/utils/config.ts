@@ -45,6 +45,7 @@ export default class LyraConfig {
   }
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
+    // TODO: cache this call with TTL
     const filename = path.join(repoPath, 'lyra.yml');
     try {
       const ymlBuf = await fs.readFile(filename);

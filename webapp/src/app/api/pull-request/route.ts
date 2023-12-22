@@ -2,12 +2,13 @@ import { Cache } from '@/Cache';
 import { envVarNotFound } from '@/utils/util';
 import fs from 'fs/promises';
 import LyraConfig from '@/utils/config';
-import { NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
+import path from 'path';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
+import { NextRequest, NextResponse } from 'next/server';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -18,7 +19,7 @@ const GITHUB_OWNER = process.env.GITHUB_OWNER ?? envVarNotFound('GITHUB_OWNER');
 /** used to prevent multiple requests from running at the same time */
 let syncLock = false;
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   if (syncLock) {
     return NextResponse.json(
       { message: 'Another Request in progress' },
@@ -38,13 +39,16 @@ export async function POST() {
     const git: SimpleGit = simpleGit(options);
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
-    const store = await Cache.getStore();
-    const languages = await store.getLanguageData();
+    const payload = await req.json();
+    const projectConfig = payload.project
+      ? lyraConfig.getProjectConfigByPath(payload.project)
+      : lyraConfig.projects[0];
+    const projectStore = await Cache.getProjectStore(projectConfig.path);
+    const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
+    // TODO: use forEach and Promise.all
     for (const lang of Object.keys(languages)) {
-      // TODO: 1. make it multi projects
-      //       2. use path to avoid double slash
-      const yamlPath = lyraConfig.projects[0].translationsPath + `/${lang}.yml`;
+      const yamlPath = path.join(projectConfig.translationsPath, `${lang}.yml`);
       const yamlOutput = stringify(unflatten(languages[lang]), {
         doubleQuotedAsJSON: true,
         singleQuote: true,

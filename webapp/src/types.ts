@@ -1,4 +1,4 @@
-import Store from './store/Store';
+import { Store } from '@/store/Store';
 
 export type LanguageMap = Map<string, Record<string, string>>;
 

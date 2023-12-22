@@ -1,154 +1,163 @@
 import { describe, expect, it } from '@jest/globals';
 
-import Store from './Store';
+import { ProjectStore } from './Store';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
 
-describe('Store', () => {
-  it('returns empty object when empty', async () => {
-    const store = new Store({
-      getTranslations: async () => ({
-        sv: {},
-      }),
-    });
-
-    const translations = await store.getTranslations('sv');
-    expect(translations).toEqual({});
+describe('Store.ts', () => {
+  describe.skip('Store class', () => {
+    it.todo('test Store class');
   });
 
-  it('returns correct language', async () => {
-    const store = new Store({
-      getTranslations: async () => ({
-        de: {
-          'greeting.headline': {
-            sourceFile: '',
-            text: 'Hallo',
+  describe('ProjectStore class', () => {
+    it('returns empty object when empty', async () => {
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          sv: {},
+        }),
+      });
+
+      const translations = await projectStore.getTranslations('sv');
+      expect(translations).toEqual({});
+    });
+
+    it('returns correct language', async () => {
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          de: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hallo',
+            },
           },
-        },
-        sv: {
-          'greeting.headline': {
-            sourceFile: '',
-            text: 'Hej',
+          sv: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hej',
+            },
           },
-        },
-      }),
-    });
+        }),
+      });
 
-    const translations = await store.getTranslations('de');
-    expect(translations).toEqual({
-      'greeting.headline': 'Hallo',
-    });
-  });
-
-  it('throws exception for missing language', async () => {
-    const store = new Store({
-      getTranslations: async () => ({}),
-    });
-
-    const promise = store.getTranslations('fi');
-    expect(promise).rejects.toThrowError(LanguageNotFound);
-  });
-
-  it('returns updated translations', async () => {
-    const store = new Store({
-      getTranslations: async () => ({
-        de: {
-          'greeting.headline': {
-            sourceFile: '',
-            text: 'Hallo',
-          },
-        },
-      }),
-    });
-
-    const before = await store.getTranslations('de');
-    await store.updateTranslation('de', 'greeting.headline', 'Hallo!');
-    const after = await store.getTranslations('de');
-
-    expect(before).toEqual({
-      'greeting.headline': 'Hallo',
-    });
-
-    expect(after).toEqual({
-      'greeting.headline': 'Hallo!',
-    });
-  });
-
-  it('can update translations before getTranslations()', async () => {
-    const store = new Store({
-      getTranslations: async () => ({
-        de: {
-          'greeting.headline': {
-            sourceFile: '',
-            text: 'Hallo',
-          },
-        },
-      }),
-    });
-
-    await store.updateTranslation('de', 'greeting.headline', 'Hallo!');
-    const after = await store.getTranslations('de');
-
-    expect(after).toEqual({
-      'greeting.headline': 'Hallo!',
-    });
-  });
-
-  it('throws exception for missing language', async () => {
-    const store = new Store({
-      getTranslations: async () => ({}),
-    });
-
-    const promise = store.updateTranslation(
-      'de',
-      'greeting.headline',
-      'Hallo!',
-    );
-
-    expect(promise).rejects.toThrowError(LanguageNotFound);
-  });
-
-  it('throws exception for unknown message ID', async () => {
-    const store = new Store({
-      getTranslations: async () => ({
-        de: {},
-      }),
-    });
-
-    const promise = store.updateTranslation(
-      'de',
-      'greeting.headline',
-      'Hallo!',
-    );
-
-    expect(promise).rejects.toThrowError(MessageNotFound);
-  });
-
-  it('gives full access to all languages', async () => {
-    const store = new Store({
-      getTranslations: async () => ({
-        de: {
-          'greeting.headline': {
-            sourceFile: '',
-            text: 'Hallo',
-          },
-        },
-        sv: {
-          'greeting.headline': {
-            sourceFile: '',
-            text: 'Hej',
-          },
-        },
-      }),
-    });
-
-    const languages = await store.getLanguageData();
-    expect(languages).toEqual({
-      de: {
+      const translations = await projectStore.getTranslations('de');
+      expect(translations).toEqual({
         'greeting.headline': 'Hallo',
-      },
-      sv: {
-        'greeting.headline': 'Hej',
-      },
+      });
+    });
+
+    it('throws exception for missing language', async () => {
+      expect.assertions(1);
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({}),
+      });
+
+      const promise = projectStore.getTranslations('fi');
+      await expect(promise).rejects.toThrowError(LanguageNotFound);
+    });
+
+    it('returns updated translations', async () => {
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          de: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hallo',
+            },
+          },
+        }),
+      });
+
+      const before = await projectStore.getTranslations('de');
+      await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
+      const after = await projectStore.getTranslations('de');
+
+      expect(before).toEqual({
+        'greeting.headline': 'Hallo',
+      });
+
+      expect(after).toEqual({
+        'greeting.headline': 'Hallo!',
+      });
+    });
+
+    it('can update translations before getTranslations()', async () => {
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          de: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hallo',
+            },
+          },
+        }),
+      });
+
+      await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
+      const after = await projectStore.getTranslations('de');
+
+      expect(after).toEqual({
+        'greeting.headline': 'Hallo!',
+      });
+    });
+
+    it('throws exception for missing language', async () => {
+      expect.assertions(1);
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({}),
+      });
+
+      const promise = projectStore.updateTranslation(
+        'de',
+        'greeting.headline',
+        'Hallo!',
+      );
+
+      await expect(promise).rejects.toThrowError(LanguageNotFound);
+    });
+
+    it('throws exception for unknown message ID', async () => {
+      expect.assertions(1);
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          de: {},
+        }),
+      });
+
+      const promise = projectStore.updateTranslation(
+        'de',
+        'greeting.headline',
+        'Hallo!',
+      );
+
+      await expect(promise).rejects.toThrowError(MessageNotFound);
+    });
+
+    it('gives full access to all languages', async () => {
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          de: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hallo',
+            },
+          },
+          sv: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hej',
+            },
+          },
+        }),
+      });
+
+      const languages = await projectStore.getLanguageData();
+      expect(languages).toEqual({
+        de: {
+          'greeting.headline': 'Hallo',
+        },
+        sv: {
+          'greeting.headline': 'Hej',
+        },
+      });
     });
   });
 });

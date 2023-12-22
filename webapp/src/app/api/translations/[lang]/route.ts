@@ -1,6 +1,10 @@
 import { Cache } from '@/Cache';
+import { envVarNotFound } from '@/utils/util';
 import { LanguageNotFound } from '@/errors';
+import LyraConfig from '@/utils/config';
 import { NextRequest, NextResponse } from 'next/server';
+
+const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 
 export async function GET(
   req: NextRequest, // keep this here even if unused
@@ -8,7 +12,13 @@ export async function GET(
 ) {
   const lang = context.params.lang;
   try {
-    const translations = await Cache.getLanguage(lang);
+    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
+    const payload = await req.json();
+    const projectConfig = payload.project
+      ? lyraConfig.getProjectConfigByPath(payload.project)
+      : lyraConfig.projects[0];
+
+    const translations = await Cache.getLanguage(projectConfig.path, lang);
     return NextResponse.json({
       lang,
       translations,

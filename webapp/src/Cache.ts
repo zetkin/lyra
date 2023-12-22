@@ -3,8 +3,8 @@
 import { debug } from '@/utils/log';
 import { envVarNotFound } from '@/utils/util';
 import LyraConfig from '@/utils/config';
-import Store from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
+import { ProjectStore, Store } from '@/store/Store';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
@@ -12,25 +12,35 @@ const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
 export class Cache {
   private static hasPulled: boolean = false;
 
-  public static async getLanguage(lang: string) {
+  public static async getLanguage(projectPath: string, lang: string) {
     if (!Cache.hasPulled) {
-      await Cache.gitPull()
+      await Cache.gitPull();
     }
 
-    const store = await Cache.getStore();
+    const store = await Cache.getProjectStore(projectPath);
     return store.getTranslations(lang);
   }
 
-  public static async getStore(): Promise<Store> {
+  public static async getProjectStore(
+    projectPath: string,
+  ): Promise<ProjectStore> {
     if (!globalThis.store) {
-      // TODO: Implement differently for multi-repo/multi-project support
-      const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
-      globalThis.store = new Store(
-        new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath),
-      );
+      globalThis.store = new Store();
     }
 
-    return globalThis.store;
+    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
+    const projectConfig = projectPath
+      ? lyraConfig.getProjectConfigByPath(projectPath)
+      : lyraConfig.projects[0];
+
+    if (!globalThis.store.hasProjectStore(projectConfig.path)) {
+      const projectStore = new ProjectStore(
+        new YamlTranslationAdapter(projectConfig.translationsPath),
+      );
+      globalThis.store.addProjectStore(projectConfig.path, projectStore);
+    }
+
+    return globalThis.store.getProjectStore(projectConfig.path);
   }
 
   private static async gitPull() {
