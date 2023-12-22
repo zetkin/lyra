@@ -84,13 +84,13 @@ export class LyraProjectConfig {
 const serverConfigSchema = z.object({
   projects: z.array(
     z.object({
-      githubToken: z.string(),
+      github_token: z.string(),
       host: z.string(),
-      localPath: z.string(),
+      local_path: z.string(),
       name: z.string(),
       owner: z.string(),
       repo: z.string(),
-      subProjectPath: z.string(),
+      sub_project_path: z.string(),
     }),
   ),
 });
@@ -109,8 +109,8 @@ export class ServerConfig {
     throw new Error('project not found: ' + projectName);
   }
 
-  static async readFromDir(repoPath: string): Promise<ServerConfig> {
-    const filename = path.join('./config', 'projects.yml');
+  static async load(): Promise<ServerConfig> {
+    const filename = './config/projects.yaml';
     try {
       const ymlBuf = await fs.readFile(filename);
       const configData = parse(ymlBuf.toString());
@@ -121,12 +121,12 @@ export class ServerConfig {
         parsed.projects.map((project) => {
           return new ServerProjectConfig(
             project.name,
-            path.join(repoPath, project.localPath),
-            path.join(repoPath, project.localPath, project.subProjectPath),
+            project.local_path,
+            path.join(project.local_path, project.sub_project_path),
             project.host,
             project.owner,
             project.repo,
-            project.githubToken,
+            project.github_token,
           );
         }),
       );
