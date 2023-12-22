@@ -9,7 +9,11 @@ type StoreData = {
 export class Store {
   private data = new Map<string, ProjectStore>();
 
-  public addProjectStore(repoPath: string, projectPath: string, projectStore: ProjectStore) {
+  public addProjectStore(
+    repoPath: string,
+    projectPath: string,
+    projectStore: ProjectStore,
+  ) {
     this.data.set(path.join(repoPath, projectPath), projectStore);
   }
 

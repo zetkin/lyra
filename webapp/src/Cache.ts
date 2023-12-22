@@ -2,7 +2,7 @@
 
 import { debug } from '@/utils/log';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
-import { LyraConfig, ServerConfig } from '@/utils/config';
+import { LyraConfig, LyraProjectConfig, ServerConfig } from '@/utils/config';
 import { ProjectStore, Store } from '@/store/Store';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
@@ -19,47 +19,36 @@ export class Cache {
     if (!Cache.hasPulled) {
       await Cache.gitPull(serverProjectConfig.localPath, lyraConfig.baseBranch);
     }
-
-    const store = await Cache.getProjectStore(projectName);
+    const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
+      serverProjectConfig.subProjectPath,
+    );
+    const store = await Cache.getProjectStore(
+      serverProjectConfig.localPath,
+      lyraProjectConfig,
+    );
     return store.getTranslations(lang);
   }
 
   public static async getProjectStore(
-    projectName: string,
+    repoPath: string,
+    lyraProjectConfig: LyraProjectConfig,
   ): Promise<ProjectStore> {
     if (!globalThis.store) {
       globalThis.store = new Store();
     }
-    const serverConfig = await ServerConfig.read();
-    const serverProjectConfig =
-      serverConfig.getProjectConfigByName(projectName);
-    const lyraConfig = await LyraConfig.readFromDir(
-      serverProjectConfig.localPath,
-    );
-    const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
-      serverProjectConfig.subProjectPath,
-    );
 
-    if (
-      !globalThis.store.hasProjectStore(
-        serverProjectConfig.localPath,
-        lyraProjectConfig.path,
-      )
-    ) {
+    if (!globalThis.store.hasProjectStore(repoPath, lyraProjectConfig.path)) {
       const projectStore = new ProjectStore(
         new YamlTranslationAdapter(lyraProjectConfig.translationsPath),
       );
       globalThis.store.addProjectStore(
-        serverProjectConfig.localPath,
+        repoPath,
         lyraProjectConfig.path,
         projectStore,
       );
     }
 
-    return globalThis.store.getProjectStore(
-      serverProjectConfig.localPath,
-      lyraProjectConfig.path,
-    );
+    return globalThis.store.getProjectStore(repoPath, lyraProjectConfig.path);
   }
 
   private static async gitPull(repoPath: string, branchName: string) {

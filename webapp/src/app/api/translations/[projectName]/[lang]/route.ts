@@ -14,7 +14,10 @@ export async function GET(
       translations,
     });
   } catch (e) {
-    if (e instanceof LanguageNotFound || e instanceof ProjectNameNotFoundError) {
+    if (
+      e instanceof LanguageNotFound ||
+      e instanceof ProjectNameNotFoundError
+    ) {
       return NextResponse.json({ message: e.message }, { status: 404 });
     }
     throw e;

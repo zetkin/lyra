@@ -43,7 +43,10 @@ export async function POST(
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
     const projectConfig = lyraConfig.getProjectConfigByPath(projectName);
-    const projectStore = await Cache.getProjectStore(projectConfig.path);
+    const projectStore = await Cache.getProjectStore(
+      serverProjectConfig.localPath,
+      projectConfig,
+    );
     const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
     // TODO: use forEach and Promise.all

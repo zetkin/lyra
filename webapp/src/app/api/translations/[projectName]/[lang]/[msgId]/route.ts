@@ -18,10 +18,9 @@ export async function PUT(
     };
   },
 ) {
+  const { lang, msgId, projectName } = context.params;
   const payload = await req.json();
-  const { lang, msgId } = context.params;
   const { text } = payload;
-  const projectName = context.params.projectName;
   const serverConfig = await ServerConfig.read();
   const serverProjectConfig = serverConfig.getProjectConfigByName(projectName);
   const lyraConfig = await LyraConfig.readFromDir(
@@ -32,7 +31,10 @@ export async function PUT(
   );
 
   try {
-    const projectStore = await Cache.getProjectStore(projectConfig.path);
+    const projectStore = await Cache.getProjectStore(
+      serverProjectConfig.localPath,
+      projectConfig,
+    );
     await projectStore.updateTranslation(lang, msgId, text);
   } catch (e) {
     if (
