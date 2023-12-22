@@ -14,7 +14,7 @@ const KIND_BY_FORMAT_VALUE: Record<'ts' | 'yaml', MessageKind> = {
   yaml: MessageKind.YAML,
 };
 
-const configSchema = z.object({
+const lyraConfigSchema = z.object({
   baseBranch: z.optional(z.string()),
   projects: z.array(
     z.object({
@@ -53,7 +53,7 @@ export class LyraConfig {
       const ymlBuf = await fs.readFile(filename);
       const configData = parse(ymlBuf.toString());
 
-      const parsed = configSchema.parse(configData);
+      const parsed = lyraConfigSchema.parse(configData);
 
       return new LyraConfig(
         parsed.projects.map((project) => {
