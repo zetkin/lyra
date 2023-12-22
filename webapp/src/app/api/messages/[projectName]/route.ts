@@ -1,16 +1,13 @@
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
+import { NextResponse } from 'next/server';
 import { LyraConfig, ServerConfig } from '@/utils/config';
 import {
   LyraConfigReadingError,
   ProjectNameNotFoundError,
   ProjectPathNotFoundError,
 } from '@/errors';
-import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { projectName: string } },
-) {
+export async function GET(context: { params: { projectName: string } }) {
   try {
     const projectName = context.params.projectName;
     const serverConfig = await ServerConfig.read();
