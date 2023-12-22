@@ -27,3 +27,9 @@ export class ProjectPathNotFoundError extends Error {
     super(`Project with path [${projectPath}] not found`);
   }
 }
+
+export class ProjectNameNotFoundError extends Error {
+  constructor(projectName: string) {
+    super(`Project name: [${projectName}] not found`);
+  }
+}

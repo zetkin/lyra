@@ -4,6 +4,7 @@ import path from 'path';
 import { z } from 'zod';
 import {
   LyraConfigReadingError,
+  ProjectNameNotFoundError,
   ProjectPathNotFoundError,
   ServerConfigReadingError,
 } from '@/errors';
@@ -109,8 +110,7 @@ export class ServerConfig {
     if (projectConfig) {
       return projectConfig;
     }
-    // TODO: throw custom error class
-    throw new Error('project not found: ' + projectName);
+    throw new ProjectNameNotFoundError(projectName);
   }
 
   static async read(): Promise<ServerConfig> {

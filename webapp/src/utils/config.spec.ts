@@ -1,7 +1,12 @@
 import mock from 'mock-fs';
 import { describe, expect, it } from '@jest/globals';
 import { LyraConfig, MessageKind, ServerConfig } from './config';
-import { LyraConfigReadingError, ProjectPathNotFoundError, ServerConfigReadingError } from '@/errors';
+import {
+  LyraConfigReadingError,
+  ProjectNameNotFoundError,
+  ProjectPathNotFoundError,
+  ServerConfigReadingError,
+} from '@/errors';
 
 describe('config.ts', () => {
   describe('LyraConfig', () => {
@@ -279,6 +284,54 @@ describe('config.ts', () => {
         });
         const actual = () => ServerConfig.read();
         await expect(actual).rejects.toThrow(ServerConfigReadingError);
+      });
+    });
+    describe('getProjectConfigByName()', () => {
+      it('reads config of project by name', async () => {
+        mock({
+          './config/projects.yaml': [
+            'projects:',
+            '  - name: foo',
+            '    local_path: /path/to/repo',
+            '    sub_project_path: ./subproject1',
+            '    host: github.com',
+            '    owner: owner',
+            '    repo: app.zetkin.org',
+            '    github_token: github_123245',
+            '  - name: bar',
+            '    local_path: /path/to/repo',
+            '    sub_project_path: ./subproject2',
+            '    host: github.com',
+            '    owner: owner',
+            '    repo: app.zetkin.org',
+            '    github_token: github_123245',
+          ].join('\n'),
+        });
+        const config = await ServerConfig.read();
+        const projectConfig = config.getProjectConfigByName('bar');
+        expect(projectConfig.localPath).toEqual('/path/to/repo');
+        expect(projectConfig.subProjectPath).toEqual(
+          '/path/to/repo/subproject2',
+        );
+      });
+
+      it('throw ProjectNameNotFoundError for invalid project path', async () => {
+        expect.assertions(1);
+        mock({
+          './config/projects.yaml': [
+            'projects:',
+            '  - name: foo',
+            '    local_path: /path/to/repo',
+            '    sub_project_path: ./subproject1',
+            '    host: github.com',
+            '    owner: owner',
+            '    repo: app.zetkin.org',
+            '    github_token: github_123245',
+          ].join('\n'),
+        });
+        const config = await ServerConfig.read();
+        const actual = () => config.getProjectConfigByName('wrong_name');
+        expect(actual).toThrow(ProjectNameNotFoundError);
       });
     });
   });
