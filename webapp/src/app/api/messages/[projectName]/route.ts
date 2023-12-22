@@ -1,6 +1,10 @@
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { LyraConfig, ServerConfig } from '@/utils/config';
-import { LyraConfigReadingError, ProjectNameNotFoundError, ProjectPathNotFoundError } from '@/errors';
+import {
+  LyraConfigReadingError,
+  ProjectNameNotFoundError,
+  ProjectPathNotFoundError,
+} from '@/errors';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -10,9 +14,14 @@ export async function GET(
   try {
     const projectName = context.params.projectName;
     const serverConfig = await ServerConfig.read();
-    const serverProjectConfig = serverConfig.getProjectConfigByName(projectName);
-    const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig.localPath);
-    const projectConfig = lyraConfig.getProjectConfigByPath(serverProjectConfig.subProjectPath);
+    const serverProjectConfig =
+      serverConfig.getProjectConfigByName(projectName);
+    const lyraConfig = await LyraConfig.readFromDir(
+      serverProjectConfig.localPath,
+    );
+    const projectConfig = lyraConfig.getProjectConfigByPath(
+      serverProjectConfig.subProjectPath,
+    );
     const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
     const messages = await msgAdapter.getMessages();
 

@@ -15,7 +15,6 @@ projects:
     owner: amerharb
     repo: zetkin.app.zetkin.org
     github_token: << github token >>
-
 ```
 
 also the project repository needs to be cloned locally. and has in the root folder config file `lyra.yml` with the

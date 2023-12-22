@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json(
         { message: 'Project name [' + projectName + '] not found' },
         { status: 404 },
-      )
+      );
     }
     throw e;
   }
