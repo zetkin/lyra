@@ -25,8 +25,8 @@ baseBranch: main
 projects:
   - path: .
     messages:
-      format: yaml
-      path: locale
+      format: ts
+      path: src
     translations:
-      path: locale
+      path: src/locale
 ```

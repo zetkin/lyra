@@ -14,16 +14,8 @@ export async function GET(
       translations,
     });
   } catch (e) {
-    if (e instanceof LanguageNotFound) {
-      return NextResponse.json(
-        { message: 'language [' + lang + '] not found' },
-        { status: 404 },
-      );
-    } else if (e instanceof ProjectNameNotFoundError) {
-      return NextResponse.json(
-        { message: 'Project name [' + projectName + '] not found' },
-        { status: 404 },
-      );
+    if (e instanceof LanguageNotFound || e instanceof ProjectNameNotFoundError) {
+      return NextResponse.json({ message: e.message }, { status: 404 });
     }
     throw e;
   }

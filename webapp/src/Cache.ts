@@ -36,19 +36,33 @@ export class Cache {
     const lyraConfig = await LyraConfig.readFromDir(
       serverProjectConfig.localPath,
     );
-    const lyraProjectConfig = lyraConfig.getProjectConfigByPath(projectName);
+    const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
+      serverProjectConfig.subProjectPath,
+    );
 
-    if (!globalThis.store.hasProjectStore(lyraProjectConfig.path)) {
+    if (
+      !globalThis.store.hasProjectStore(
+        serverProjectConfig.localPath,
+        lyraProjectConfig.path,
+      )
+    ) {
       const projectStore = new ProjectStore(
         new YamlTranslationAdapter(lyraProjectConfig.translationsPath),
       );
-      globalThis.store.addProjectStore(lyraProjectConfig.path, projectStore);
+      globalThis.store.addProjectStore(
+        serverProjectConfig.localPath,
+        lyraProjectConfig.path,
+        projectStore,
+      );
     }
 
-    return globalThis.store.getProjectStore(lyraProjectConfig.path);
+    return globalThis.store.getProjectStore(
+      serverProjectConfig.localPath,
+      lyraProjectConfig.path,
+    );
   }
 
-  private static async gitPull(branchName: string, repoPath: string) {
+  private static async gitPull(repoPath: string, branchName: string) {
     debug('read lyra.yml from project root...');
     const options: Partial<SimpleGitOptions> = {
       baseDir: repoPath,

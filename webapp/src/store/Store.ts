@@ -1,3 +1,4 @@
+import path from 'path';
 import { ITranslationAdapter, TranslationMap } from '@/utils/adapters';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
 
@@ -8,19 +9,20 @@ type StoreData = {
 export class Store {
   private data = new Map<string, ProjectStore>();
 
-  public addProjectStore(projectPath: string, projectStore: ProjectStore) {
-    this.data.set(projectPath, projectStore);
+  public addProjectStore(repoPath: string, projectPath: string, projectStore: ProjectStore) {
+    this.data.set(path.join(repoPath, projectPath), projectStore);
   }
 
-  public hasProjectStore(projectPath: string): boolean {
-    return this.data.has(projectPath);
+  public hasProjectStore(repoPath: string, projectPath: string): boolean {
+    return this.data.has(path.join(repoPath, projectPath));
   }
 
-  public getProjectStore(projectPath: string): ProjectStore {
-    const projectStore = this.data.get(projectPath);
+  public getProjectStore(repoPath: string, projectPath: string): ProjectStore {
+    const storePath = path.join(repoPath, projectPath);
+    const projectStore = this.data.get(storePath);
     if (!projectStore) {
       // TODO: create new Error class
-      throw new Error(`ProjectStore not found for projectPath: ${projectPath}`);
+      throw new Error(`ProjectStore not found for path: ${storePath}`);
     }
     return projectStore;
   }
