@@ -2,7 +2,7 @@ name: Lint
 
 on:
   push:
-    branches: [ "*" ]
+    branches: ["*"]
   pull_request:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: 'yarn'
+          cache: "yarn"
       - run: yarn
       - run: yarn workspaces run build
       - run: yarn workspaces run test

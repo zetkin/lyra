@@ -37,7 +37,9 @@ export default class LyraConfig {
   ) {}
 
   public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
-    const projectConfig = this.projects.find((project) => project.path === projectPath);
+    const projectConfig = this.projects.find(
+      (project) => project.path === projectPath,
+    );
     if (projectConfig) {
       return projectConfig;
     }
