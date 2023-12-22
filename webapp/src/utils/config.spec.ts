@@ -207,7 +207,7 @@ describe('config.ts', () => {
     describe('read()', () => {
       it('reads project property from server config projects', async () => {
         mock({
-          './config/projects.yaml': [
+          '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
@@ -221,9 +221,7 @@ describe('config.ts', () => {
         const config = await ServerConfig.read();
         expect(config.projects[0].name).toEqual('foo');
         expect(config.projects[0].localPath).toEqual('/path/to/repo');
-        expect(config.projects[0].subProjectPath).toEqual(
-          '/path/to/repo/subproject',
-        );
+        expect(config.projects[0].subProjectPath).toEqual('./subproject');
         expect(config.projects[0].host).toEqual('github.com');
         expect(config.projects[0].owner).toEqual('owner');
         expect(config.projects[0].repo).toEqual('app.zetkin.org');
@@ -231,7 +229,7 @@ describe('config.ts', () => {
       });
       it('reads multi project', async () => {
         mock({
-          './config/projects.yaml': [
+          '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
@@ -252,18 +250,14 @@ describe('config.ts', () => {
         const config = await ServerConfig.read();
         expect(config.projects.length).toEqual(2);
         expect(config.projects[0].name).toEqual('foo');
-        expect(config.projects[0].subProjectPath).toEqual(
-          '/path/to/repo/subproject1',
-        );
+        expect(config.projects[0].subProjectPath).toEqual('./subproject1');
         expect(config.projects[1].name).toEqual('bar');
-        expect(config.projects[1].subProjectPath).toEqual(
-          '/path/to/repo/subproject2',
-        );
+        expect(config.projects[1].subProjectPath).toEqual('./subproject2');
       });
       it('throws for empty projects file', async () => {
         expect.assertions(1);
         mock({
-          './config/projects.yaml': '',
+          '../config/projects.yaml': '',
         });
         const actual = () => ServerConfig.read();
         await expect(actual).rejects.toThrow();
@@ -289,7 +283,7 @@ describe('config.ts', () => {
     describe('getProjectConfigByName()', () => {
       it('reads config of project by name', async () => {
         mock({
-          './config/projects.yaml': [
+          '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
@@ -310,15 +304,13 @@ describe('config.ts', () => {
         const config = await ServerConfig.read();
         const projectConfig = config.getProjectConfigByName('bar');
         expect(projectConfig.localPath).toEqual('/path/to/repo');
-        expect(projectConfig.subProjectPath).toEqual(
-          '/path/to/repo/subproject2',
-        );
+        expect(projectConfig.subProjectPath).toEqual('./subproject2');
       });
 
       it('throw ProjectNameNotFoundError for invalid project path', async () => {
         expect.assertions(1);
         mock({
-          './config/projects.yaml': [
+          '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
