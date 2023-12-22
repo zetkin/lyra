@@ -80,3 +80,71 @@ export class LyraProjectConfig {
     public readonly translationsPath: string,
   ) {}
 }
+
+const serverConfigSchema = z.object({
+  projects: z.array(
+    z.object({
+      githubToken: z.string(),
+      host: z.string(),
+      localPath: z.string(),
+      name: z.string(),
+      owner: z.string(),
+      repo: z.string(),
+      subProjectPath: z.string(),
+    }),
+  ),
+});
+
+export class ServerConfig {
+  private constructor(public readonly projects: ServerProjectConfig[]) {}
+
+  public getProjectConfigByName(projectName: string): ServerProjectConfig {
+    const projectConfig = this.projects.find(
+      (project) => project.name === projectName,
+    );
+    if (projectConfig) {
+      return projectConfig;
+    }
+    // TODO: throw custom error class
+    throw new Error('project not found: ' + projectName);
+  }
+
+  static async readFromDir(repoPath: string): Promise<ServerConfig> {
+    const filename = path.join('./config', 'projects.yml');
+    try {
+      const ymlBuf = await fs.readFile(filename);
+      const configData = parse(ymlBuf.toString());
+
+      const parsed = serverConfigSchema.parse(configData);
+
+      return new ServerConfig(
+        parsed.projects.map((project) => {
+          return new ServerProjectConfig(
+            project.name,
+            path.join(repoPath, project.localPath),
+            path.join(repoPath, project.localPath, project.subProjectPath),
+            project.host,
+            project.owner,
+            project.repo,
+            project.githubToken,
+          );
+        }),
+      );
+    } catch (e) {
+      // TODO: throw custom error class
+      throw new Error('error reading server config file: ' + filename);
+    }
+  }
+}
+
+export class ServerProjectConfig {
+  constructor(
+    public readonly name: string,
+    public readonly localPath: string,
+    public readonly subProjectPath: string,
+    public readonly host: string,
+    public readonly owner: string,
+    public readonly repo: string,
+    public readonly githubToken: string,
+  ) {}
+}

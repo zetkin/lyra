@@ -198,3 +198,7 @@ describe('LyraConfig', () => {
     });
   });
 });
+
+describe.skip('LyraProjectConfig', () => {
+  it.todo('ServerConfig test');
+});
