@@ -42,7 +42,9 @@ export async function POST(
     const git: SimpleGit = simpleGit(options);
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
-    const projectConfig = lyraConfig.getProjectConfigByPath(projectName);
+    const projectConfig = lyraConfig.getProjectConfigByPath(
+      serverProjectConfig.subProjectPath,
+    );
     const projectStore = await Cache.getProjectStore(
       serverProjectConfig.localPath,
       projectConfig,
