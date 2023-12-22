@@ -2,7 +2,11 @@ import fs from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
 import { z } from 'zod';
-import { LyraConfigReadingError, ProjectPathNotFoundError } from '@/errors';
+import {
+  LyraConfigReadingError,
+  ProjectPathNotFoundError,
+  ServerConfigReadingError,
+} from '@/errors';
 
 export enum MessageKind {
   TS = 'ts',
@@ -109,7 +113,7 @@ export class ServerConfig {
     throw new Error('project not found: ' + projectName);
   }
 
-  static async load(): Promise<ServerConfig> {
+  static async read(): Promise<ServerConfig> {
     const filename = './config/projects.yaml';
     try {
       const ymlBuf = await fs.readFile(filename);
@@ -131,8 +135,7 @@ export class ServerConfig {
         }),
       );
     } catch (e) {
-      // TODO: throw custom error class
-      throw new Error('error reading server config file: ' + filename);
+      throw new ServerConfigReadingError(filename);
     }
   }
 }
