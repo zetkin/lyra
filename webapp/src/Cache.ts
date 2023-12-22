@@ -13,23 +13,8 @@ export class Cache {
   private static hasPulled: boolean = false;
 
   public static async getLanguage(lang: string) {
-    debug('read lyra.yml from project root...');
-    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
     if (!Cache.hasPulled) {
-      debug('Initializing languages');
-      const options: Partial<SimpleGitOptions> = {
-        baseDir: REPO_PATH,
-        binary: 'git',
-        maxConcurrentProcesses: 1,
-        trimmed: false,
-      };
-      const git: SimpleGit = simpleGit(options);
-      debug(`git checkout ${lyraConfig.baseBranch} branch...`);
-      await git.checkout(lyraConfig.baseBranch);
-      debug('git pull...');
-      await git.pull();
-      debug(`git done checkout ${lyraConfig.baseBranch} branch and pull`);
-      Cache.hasPulled = true;
+      await Cache.gitPull()
     }
 
     const store = await Cache.getStore();
@@ -46,5 +31,23 @@ export class Cache {
     }
 
     return globalThis.store;
+  }
+
+  private static async gitPull() {
+    debug('read lyra.yml from project root...');
+    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
+    const options: Partial<SimpleGitOptions> = {
+      baseDir: REPO_PATH,
+      binary: 'git',
+      maxConcurrentProcesses: 1,
+      trimmed: false,
+    };
+    const git: SimpleGit = simpleGit(options);
+    debug(`git checkout ${lyraConfig.baseBranch} branch...`);
+    await git.checkout(lyraConfig.baseBranch);
+    debug('git pull...');
+    await git.pull();
+    debug(`git done checkout ${lyraConfig.baseBranch} branch and pull`);
+    Cache.hasPulled = true;
   }
 }
