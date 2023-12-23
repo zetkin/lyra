@@ -7,16 +7,20 @@
 ### Added
 
 - Server config file `./config/projects.yaml` to support multi project and multi repository
+- New API endpoint to get all projects in a list that is configured at server in `./config/projects.yaml`
+  ```http request
+  GET http://example.com/api/projects
+  ```
 
 ### Changed
 
 - Api url to include project name in path
   ```http request
-  GET http://host/api/translations/<projectName>/sv
+  GET http://example.com/api/translations/<projectName>/sv
   ```
 - Web page url to include which project to load
   ```
-  http://host/project/<projectName>/sv
+  http://example.com/project/<projectName>/sv
   ```
 
 ## [0.2.5] 2023-12-21
