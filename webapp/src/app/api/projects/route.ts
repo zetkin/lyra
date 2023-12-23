@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { ServerConfig } from '@/utils/config';
 import { ServerConfigReadingError } from '@/errors';
+import { type ProjectItem, type ProjectsResponse } from '@/types';
 
 export async function GET() {
   try {
     const serverConfig = await ServerConfig.read();
-    return NextResponse.json({
-      projects: serverConfig.projects.map((project) => ({
+    return NextResponse.json<ProjectsResponse>({
+      projects: serverConfig.projects.map<ProjectItem>((project) => ({
         host: project.host,
         name: project.name,
         owner: project.owner,

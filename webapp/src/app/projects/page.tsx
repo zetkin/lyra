@@ -1,9 +1,10 @@
 'use client';
 
+import { type ProjectItem } from '@/types';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
 
   useEffect(() => {
     async function loadProjects() {
@@ -32,11 +33,3 @@ export default function Home() {
     </main>
   );
 }
-
-type Project = {
-  host: string;
-  name: string;
-  owner: string;
-  repo: string;
-  subProjectPath: string;
-};

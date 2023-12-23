@@ -6,3 +6,15 @@ declare global {
   // eslint-disable-next-line
   var store: Store;
 }
+
+export type ProjectItem = {
+  host: string;
+  name: string;
+  owner: string;
+  repo: string;
+  subProjectPath: string;
+};
+
+export type ProjectsResponse = {
+  projects: ProjectItem[];
+};
