@@ -13,9 +13,8 @@ export async function GET(
 ) {
   try {
     const projectName = context.params.projectName;
-    const serverConfig = await ServerConfig.read();
     const serverProjectConfig =
-      serverConfig.getProjectConfigByName(projectName);
+      await ServerConfig.getProjectConfig(projectName);
     const lyraConfig = await LyraConfig.readFromDir(
       serverProjectConfig.localPath,
     );

@@ -301,8 +301,7 @@ describe('config.ts', () => {
             '    github_token: github_123245',
           ].join('\n'),
         });
-        const config = await ServerConfig.read();
-        const projectConfig = config.getProjectConfigByName('bar');
+        const projectConfig = await ServerConfig.getProjectConfig('bar');
         expect(projectConfig.localPath).toEqual('/path/to/repo');
         expect(projectConfig.subProjectPath).toEqual('./subproject2');
       });
@@ -322,7 +321,7 @@ describe('config.ts', () => {
           ].join('\n'),
         });
         const config = await ServerConfig.read();
-        const actual = () => config.getProjectConfigByName('wrong_name');
+        const actual = () => config.getProjectConfig('wrong_name');
         expect(actual).toThrow(ProjectNameNotFoundError);
       });
     });

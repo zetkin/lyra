@@ -18,8 +18,7 @@ export async function POST(
   context: { params: { projectName: string } },
 ) {
   const projectName = context.params.projectName;
-  const serverConfig = await ServerConfig.read();
-  const serverProjectConfig = serverConfig.getProjectConfigByName(projectName);
+  const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   const localPath = serverProjectConfig.localPath;
   if (!syncLock.has(localPath)) {
     syncLock.set(localPath, false);

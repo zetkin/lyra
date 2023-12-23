@@ -21,8 +21,7 @@ export async function PUT(
   const { lang, msgId, projectName } = context.params;
   const payload = await req.json();
   const { text } = payload;
-  const serverConfig = await ServerConfig.read();
-  const serverProjectConfig = serverConfig.getProjectConfigByName(projectName);
+  const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   const lyraConfig = await LyraConfig.readFromDir(
     serverProjectConfig.localPath,
   );

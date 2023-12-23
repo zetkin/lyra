@@ -10,9 +10,8 @@ export class Cache {
   private static hasPulled: boolean = false;
 
   public static async getLanguage(projectName: string, lang: string) {
-    const serverConfig = await ServerConfig.read();
     const serverProjectConfig =
-      serverConfig.getProjectConfigByName(projectName);
+      await ServerConfig.getProjectConfig(projectName);
     const lyraConfig = await LyraConfig.readFromDir(
       serverProjectConfig.localPath,
     );

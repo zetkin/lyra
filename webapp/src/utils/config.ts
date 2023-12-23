@@ -103,7 +103,7 @@ const serverConfigSchema = z.object({
 export class ServerConfig {
   private constructor(public readonly projects: ServerProjectConfig[]) {}
 
-  public getProjectConfigByName(projectName: string): ServerProjectConfig {
+  public getProjectConfig(projectName: string): ServerProjectConfig {
     const projectConfig = this.projects.find(
       (project) => project.name === projectName,
     );
@@ -113,7 +113,7 @@ export class ServerConfig {
     throw new ProjectNameNotFoundError(projectName);
   }
 
-  static async read(): Promise<ServerConfig> {
+  public static async read(): Promise<ServerConfig> {
     // TODO: cache this call with TTL, it will be read on every request but only changes when admin changes it
     const filename = '../config/projects.yaml';
     try {
@@ -138,6 +138,13 @@ export class ServerConfig {
     } catch (e) {
       throw new ServerConfigReadingError(filename);
     }
+  }
+
+  public static async getProjectConfig(
+    projectName: string,
+  ): Promise<ServerProjectConfig> {
+    const serverConfig = await ServerConfig.read();
+    return serverConfig.getProjectConfig(projectName);
   }
 }
 
