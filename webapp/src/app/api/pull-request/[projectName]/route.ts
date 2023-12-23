@@ -35,11 +35,9 @@ export async function POST(
 
   try {
     syncLock.set(localPath, true);
-    const lyraConfig = await LyraConfig.readFromDir(
-      serverProjectConfig.localPath,
-    );
+    const lyraConfig = await LyraConfig.readFromDir(localPath);
     const options: Partial<SimpleGitOptions> = {
-      baseDir: serverProjectConfig.localPath,
+      baseDir: localPath,
       binary: 'git',
       maxConcurrentProcesses: 1,
       trimmed: false,
@@ -50,10 +48,7 @@ export async function POST(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.subProjectPath,
     );
-    const projectStore = await Cache.getProjectStore(
-      serverProjectConfig.localPath,
-      projectConfig,
-    );
+    const projectStore = await Cache.getProjectStore(localPath, projectConfig);
     const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
     // TODO: use forEach and Promise.all
