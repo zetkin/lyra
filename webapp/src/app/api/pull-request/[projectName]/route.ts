@@ -3,10 +3,11 @@ import fs from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import path from 'path';
+import { ProjectNameNotFoundError } from '@/errors';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
-import { LyraConfig, ServerConfig } from '@/utils/config';
+import { LyraConfig, ServerConfig, ServerProjectConfig } from '@/utils/config';
 import { NextRequest, NextResponse } from 'next/server';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
@@ -18,8 +19,17 @@ export async function POST(
   context: { params: { projectName: string } },
 ) {
   const projectName = context.params.projectName;
-  const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
+  let serverProjectConfig: ServerProjectConfig;
+  try {
+    serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
+  } catch (e) {
+    if (e instanceof ProjectNameNotFoundError) {
+      return NextResponse.json({ message: e.message }, { status: 404 });
+    }
+    throw e;
+  }
   const localPath = serverProjectConfig.localPath;
+
   if (!syncLock.has(localPath)) {
     syncLock.set(localPath, false);
   }
