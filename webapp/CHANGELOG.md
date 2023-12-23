@@ -11,6 +11,10 @@
   ```http request
   GET http://example.com/api/projects
   ```
+- New page to list all projects and languages
+  ```
+  http://example.com/projects
+  ```
 
 ### Changed
 
