@@ -11,25 +11,31 @@ import { NextRequest, NextResponse } from 'next/server';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 /** used to prevent multiple requests from running at the same time */
-let syncLock = false;
+const syncLock = new Map<string, boolean>();
 
 export async function POST(
   req: NextRequest,
   context: { params: { projectName: string } },
 ) {
-  if (syncLock) {
+  const projectName = context.params.projectName;
+  const serverConfig = await ServerConfig.read();
+  const serverProjectConfig = serverConfig.getProjectConfigByName(projectName);
+  const localPath = serverProjectConfig.localPath;
+  if (!syncLock.has(localPath)) {
+    syncLock.set(localPath, false);
+  }
+
+  if (syncLock.get(localPath) === true) {
     return NextResponse.json(
-      { message: 'Another Request in progress' },
+      {
+        message: `Another Request in progress for the same repository: ${serverProjectConfig.owner}/${serverProjectConfig.repo}`,
+      },
       { status: 400 },
     );
   }
 
   try {
-    syncLock = true;
-    const projectName = context.params.projectName;
-    const serverConfig = await ServerConfig.read();
-    const serverProjectConfig =
-      serverConfig.getProjectConfigByName(projectName);
+    syncLock.set(localPath, true);
     const lyraConfig = await LyraConfig.readFromDir(
       serverProjectConfig.localPath,
     );
@@ -89,7 +95,7 @@ export async function POST(
       pullRequestUrl,
     });
   } finally {
-    syncLock = false;
+    syncLock.set(localPath, false);
   }
 
   async function createPR(
