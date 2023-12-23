@@ -20,7 +20,7 @@
   ```
 - Web page url to include which project to load
   ```
-  http://example.com/project/<projectName>/sv
+  http://example.com/projects/<projectName>/sv
   ```
 
 ## [0.2.5] 2023-12-21
