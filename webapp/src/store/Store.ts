@@ -25,7 +25,6 @@ export class Store {
     const storePath = path.join(repoPath, projectPath);
     const projectStore = this.data.get(storePath);
     if (!projectStore) {
-      // TODO: create new Error class
       throw new Error(`ProjectStore not found for path: ${storePath}`);
     }
     return projectStore;
