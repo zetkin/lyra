@@ -14,7 +14,6 @@
   ```http request
   GET http://host/api/translations/<projectName>/sv
   ```
-
 - Web page url to include which project to load
   ```
   http://host/project/<projectName>/sv
