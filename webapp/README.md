@@ -4,7 +4,7 @@
 
 For the time being, you need to supply the path to a repository containing
 Lyra messages (`messageIds.ts` files) using an environment variable called
-in config folder create file `projects.yaml` with example content:
+in config folder create file `./config/projects.yaml` with example content:
 
 ```yaml
 projects:

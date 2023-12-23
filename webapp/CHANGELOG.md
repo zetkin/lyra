@@ -6,7 +6,19 @@
 
 ### Added
 
-- Support for multi project within one repository
+- Server config file `./config/projects.yaml` to support multi project and multi repository
+
+### Changed
+
+- Api url to include project name in path
+  ```http request
+  GET http://host/api/translations/<projectName>/sv
+  ```
+
+- Web page url to include which project to load
+  ```
+  http://host/project/<projectName>/sv
+  ```
 
 ## [0.2.5] 2023-12-21
 
