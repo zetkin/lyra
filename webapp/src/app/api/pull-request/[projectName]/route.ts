@@ -61,15 +61,20 @@ export async function POST(
     const projectStore = await Cache.getProjectStore(localPath, projectConfig);
     const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
-    await Promise.all(Object.keys(languages).map(async (lang) => {
-      const yamlPath = path.join(projectConfig.translationsPath, `${lang}.yml`);
-      const yamlOutput = stringify(unflatten(languages[lang]), {
-        doubleQuotedAsJSON: true,
-        singleQuote: true,
-      });
-      pathsToAdd.push(yamlPath);
-      await fs.writeFile(yamlPath, yamlOutput);
-    }));
+    await Promise.all(
+      Object.keys(languages).map(async (lang) => {
+        const yamlPath = path.join(
+          projectConfig.translationsPath,
+          `${lang}.yml`,
+        );
+        const yamlOutput = stringify(unflatten(languages[lang]), {
+          doubleQuotedAsJSON: true,
+          singleQuote: true,
+        });
+        pathsToAdd.push(yamlPath);
+        await fs.writeFile(yamlPath, yamlOutput);
+      }),
+    );
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(

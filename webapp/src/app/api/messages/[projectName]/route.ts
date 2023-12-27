@@ -15,9 +15,7 @@ export async function GET(
     const projectName = context.params.projectName;
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
-    const lyraConfig = await LyraConfig.get(
-      serverProjectConfig.localPath,
-    );
+    const lyraConfig = await LyraConfig.get(serverProjectConfig.localPath);
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.subProjectPath,
     );
