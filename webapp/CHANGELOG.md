@@ -2,6 +2,17 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## [0.3.1] 2023-12-27
+
+### Added
+
+- Both LyraConfig and LyraConfigFile use method `get` to read config
+- Configs are now cached in memory to TTL 1 hour
+- method `get` has optional parameter `useCache` to force reload config from file
+
+### Changed
+- Function `readFromDir()` and `read()` in `LyraConfig` and `ServerConfig` are now private
+
 ## [0.3.0] 2023-12-21
 
 ### Added
