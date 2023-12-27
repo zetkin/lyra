@@ -22,7 +22,7 @@ export async function PUT(
   const payload = await req.json();
   const { text } = payload;
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
-  const lyraConfig = await LyraConfig.readFromDir(
+  const lyraConfig = await LyraConfig.get(
     serverProjectConfig.localPath,
   );
   const projectConfig = lyraConfig.getProjectConfigByPath(

@@ -36,6 +36,10 @@ const lyraConfigSchema = z.object({
 });
 
 export class LyraConfig {
+  private static TTL = 1000 * 60 * 60; // 1 hour
+  private static instances = new Map<string, LyraConfig>();
+  private static instancesTimestamp = new Map<string, number>();
+
   private constructor(
     public readonly projects: LyraProjectConfig[],
     public readonly baseBranch: string, // following GitHub terminology target branch called base branch
@@ -51,8 +55,39 @@ export class LyraConfig {
     throw new ProjectPathNotFoundError(projectPath);
   }
 
-  static async readFromDir(repoPath: string): Promise<LyraConfig> {
-    // TODO: cache this call with TTL
+  public static async get(repoPath: string, useCache: boolean = true): Promise<LyraConfig> {
+    if (!useCache) {
+      const newConfig = await LyraConfig.readFromDir(repoPath);
+      // TODO: update object instead of creating new one
+      LyraConfig.instances.set(repoPath, newConfig);
+      LyraConfig.instancesTimestamp.set(repoPath, Date.now());
+      return newConfig;
+    }
+    if (LyraConfig.instances.has(repoPath)) {
+      const config = LyraConfig.instances.get(repoPath)!;
+      if (
+        LyraConfig.instancesTimestamp.has(repoPath) &&
+        Date.now() - LyraConfig.instancesTimestamp.get(repoPath)! < this.TTL
+      ) {
+        return config;
+      } else {
+        LyraConfig.instancesTimestamp.delete(repoPath);
+        const newConfig = await LyraConfig.readFromDir(repoPath);
+        // TODO: update object instead of creating new one
+        // config.update(newConfig);
+        LyraConfig.instances.set(repoPath, newConfig);
+        LyraConfig.instancesTimestamp.set(repoPath, Date.now());
+        return newConfig;
+      }
+    } else {
+      const newConfig = await LyraConfig.readFromDir(repoPath);
+      LyraConfig.instances.set(repoPath, newConfig);
+      LyraConfig.instancesTimestamp.set(repoPath, Date.now());
+      return newConfig;
+    }
+  }
+
+  private static async readFromDir(repoPath: string): Promise<LyraConfig> {
     const filename = path.join(repoPath, 'lyra.yml');
     try {
       const ymlBuf = await fs.readFile(filename);

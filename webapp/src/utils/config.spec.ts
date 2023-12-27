@@ -10,7 +10,7 @@ import {
 
 describe('config.ts', () => {
   describe('LyraConfig', () => {
-    describe('readFromDir()', () => {
+    describe('get()', () => {
       it('reads message kind and path from lyra.yml', async () => {
         mock({
           '/path/to/repo/lyra.yml': [
@@ -23,7 +23,7 @@ describe('config.ts', () => {
             '    path: locale',
           ].join('\n'),
         });
-        const config = await LyraConfig.readFromDir('/path/to/repo');
+        const config = await LyraConfig.get('/path/to/repo', false);
         expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
         expect(config.projects[0].messagesPath).toEqual('/path/to/repo/locale');
         expect(config.projects[0].translationsPath).toEqual(
@@ -45,7 +45,7 @@ describe('config.ts', () => {
           ].join('\n'),
         });
 
-        const config = await LyraConfig.readFromDir('/path/to/repo');
+        const config = await LyraConfig.get('/path/to/repo', false);
         expect(config.projects[0].messagesPath).toEqual(
           '/path/to/repo/subproject/locale',
         );
@@ -68,7 +68,7 @@ describe('config.ts', () => {
           ].join('\n'),
         });
 
-        const config = await LyraConfig.readFromDir('/path/to/repo');
+        const config = await LyraConfig.get('/path/to/repo', false);
         expect(config.baseBranch).toEqual('branch1');
       });
 
@@ -91,7 +91,7 @@ describe('config.ts', () => {
           ].join('\n'),
         });
 
-        const config = await LyraConfig.readFromDir('/path/to/repo');
+        const config = await LyraConfig.get('/path/to/repo', false);
         expect(config.projects.length).toEqual(2);
 
         expect(config.projects[0].path).toEqual('subproject1');
@@ -118,7 +118,7 @@ describe('config.ts', () => {
           expect.assertions(1);
           mock({ '/path/to/repo/lyra.yml': '' });
 
-          const promise = () => LyraConfig.readFromDir('/path/to/repo');
+          const promise = () => LyraConfig.get('/path/to/repo', false);
           await expect(promise).rejects.toThrow(LyraConfigReadingError);
         });
 
@@ -135,7 +135,7 @@ describe('config.ts', () => {
               '    path: anyValue',
             ].join('\n'),
           });
-          const promise = () => LyraConfig.readFromDir('/path/to/repo');
+          const promise = () => LyraConfig.get('/path/to/repo', false);
           await expect(promise).rejects.toThrow(LyraConfigReadingError);
         });
 
@@ -153,7 +153,7 @@ describe('config.ts', () => {
               '    path: anyValue',
             ].join('\n'),
           });
-          const promise = () => LyraConfig.readFromDir('/path/to/repo');
+          const promise = () => LyraConfig.get('/path/to/repo', false);
           await expect(promise).rejects.toThrow(LyraConfigReadingError);
         });
       });
@@ -171,7 +171,7 @@ describe('config.ts', () => {
             '    path: locale',
           ].join('\n'),
         });
-        const config = await LyraConfig.readFromDir('/path/to/repo');
+        const config = await LyraConfig.get('/path/to/repo', false);
         const projectConfig = config.getProjectConfigByPath('foo');
         expect(projectConfig.messageKind).toEqual(MessageKind.YAML);
         expect(projectConfig.messagesPath).toEqual('/path/to/repo/foo/locale');
@@ -196,7 +196,7 @@ describe('config.ts', () => {
               '    path: anyValue',
             ].join('\n'),
           });
-          const config = await LyraConfig.readFromDir('/path/to/repo');
+          const config = await LyraConfig.get('/path/to/repo', false);
           const actual = () => config.getProjectConfigByPath('wrongPath');
           expect(actual).toThrow(ProjectPathNotFoundError);
         });

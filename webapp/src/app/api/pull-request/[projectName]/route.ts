@@ -45,7 +45,7 @@ export async function POST(
 
   try {
     syncLock.set(localPath, true);
-    const lyraConfig = await LyraConfig.readFromDir(localPath);
+    const lyraConfig = await LyraConfig.get(localPath);
     const options: Partial<SimpleGitOptions> = {
       baseDir: localPath,
       binary: 'git',
