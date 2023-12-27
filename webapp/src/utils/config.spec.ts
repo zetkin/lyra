@@ -207,7 +207,7 @@ describe('config.ts', () => {
     });
   });
   describe('ServerConfig', () => {
-    describe('read()', () => {
+    describe('get()', () => {
       it('reads project property from server config projects', async () => {
         mock({
           '../config/projects.yaml': [
