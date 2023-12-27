@@ -40,25 +40,65 @@ export class LyraConfig {
   private static instances = new Map<string, LyraConfig>();
   private static instancesTimestamp = new Map<string, number>();
 
-  private constructor(
-    public readonly projects: LyraProjectConfig[],
-    public readonly baseBranch: string, // following GitHub terminology target branch called base branch
-  ) {}
+  private mBaseBranch: string;
+  private mProjects = new Map<string, LyraProjectConfig>();
 
-  public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
-    const projectConfig = this.projects.find(
-      (project) => project.path === projectPath,
-    );
-    if (projectConfig) {
-      return projectConfig;
-    }
-    throw new ProjectPathNotFoundError(projectPath);
+  private constructor(
+    projects: LyraProjectConfig[],
+    baseBranch: string, // following GitHub terminology target branch called base branch
+  ) {
+    this.mBaseBranch = baseBranch;
+    projects.forEach((project) => {
+      this.mProjects.set(project.path, project);
+    });
   }
 
-  public static async get(repoPath: string, useCache: boolean = true): Promise<LyraConfig> {
+  public get baseBranch(): string {
+    return this.mBaseBranch;
+  }
+
+  public get projects(): Map<string, LyraProjectConfig> {
+    return this.mProjects;
+  }
+
+  public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
+    const projectConfig = this.mProjects.get(projectPath);
+    if (projectConfig === undefined) {
+      throw new ProjectPathNotFoundError(projectPath);
+    }
+    return projectConfig;
+  }
+
+  public update(newConfig: LyraConfig) {
+    this.mBaseBranch = newConfig.baseBranch;
+    // remove projects that are not in newConfig and update existing ones
+    this.mProjects.forEach((project) => {
+      if (!newConfig.projects.has(project.path)) {
+        this.mProjects.delete(project.path);
+      } else {
+        project.update(newConfig.projects.get(project.path)!);
+      }
+    });
+    // add new projects
+    newConfig.projects.forEach((project) => {
+      if (!this.mProjects.has(project.path)) {
+        this.mProjects.set(project.path, project);
+      }
+    });
+  }
+
+  public static async get(
+    repoPath: string,
+    useCache: boolean = true,
+  ): Promise<LyraConfig> {
     if (!useCache) {
       const newConfig = await LyraConfig.readFromDir(repoPath);
-      // TODO: update object instead of creating new one
+      if (LyraConfig.instances.has(repoPath)) {
+        const config = LyraConfig.instances.get(repoPath)!;
+        config.update(newConfig);
+        LyraConfig.instancesTimestamp.set(repoPath, Date.now());
+        return config;
+      }
       LyraConfig.instances.set(repoPath, newConfig);
       LyraConfig.instancesTimestamp.set(repoPath, Date.now());
       return newConfig;
@@ -73,11 +113,9 @@ export class LyraConfig {
       } else {
         LyraConfig.instancesTimestamp.delete(repoPath);
         const newConfig = await LyraConfig.readFromDir(repoPath);
-        // TODO: update object instead of creating new one
-        // config.update(newConfig);
-        LyraConfig.instances.set(repoPath, newConfig);
+        config.update(newConfig);
         LyraConfig.instancesTimestamp.set(repoPath, Date.now());
-        return newConfig;
+        return config;
       }
     } else {
       const newConfig = await LyraConfig.readFromDir(repoPath);
@@ -113,12 +151,45 @@ export class LyraConfig {
 }
 
 export class LyraProjectConfig {
+  private mPath: string;
+  private mMessageKind: string;
+  private mMessagesPath: string;
+  private mTranslationsPath: string;
+
   constructor(
-    public readonly path: string,
-    public readonly messageKind: string,
-    public readonly messagesPath: string,
-    public readonly translationsPath: string,
-  ) {}
+    path: string,
+    messageKind: string,
+    messagesPath: string,
+    translationsPath: string,
+  ) {
+    this.mPath = path;
+    this.mMessageKind = messageKind;
+    this.mMessagesPath = messagesPath;
+    this.mTranslationsPath = translationsPath;
+  }
+
+  public get path(): string {
+    return this.mPath;
+  }
+
+  public get messageKind(): string {
+    return this.mMessageKind;
+  }
+
+  public get messagesPath(): string {
+    return this.mMessagesPath;
+  }
+
+  public get translationsPath(): string {
+    return this.mTranslationsPath;
+  }
+
+  public update(newConfig: LyraProjectConfig) {
+    this.mPath = newConfig.path;
+    this.mMessageKind = newConfig.messageKind;
+    this.mMessagesPath = newConfig.messagesPath;
+    this.mTranslationsPath = newConfig.translationsPath;
+  }
 }
 
 const serverConfigSchema = z.object({
