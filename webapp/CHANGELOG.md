@@ -13,6 +13,7 @@
 ### Changed
 
 - Function `readFromDir()` and `read()` in `LyraConfig` and `ServerConfig` are now private
+- config.ts split into two files `LyraConfig.ts` and `ServerConfig.ts`
 
 ## [0.3.0] 2023-12-21
 
