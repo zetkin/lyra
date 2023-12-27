@@ -225,7 +225,7 @@ export class ServerConfig {
 
   public static async get(useCache: boolean = true): Promise<ServerConfig> {
     if (!useCache) {
-      const config = await ServerConfig.read();
+      const config = await ServerConfig.readFromFile();
       // TODO: update instance
       ServerConfig.instance = config;
       ServerConfig.instanceTimestamp = Date.now();
@@ -238,14 +238,14 @@ export class ServerConfig {
       }
     }
 
-    const config = await ServerConfig.read();
+    const config = await ServerConfig.readFromFile();
     // TODO: update instance
     ServerConfig.instance = config;
     ServerConfig.instanceTimestamp = Date.now();
     return config;
   }
 
-  private static async read(): Promise<ServerConfig> {
+  private static async readFromFile(): Promise<ServerConfig> {
     const filename = '../config/projects.yaml';
     try {
       const ymlBuf = await fs.readFile(filename);
