@@ -1,12 +1,9 @@
 /* global globalThis */
 
 import { debug } from '@/utils/log';
+import { ServerConfig } from '@/utils/ServerConfig';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
-import {
-  LyraConfig,
-  LyraProjectConfig,
-  ServerConfig,
-} from '@/utils/LyraConfig';
+import { LyraConfig, LyraProjectConfig } from '@/utils/LyraConfig';
 import { ProjectStore, Store } from '@/store/Store';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 

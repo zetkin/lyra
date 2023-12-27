@@ -1,11 +1,12 @@
 import { Cache } from '@/Cache';
+import { LyraConfig } from '@/utils/LyraConfig';
+import { ServerConfig } from '@/utils/ServerConfig';
 import {
   LanguageNotFound,
   MessageNotFound,
   ProjectNameNotFoundError,
   ProjectPathNotFoundError,
 } from '@/errors';
-import { LyraConfig, ServerConfig } from '@/utils/LyraConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
