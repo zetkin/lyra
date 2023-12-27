@@ -24,10 +24,10 @@ describe('config.ts', () => {
           ].join('\n'),
         });
         const config = await LyraConfig.get('/path/to/repo', false);
-        const projectConfig0 = config.projects.values().next().value;
-        expect(projectConfig0.messageKind).toEqual(MessageKind.YAML);
-        expect(projectConfig0.messagesPath).toEqual('/path/to/repo/locale');
-        expect(projectConfig0.translationsPath).toEqual('/path/to/repo/locale');
+        const projectArr = Array.from(config.projects.values());
+        expect(projectArr[0].messageKind).toEqual(MessageKind.YAML);
+        expect(projectArr[0].messagesPath).toEqual('/path/to/repo/locale');
+        expect(projectArr[0].translationsPath).toEqual('/path/to/repo/locale');
         expect(config.baseBranch).toEqual('main'); // default value
       });
 
@@ -45,11 +45,11 @@ describe('config.ts', () => {
         });
 
         const config = await LyraConfig.get('/path/to/repo', false);
-        const projectConfig0 = config.projects.values().next().value;
-        expect(projectConfig0.messagesPath).toEqual(
+        const projectArr = Array.from(config.projects.values());
+        expect(projectArr[0].messagesPath).toEqual(
           '/path/to/repo/subproject/locale',
         );
-        expect(projectConfig0.translationsPath).toEqual(
+        expect(projectArr[0].translationsPath).toEqual(
           '/path/to/repo/subproject/locale',
         );
       });
@@ -92,28 +92,26 @@ describe('config.ts', () => {
         });
 
         const config = await LyraConfig.get('/path/to/repo', false);
-        const iterable = config.projects.values();
-        const projectConfig0 = iterable.next().value;
-        const projectConfig1 = iterable.next().value;
+        const projectArr = Array.from(config.projects.values());
         expect(config.projects.size).toEqual(2);
 
-        expect(projectConfig0.path).toEqual('subproject1');
-        expect(projectConfig0.messagesPath).toEqual(
+        expect(projectArr[0].path).toEqual('subproject1');
+        expect(projectArr[0].messagesPath).toEqual(
           '/path/to/repo/subproject1/locale1',
         );
-        expect(projectConfig0.translationsPath).toEqual(
+        expect(projectArr[0].translationsPath).toEqual(
           '/path/to/repo/subproject1/locale1',
         );
-        expect(projectConfig0.messageKind).toEqual(MessageKind.YAML);
+        expect(projectArr[0].messageKind).toEqual(MessageKind.YAML);
 
-        expect(projectConfig1.path).toEqual('subproject2');
-        expect(projectConfig1.messagesPath).toEqual(
+        expect(projectArr[1].path).toEqual('subproject2');
+        expect(projectArr[1].messagesPath).toEqual(
           '/path/to/repo/subproject2/msg_locale2',
         );
-        expect(projectConfig1.translationsPath).toEqual(
+        expect(projectArr[1].translationsPath).toEqual(
           '/path/to/repo/subproject2/trans_locale2',
         );
-        expect(projectConfig1.messageKind).toEqual(MessageKind.TS);
+        expect(projectArr[1].messageKind).toEqual(MessageKind.TS);
       });
 
       describe('throw LyraConfigReadingError for invalid content or file not found', () => {
@@ -222,13 +220,15 @@ describe('config.ts', () => {
           ].join('\n'),
         });
         const config = await ServerConfig.get(false);
-        expect(config.projects[0].name).toEqual('foo');
-        expect(config.projects[0].localPath).toEqual('/path/to/repo');
-        expect(config.projects[0].subProjectPath).toEqual('./subproject');
-        expect(config.projects[0].host).toEqual('github.com');
-        expect(config.projects[0].owner).toEqual('owner');
-        expect(config.projects[0].repo).toEqual('app.zetkin.org');
-        expect(config.projects[0].githubToken).toEqual('github_123245');
+        const projectConfigArr = Array.from(config.projects.values());
+
+        expect(projectConfigArr[0].name).toEqual('foo');
+        expect(projectConfigArr[0].localPath).toEqual('/path/to/repo');
+        expect(projectConfigArr[0].subProjectPath).toEqual('./subproject');
+        expect(projectConfigArr[0].host).toEqual('github.com');
+        expect(projectConfigArr[0].owner).toEqual('owner');
+        expect(projectConfigArr[0].repo).toEqual('app.zetkin.org');
+        expect(projectConfigArr[0].githubToken).toEqual('github_123245');
       });
       it('reads multi project', async () => {
         mock({
@@ -251,11 +251,13 @@ describe('config.ts', () => {
           ].join('\n'),
         });
         const config = await ServerConfig.get(false);
-        expect(config.projects.length).toEqual(2);
-        expect(config.projects[0].name).toEqual('foo');
-        expect(config.projects[0].subProjectPath).toEqual('./subproject1');
-        expect(config.projects[1].name).toEqual('bar');
-        expect(config.projects[1].subProjectPath).toEqual('./subproject2');
+        const projectConfigArr = Array.from(config.projects.values());
+
+        expect(projectConfigArr.length).toEqual(2);
+        expect(projectConfigArr[0].name).toEqual('foo');
+        expect(projectConfigArr[0].subProjectPath).toEqual('./subproject1');
+        expect(projectConfigArr[1].name).toEqual('bar');
+        expect(projectConfigArr[1].subProjectPath).toEqual('./subproject2');
       });
       it('throws for empty projects file', async () => {
         expect.assertions(1);

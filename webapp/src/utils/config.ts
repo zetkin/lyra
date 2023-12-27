@@ -211,16 +211,26 @@ export class ServerConfig {
   private static instance: ServerConfig;
   private static instanceTimestamp: number;
 
-  private constructor(public readonly projects: ServerProjectConfig[]) {}
+  private mProjects = new Map<string, ServerProjectConfig>();
+
+  private constructor(projects: ServerProjectConfig[]) {
+    projects.forEach((project) => {
+      this.mProjects.set(project.name, project);
+    });
+  }
+
+  public get projects(): Map<string, ServerProjectConfig> {
+    return this.mProjects;
+  }
 
   public getProjectConfig(projectName: string): ServerProjectConfig {
-    const projectConfig = this.projects.find(
-      (project) => project.name === projectName,
-    );
-    if (projectConfig) {
-      return projectConfig;
+    const projectConfig = this.projects.get(projectName);
+    if (projectConfig === undefined) {
+      throw new ProjectNameNotFoundError(projectName);
     }
-    throw new ProjectNameNotFoundError(projectName);
+    return projectConfig;
+  }
+
   }
 
   public static async get(useCache: boolean = true): Promise<ServerConfig> {

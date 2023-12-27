@@ -6,8 +6,9 @@ import { type ProjectItem, type ProjectsResponse } from '@/types';
 export async function GET() {
   try {
     const serverConfig = await ServerConfig.get();
+    const projectArr = Array.from(serverConfig.projects.values());
     return NextResponse.json<ProjectsResponse>({
-      projects: serverConfig.projects.map<ProjectItem>((project) => ({
+      projects: projectArr.map<ProjectItem>((project) => ({
         host: project.host,
         name: project.name,
         owner: project.owner,
