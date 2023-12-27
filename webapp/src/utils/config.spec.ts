@@ -27,9 +27,7 @@ describe('config.ts', () => {
         const projectConfig0 = config.projects.values().next().value;
         expect(projectConfig0.messageKind).toEqual(MessageKind.YAML);
         expect(projectConfig0.messagesPath).toEqual('/path/to/repo/locale');
-        expect(projectConfig0.translationsPath).toEqual(
-          '/path/to/repo/locale',
-        );
+        expect(projectConfig0.translationsPath).toEqual('/path/to/repo/locale');
         expect(config.baseBranch).toEqual('main'); // default value
       });
 
@@ -223,7 +221,7 @@ describe('config.ts', () => {
             '    github_token: github_123245',
           ].join('\n'),
         });
-        const config = await ServerConfig.read();
+        const config = await ServerConfig.get(false);
         expect(config.projects[0].name).toEqual('foo');
         expect(config.projects[0].localPath).toEqual('/path/to/repo');
         expect(config.projects[0].subProjectPath).toEqual('./subproject');
@@ -252,7 +250,7 @@ describe('config.ts', () => {
             '    github_token: github_123245',
           ].join('\n'),
         });
-        const config = await ServerConfig.read();
+        const config = await ServerConfig.get(false);
         expect(config.projects.length).toEqual(2);
         expect(config.projects[0].name).toEqual('foo');
         expect(config.projects[0].subProjectPath).toEqual('./subproject1');
@@ -264,7 +262,7 @@ describe('config.ts', () => {
         mock({
           '../config/projects.yaml': '',
         });
-        const actual = () => ServerConfig.read();
+        const actual = () => ServerConfig.get(false);
         await expect(actual).rejects.toThrow();
       });
       it('throws for missing projects file', async () => {
@@ -281,7 +279,7 @@ describe('config.ts', () => {
             '    github_token: github_123245',
           ].join('\n'),
         });
-        const actual = () => ServerConfig.read();
+        const actual = () => ServerConfig.get(false);
         await expect(actual).rejects.toThrow(ServerConfigReadingError);
       });
     });
@@ -325,7 +323,7 @@ describe('config.ts', () => {
             '    github_token: github_123245',
           ].join('\n'),
         });
-        const config = await ServerConfig.read();
+        const config = await ServerConfig.get();
         const actual = () => config.getProjectConfig('wrong_name');
         expect(actual).toThrow(ProjectNameNotFoundError);
       });

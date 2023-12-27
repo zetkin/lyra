@@ -207,6 +207,10 @@ const serverConfigSchema = z.object({
 });
 
 export class ServerConfig {
+  private static TTL = 1000 * 60 * 60; // 1 hour
+  private static instance: ServerConfig;
+  private static instanceTimestamp: number;
+
   private constructor(public readonly projects: ServerProjectConfig[]) {}
 
   public getProjectConfig(projectName: string): ServerProjectConfig {
@@ -219,8 +223,29 @@ export class ServerConfig {
     throw new ProjectNameNotFoundError(projectName);
   }
 
-  public static async read(): Promise<ServerConfig> {
-    // TODO: cache this call with TTL, it will be read on every request but only changes when admin changes it
+  public static async get(useCache: boolean = true): Promise<ServerConfig> {
+    if (!useCache) {
+      const config = await ServerConfig.read();
+      // TODO: update instance
+      ServerConfig.instance = config;
+      ServerConfig.instanceTimestamp = Date.now();
+      return config;
+    }
+
+    if (ServerConfig.instance) {
+      if (Date.now() - ServerConfig.instanceTimestamp < this.TTL) {
+        return ServerConfig.instance;
+      }
+    }
+
+    const config = await ServerConfig.read();
+    // TODO: update instance
+    ServerConfig.instance = config;
+    ServerConfig.instanceTimestamp = Date.now();
+    return config;
+  }
+
+  private static async read(): Promise<ServerConfig> {
     const filename = '../config/projects.yaml';
     try {
       const ymlBuf = await fs.readFile(filename);
@@ -249,7 +274,7 @@ export class ServerConfig {
   public static async getProjectConfig(
     projectName: string,
   ): Promise<ServerProjectConfig> {
-    const serverConfig = await ServerConfig.read();
+    const serverConfig = await ServerConfig.get();
     return serverConfig.getProjectConfig(projectName);
   }
 }
