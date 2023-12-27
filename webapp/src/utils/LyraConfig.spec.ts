@@ -1,6 +1,6 @@
 import mock from 'mock-fs';
 import { describe, expect, it } from '@jest/globals';
-import { LyraConfig, MessageKind, ServerConfig } from './config';
+import { LyraConfig, MessageKind, ServerConfig } from './LyraConfig';
 import {
   LyraConfigReadingError,
   ProjectNameNotFoundError,

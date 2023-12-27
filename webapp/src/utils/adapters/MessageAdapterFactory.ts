@@ -1,6 +1,6 @@
-import TsMessageAdapter from './TsMessageAdapter';
-import YamlMessageAdapter from './YamlMessageAdapter';
-import { LyraProjectConfig, MessageKind } from '../config';
+import TsMessageAdapter from '@/utils/adapters/TsMessageAdapter';
+import YamlMessageAdapter from '@/utils/adapters/YamlMessageAdapter';
+import { LyraProjectConfig, MessageKind } from '@/utils/LyraConfig';
 
 export default class MessageAdapterFactory {
   static createAdapter(config: LyraProjectConfig) {

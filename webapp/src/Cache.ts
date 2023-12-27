@@ -2,7 +2,11 @@
 
 import { debug } from '@/utils/log';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
-import { LyraConfig, LyraProjectConfig, ServerConfig } from '@/utils/config';
+import {
+  LyraConfig,
+  LyraProjectConfig,
+  ServerConfig,
+} from '@/utils/LyraConfig';
 import { ProjectStore, Store } from '@/store/Store';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 

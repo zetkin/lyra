@@ -1,5 +1,5 @@
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
-import { LyraConfig, ServerConfig } from '@/utils/config';
+import { LyraConfig, ServerConfig } from '@/utils/LyraConfig';
 import {
   LyraConfigReadingError,
   ProjectNameNotFoundError,

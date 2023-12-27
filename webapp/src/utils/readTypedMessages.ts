@@ -1,4 +1,4 @@
-import { type MessageData } from './adapters';
+import { type MessageData } from '@/utils/adapters';
 import ts from 'typescript';
 
 export default function readTypedMessages(fileName: string): MessageData[] {

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ServerConfig } from '@/utils/config';
+import { ServerConfig } from '@/utils/LyraConfig';
 import { ServerConfigReadingError } from '@/errors';
 import { type ProjectItem, type ProjectsResponse } from '@/types';
 
