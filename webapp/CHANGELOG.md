@@ -11,6 +11,7 @@
 - method `get` has optional parameter `useCache` to force reload config from file
 
 ### Changed
+
 - Function `readFromDir()` and `read()` in `LyraConfig` and `ServerConfig` are now private
 
 ## [0.3.0] 2023-12-21
