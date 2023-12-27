@@ -103,6 +103,7 @@ export class LyraConfig {
       LyraConfig.instancesTimestamp.set(repoPath, Date.now());
       return newConfig;
     }
+
     if (LyraConfig.instances.has(repoPath)) {
       const config = LyraConfig.instances.get(repoPath)!;
       if (
@@ -231,28 +232,49 @@ export class ServerConfig {
     return projectConfig;
   }
 
+  public update(newConfig: ServerConfig) {
+    // remove projects that are not in newConfig and update existing ones
+    this.mProjects.forEach((project) => {
+      if (!newConfig.projects.has(project.name)) {
+        this.mProjects.delete(project.name);
+      } else {
+        project.update(newConfig.projects.get(project.name)!);
+      }
+    });
+    // add new projects
+    newConfig.projects.forEach((project) => {
+      if (!this.mProjects.has(project.name)) {
+        this.mProjects.set(project.name, project);
+      }
+    });
   }
 
   public static async get(useCache: boolean = true): Promise<ServerConfig> {
     if (!useCache) {
       const config = await ServerConfig.readFromFile();
-      // TODO: update instance
-      ServerConfig.instance = config;
+      if (ServerConfig.instance) {
+        ServerConfig.instance.update(config);
+      } else {
+        ServerConfig.instance = config;
+      }
       ServerConfig.instanceTimestamp = Date.now();
-      return config;
+      return ServerConfig.instance;
     }
 
     if (ServerConfig.instance) {
       if (Date.now() - ServerConfig.instanceTimestamp < this.TTL) {
         return ServerConfig.instance;
+      } else {
+        ServerConfig.instanceTimestamp = Date.now();
+        const newConfig = await ServerConfig.readFromFile();
+        ServerConfig.instance.update(newConfig);
+        return ServerConfig.instance;
       }
     }
 
-    const config = await ServerConfig.readFromFile();
-    // TODO: update instance
-    ServerConfig.instance = config;
+    ServerConfig.instance = await ServerConfig.readFromFile();
     ServerConfig.instanceTimestamp = Date.now();
-    return config;
+    return ServerConfig.instance;
   }
 
   private static async readFromFile(): Promise<ServerConfig> {
@@ -290,13 +312,67 @@ export class ServerConfig {
 }
 
 export class ServerProjectConfig {
+  private mName: string;
+  private mLocalPath: string;
+  private mSubProjectPath: string;
+  private mHost: string;
+  private mOwner: string;
+  private mRepo: string;
+  private mGithubToken: string;
+
   constructor(
-    public readonly name: string,
-    public readonly localPath: string,
-    public readonly subProjectPath: string,
-    public readonly host: string,
-    public readonly owner: string,
-    public readonly repo: string,
-    public readonly githubToken: string,
-  ) {}
+    name: string,
+    localPath: string,
+    subProjectPath: string,
+    host: string,
+    owner: string,
+    repo: string,
+    githubToken: string,
+  ) {
+    this.mName = name;
+    this.mLocalPath = localPath;
+    this.mSubProjectPath = subProjectPath;
+    this.mHost = host;
+    this.mOwner = owner;
+    this.mRepo = repo;
+    this.mGithubToken = githubToken;
+  }
+
+  public get name() {
+    return this.mName;
+  }
+
+  public get localPath() {
+    return this.mLocalPath;
+  }
+
+  public get subProjectPath() {
+    return this.mSubProjectPath;
+  }
+
+  public get host() {
+    return this.mHost;
+  }
+
+  public get owner() {
+    return this.mOwner;
+  }
+
+  public get repo() {
+    return this.mRepo;
+  }
+
+  public get githubToken() {
+    return this.mGithubToken;
+  }
+
+  public update(newConfig: ServerProjectConfig) {
+    this.mName = newConfig.name;
+    this.mLocalPath = newConfig.localPath;
+    this.mSubProjectPath = newConfig.subProjectPath;
+    this.mHost = newConfig.host;
+    this.mOwner = newConfig.owner;
+    this.mRepo = newConfig.repo;
+    this.mGithubToken = newConfig.githubToken;
+  }
 }
