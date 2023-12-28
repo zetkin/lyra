@@ -19,7 +19,7 @@ export class Cache {
       await Cache.gitPull(serverProjectConfig.localPath, lyraConfig.baseBranch);
     }
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
-      serverProjectConfig.subProjectPath,
+      serverProjectConfig.projectPath,
     );
     const store = await Cache.getProjectStore(
       serverProjectConfig.localPath,

@@ -19,7 +19,7 @@ export async function GET(
       serverProjectConfig.localPath,
     );
     const projectConfig = lyraConfig.getProjectConfigByPath(
-      serverProjectConfig.subProjectPath,
+      serverProjectConfig.projectPath,
     );
     const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
     const messages = await msgAdapter.getMessages();

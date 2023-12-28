@@ -11,8 +11,8 @@ export type ProjectItem = {
   host: string;
   name: string;
   owner: string;
+  projectPath: string;
   repo: string;
-  subProjectPath: string;
 };
 
 export type ProjectsResponse = {

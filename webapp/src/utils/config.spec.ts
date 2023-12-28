@@ -36,7 +36,7 @@ describe('config.ts', () => {
         mock({
           '/path/to/repo/lyra.yml': [
             'projects:',
-            '- path: subproject',
+            '- path: project',
             '  messages:',
             '    format: yaml',
             '    path: locale',
@@ -47,10 +47,10 @@ describe('config.ts', () => {
 
         const config = await LyraConfig.readFromDir('/path/to/repo');
         expect(config.projects[0].messagesPath).toEqual(
-          '/path/to/repo/subproject/locale',
+          '/path/to/repo/project/locale',
         );
         expect(config.projects[0].translationsPath).toEqual(
-          '/path/to/repo/subproject/locale',
+          '/path/to/repo/project/locale',
         );
       });
 
@@ -59,7 +59,7 @@ describe('config.ts', () => {
           '/path/to/repo/lyra.yml': [
             'baseBranch: branch1',
             'projects:',
-            '- path: subproject',
+            '- path: project',
             '  messages:',
             '    format: ts',
             '    path: anyValue',
@@ -76,13 +76,13 @@ describe('config.ts', () => {
         mock({
           '/path/to/repo/lyra.yml': [
             'projects:',
-            '- path: subproject1',
+            '- path: project1',
             '  messages:',
             '    format: yaml',
             '    path: locale1',
             '  translations:',
             '    path: locale1',
-            '- path: subproject2',
+            '- path: project2',
             '  messages:',
             '    format: ts',
             '    path: msg_locale2',
@@ -94,21 +94,21 @@ describe('config.ts', () => {
         const config = await LyraConfig.readFromDir('/path/to/repo');
         expect(config.projects.length).toEqual(2);
 
-        expect(config.projects[0].path).toEqual('subproject1');
+        expect(config.projects[0].path).toEqual('project1');
         expect(config.projects[0].messagesPath).toEqual(
-          '/path/to/repo/subproject1/locale1',
+          '/path/to/repo/project1/locale1',
         );
         expect(config.projects[0].translationsPath).toEqual(
-          '/path/to/repo/subproject1/locale1',
+          '/path/to/repo/project1/locale1',
         );
         expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
 
-        expect(config.projects[1].path).toEqual('subproject2');
+        expect(config.projects[1].path).toEqual('project2');
         expect(config.projects[1].messagesPath).toEqual(
-          '/path/to/repo/subproject2/msg_locale2',
+          '/path/to/repo/project2/msg_locale2',
         );
         expect(config.projects[1].translationsPath).toEqual(
-          '/path/to/repo/subproject2/trans_locale2',
+          '/path/to/repo/project2/trans_locale2',
         );
         expect(config.projects[1].messageKind).toEqual(MessageKind.TS);
       });
@@ -128,7 +128,7 @@ describe('config.ts', () => {
             '/path/to/repo/lyra.yml': [
               'baseBranch: branch1',
               'projects:',
-              '- path: subproject',
+              '- path: project',
               '  messages:',
               '    format: ts',
               '  translations:',
@@ -145,7 +145,7 @@ describe('config.ts', () => {
             '/path/to/repo/xxx.yml': [
               'baseBranch: branch1',
               'projects:',
-              '- path: subproject',
+              '- path: project',
               '  messages:',
               '    format: ts',
               '    path: anyValue',
@@ -188,7 +188,7 @@ describe('config.ts', () => {
             '/path/to/repo/lyra.yml': [
               'baseBranch: branch1',
               'projects:',
-              '- path: subproject',
+              '- path: project',
               '  messages:',
               '    format: yaml',
               '    path: locale',
@@ -211,7 +211,7 @@ describe('config.ts', () => {
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject',
+            '    project_path: ./project',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
@@ -221,7 +221,7 @@ describe('config.ts', () => {
         const config = await ServerConfig.read();
         expect(config.projects[0].name).toEqual('foo');
         expect(config.projects[0].localPath).toEqual('/path/to/repo');
-        expect(config.projects[0].subProjectPath).toEqual('./subproject');
+        expect(config.projects[0].projectPath).toEqual('./project');
         expect(config.projects[0].host).toEqual('github.com');
         expect(config.projects[0].owner).toEqual('owner');
         expect(config.projects[0].repo).toEqual('app.zetkin.org');
@@ -233,14 +233,14 @@ describe('config.ts', () => {
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject1',
+            '    project_path: ./project1',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
             '    github_token: github_123245',
             '  - name: bar',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject2',
+            '    project_path: ./project2',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
@@ -250,9 +250,9 @@ describe('config.ts', () => {
         const config = await ServerConfig.read();
         expect(config.projects.length).toEqual(2);
         expect(config.projects[0].name).toEqual('foo');
-        expect(config.projects[0].subProjectPath).toEqual('./subproject1');
+        expect(config.projects[0].projectPath).toEqual('./project1');
         expect(config.projects[1].name).toEqual('bar');
-        expect(config.projects[1].subProjectPath).toEqual('./subproject2');
+        expect(config.projects[1].projectPath).toEqual('./project2');
       });
       it('throws for empty projects file', async () => {
         expect.assertions(1);
@@ -269,7 +269,7 @@ describe('config.ts', () => {
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject',
+            '    project_path: ./project',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
@@ -287,14 +287,14 @@ describe('config.ts', () => {
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject1',
+            '    project_path: ./project1',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
             '    github_token: github_123245',
             '  - name: bar',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject2',
+            '    project_path: ./project2',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
@@ -303,7 +303,7 @@ describe('config.ts', () => {
         });
         const projectConfig = await ServerConfig.getProjectConfig('bar');
         expect(projectConfig.localPath).toEqual('/path/to/repo');
-        expect(projectConfig.subProjectPath).toEqual('./subproject2');
+        expect(projectConfig.projectPath).toEqual('./project2');
       });
 
       it('throw ProjectNameNotFoundError for invalid project path', async () => {
@@ -313,7 +313,7 @@ describe('config.ts', () => {
             'projects:',
             '  - name: foo',
             '    local_path: /path/to/repo',
-            '    sub_project_path: ./subproject1',
+            '    project_path: ./project1',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',

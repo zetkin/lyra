@@ -26,7 +26,7 @@ export async function PUT(
     serverProjectConfig.localPath,
   );
   const projectConfig = lyraConfig.getProjectConfigByPath(
-    serverProjectConfig.subProjectPath,
+    serverProjectConfig.projectPath,
   );
 
   try {

@@ -10,7 +10,7 @@ in config folder create file `./config/projects.yaml` with example content:
 projects:
   - name: example-unique-name
     local_path: << local path to project >>
-    sub_project_path: .
+    project_path: .
     host: github.com
     owner: amerharb
     repo: zetkin.app.zetkin.org

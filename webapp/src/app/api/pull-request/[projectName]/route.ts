@@ -56,7 +56,7 @@ export async function POST(
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
     const projectConfig = lyraConfig.getProjectConfigByPath(
-      serverProjectConfig.subProjectPath,
+      serverProjectConfig.projectPath,
     );
     const projectStore = await Cache.getProjectStore(localPath, projectConfig);
     const languages = await projectStore.getLanguageData();

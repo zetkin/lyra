@@ -26,7 +26,7 @@ export default function Home() {
             <p>host: {project.host}</p>
             <p>owner: {project.owner}</p>
             <p>repo: {project.repo}</p>
-            <p>Project path: {project.subProjectPath}</p>
+            <p>Project path: {project.projectPath}</p>
           </li>
         ))}
       </ul>

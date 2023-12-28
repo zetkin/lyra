@@ -94,8 +94,8 @@ const serverConfigSchema = z.object({
       local_path: z.string(),
       name: z.string(),
       owner: z.string(),
+      project_path: z.string(),
       repo: z.string(),
-      sub_project_path: z.string(),
     }),
   ),
 });
@@ -127,7 +127,7 @@ export class ServerConfig {
           return new ServerProjectConfig(
             project.name,
             project.local_path,
-            project.sub_project_path,
+            project.project_path,
             project.host,
             project.owner,
             project.repo,
@@ -152,7 +152,7 @@ export class ServerProjectConfig {
   constructor(
     public readonly name: string,
     public readonly localPath: string,
-    public readonly subProjectPath: string,
+    public readonly projectPath: string,
     public readonly host: string,
     public readonly owner: string,
     public readonly repo: string,

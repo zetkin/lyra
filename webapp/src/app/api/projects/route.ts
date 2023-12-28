@@ -11,8 +11,8 @@ export async function GET() {
         host: project.host,
         name: project.name,
         owner: project.owner,
+        projectPath: project.projectPath,
         repo: project.repo,
-        subProjectPath: project.subProjectPath,
       })),
     });
   } catch (e) {
