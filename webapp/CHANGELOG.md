@@ -2,6 +2,13 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## [0.2.3] 2023-12-19
+
+### Changed
+
+- Become part of npm workspaces package
+- Move devDependencies to root package
+
 ## [0.2.2] 2023-12-16
 
 ### Fixed
