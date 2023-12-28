@@ -28,13 +28,13 @@ export async function POST(
     }
     throw e;
   }
-  const localPath = serverProjectConfig.localPath;
+  const repoPath = serverProjectConfig.repoPath;
 
-  if (!syncLock.has(localPath)) {
-    syncLock.set(localPath, false);
+  if (!syncLock.has(repoPath)) {
+    syncLock.set(repoPath, false);
   }
 
-  if (syncLock.get(localPath) === true) {
+  if (syncLock.get(repoPath) === true) {
     return NextResponse.json(
       {
         message: `Another Request in progress for the same repository: ${serverProjectConfig.owner}/${serverProjectConfig.repo}`,
@@ -44,10 +44,10 @@ export async function POST(
   }
 
   try {
-    syncLock.set(localPath, true);
-    const lyraConfig = await LyraConfig.readFromDir(localPath);
+    syncLock.set(repoPath, true);
+    const lyraConfig = await LyraConfig.readFromDir(repoPath);
     const options: Partial<SimpleGitOptions> = {
-      baseDir: localPath,
+      baseDir: repoPath,
       binary: 'git',
       maxConcurrentProcesses: 1,
       trimmed: false,
@@ -58,7 +58,7 @@ export async function POST(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
-    const projectStore = await Cache.getProjectStore(localPath, projectConfig);
+    const projectStore = await Cache.getProjectStore(repoPath, projectConfig);
     const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
     // TODO: use forEach and Promise.all
@@ -99,7 +99,7 @@ export async function POST(
       pullRequestUrl,
     });
   } finally {
-    syncLock.set(localPath, false);
+    syncLock.set(repoPath, false);
   }
 
   async function createPR(

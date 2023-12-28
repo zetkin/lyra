@@ -9,7 +9,7 @@ in config folder create file `./config/projects.yaml` with example content:
 ```yaml
 projects:
   - name: example-unique-name
-    local_path: << local path to project >>
+    repo_path: << local path to repo >>
     project_path: .
     host: github.com
     owner: amerharb

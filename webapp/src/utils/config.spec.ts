@@ -210,7 +210,7 @@ describe('config.ts', () => {
           '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project',
             '    host: github.com',
             '    owner: owner',
@@ -220,7 +220,7 @@ describe('config.ts', () => {
         });
         const config = await ServerConfig.read();
         expect(config.projects[0].name).toEqual('foo');
-        expect(config.projects[0].localPath).toEqual('/path/to/repo');
+        expect(config.projects[0].repoPath).toEqual('/path/to/repo');
         expect(config.projects[0].projectPath).toEqual('./project');
         expect(config.projects[0].host).toEqual('github.com');
         expect(config.projects[0].owner).toEqual('owner');
@@ -232,14 +232,14 @@ describe('config.ts', () => {
           '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project1',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
             '    github_token: github_123245',
             '  - name: bar',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project2',
             '    host: github.com',
             '    owner: owner',
@@ -268,7 +268,7 @@ describe('config.ts', () => {
           './config/WrongFile.yaml': [
             'projects:',
             '  - name: foo',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project',
             '    host: github.com',
             '    owner: owner',
@@ -286,14 +286,14 @@ describe('config.ts', () => {
           '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project1',
             '    host: github.com',
             '    owner: owner',
             '    repo: app.zetkin.org',
             '    github_token: github_123245',
             '  - name: bar',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project2',
             '    host: github.com',
             '    owner: owner',
@@ -302,7 +302,7 @@ describe('config.ts', () => {
           ].join('\n'),
         });
         const projectConfig = await ServerConfig.getProjectConfig('bar');
-        expect(projectConfig.localPath).toEqual('/path/to/repo');
+        expect(projectConfig.repoPath).toEqual('/path/to/repo');
         expect(projectConfig.projectPath).toEqual('./project2');
       });
 
@@ -312,7 +312,7 @@ describe('config.ts', () => {
           '../config/projects.yaml': [
             'projects:',
             '  - name: foo',
-            '    local_path: /path/to/repo',
+            '    repo_path: /path/to/repo',
             '    project_path: ./project1',
             '    host: github.com',
             '    owner: owner',

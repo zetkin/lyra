@@ -22,16 +22,14 @@ export async function PUT(
   const payload = await req.json();
   const { text } = payload;
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
-  const lyraConfig = await LyraConfig.readFromDir(
-    serverProjectConfig.localPath,
-  );
+  const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig.repoPath);
   const projectConfig = lyraConfig.getProjectConfigByPath(
     serverProjectConfig.projectPath,
   );
 
   try {
     const projectStore = await Cache.getProjectStore(
-      serverProjectConfig.localPath,
+      serverProjectConfig.repoPath,
       projectConfig,
     );
     await projectStore.updateTranslation(lang, msgId, text);

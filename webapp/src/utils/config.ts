@@ -91,11 +91,11 @@ const serverConfigSchema = z.object({
     z.object({
       github_token: z.string(),
       host: z.string(),
-      local_path: z.string(),
       name: z.string(),
       owner: z.string(),
       project_path: z.string(),
       repo: z.string(),
+      repo_path: z.string(),
     }),
   ),
 });
@@ -126,7 +126,7 @@ export class ServerConfig {
         parsed.projects.map((project) => {
           return new ServerProjectConfig(
             project.name,
-            project.local_path,
+            project.repo_path,
             project.project_path,
             project.host,
             project.owner,
@@ -151,7 +151,7 @@ export class ServerConfig {
 export class ServerProjectConfig {
   constructor(
     public readonly name: string,
-    public readonly localPath: string,
+    public readonly repoPath: string,
     public readonly projectPath: string,
     public readonly host: string,
     public readonly owner: string,

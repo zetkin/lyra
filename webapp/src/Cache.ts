@@ -13,16 +13,16 @@ export class Cache {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
     const lyraConfig = await LyraConfig.readFromDir(
-      serverProjectConfig.localPath,
+      serverProjectConfig.repoPath,
     );
     if (!Cache.hasPulled) {
-      await Cache.gitPull(serverProjectConfig.localPath, lyraConfig.baseBranch);
+      await Cache.gitPull(serverProjectConfig.repoPath, lyraConfig.baseBranch);
     }
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
     const store = await Cache.getProjectStore(
-      serverProjectConfig.localPath,
+      serverProjectConfig.repoPath,
       lyraProjectConfig,
     );
     return store.getTranslations(lang);
