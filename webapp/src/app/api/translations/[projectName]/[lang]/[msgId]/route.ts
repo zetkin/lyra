@@ -5,7 +5,7 @@ import {
   ProjectNameNotFoundError,
   ProjectPathNotFoundError,
 } from '@/errors';
-import { LyraConfig, ServerConfig } from '@/utils/config';
+import { LyraConfig, ServerConfig } from '@/utils/lyraConfig';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(

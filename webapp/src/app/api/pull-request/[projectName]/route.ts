@@ -7,7 +7,11 @@ import { ProjectNameNotFoundError } from '@/errors';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
-import { LyraConfig, ServerConfig, ServerProjectConfig } from '@/utils/config';
+import {
+  LyraConfig,
+  ServerConfig,
+  ServerProjectConfig,
+} from '@/utils/lyraConfig';
 import { NextRequest, NextResponse } from 'next/server';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
