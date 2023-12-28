@@ -1,6 +1,5 @@
 import { Cache } from '@/Cache';
 import fs from 'fs/promises';
-import { LyraConfig } from '@/utils/lyraConfig';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import path from 'path';
@@ -8,8 +7,12 @@ import { ProjectNameNotFoundError } from '@/errors';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
+import {
+  LyraConfig,
+  ServerConfig,
+  ServerProjectConfig,
+} from '@/utils/lyraConfig';
 import { NextRequest, NextResponse } from 'next/server';
-import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 /** used to prevent multiple requests from running at the same time */
