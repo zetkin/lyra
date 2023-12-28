@@ -1,5 +1,6 @@
 import { envVarNotFound } from '@/utils/util';
 import LyraConfig from '@/utils/config';
+import { LyraConfigReadingError } from '@/errors';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { NextResponse } from 'next/server';
 
@@ -11,18 +12,17 @@ export async function GET() {
     const msgAdapter = MessageAdapterFactory.createAdapter(config);
     const messages = await msgAdapter.getMessages();
 
-    // TODO: change data instruction to be a map of key to value, instead of object
-    //       message id is the key, and value is an object with default and params
-    //       example: { 'key1.key2.key3': { default: 'default text', params: [] }}
     return NextResponse.json({
       data: messages,
     });
   } catch (e) {
-    return NextResponse.json(
-      // TODO: error message include e which contain a local path which is not of consumer interest
-      //       remove it later, leave it for now for debugging purpose
-      { message: `error reading messages error: ${e}` },
-      { status: 500 },
-    );
+    if (e instanceof LyraConfigReadingError) {
+      return getResponse500('error while reading lyra config');
+    }
+    return getResponse500('error reading messages error');
   }
+}
+
+function getResponse500(message: string): NextResponse {
+  return NextResponse.json({ message }, { status: 500 });
 }
