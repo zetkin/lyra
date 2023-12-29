@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: yarn
+      - run: yarn install
       - run: yarn workspaces run build
       - run: yarn workspaces run test
       - run: yarn workspaces run lint:formatting
