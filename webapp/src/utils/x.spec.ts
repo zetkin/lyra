@@ -1,6 +1,8 @@
-import { expect, it } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 
 // Trying something here
-it('x', async () => {
-  expect(true).toBeTruthy();
+describe('dummy describe', () => {
+  it('x', async () => {
+    expect(true).toBeTruthy();
+  });
 });
