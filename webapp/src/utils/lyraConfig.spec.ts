@@ -1,5 +1,5 @@
 import mock from 'mock-fs';
-import { describe, expect, it } from '@jest/globals';
+import { afterEach, describe, expect, it } from '@jest/globals';
 import { LyraConfig, MessageKind, ServerConfig } from './lyraConfig';
 import {
   LyraConfigReadingError,
@@ -9,6 +9,10 @@ import {
 } from '@/errors';
 
 describe('config.ts', () => {
+  afterEach(() => {
+    mock.restore();
+  });
+
   describe('LyraConfig', () => {
     describe('readFromDir()', () => {
       it('reads message kind and path from lyra.yml', async () => {
