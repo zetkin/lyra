@@ -10,7 +10,7 @@
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
     "lint": "next lint",
-    "test": "jest"
+    "test": "npx jest"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
