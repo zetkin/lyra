@@ -3,7 +3,7 @@
 import { debug } from '@/utils/log';
 import { ProjectStore } from '@/store/ProjectStore';
 import { ServerConfig } from '@/utils/serverConfig';
-import {  Store } from '@/store/Store';
+import { Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { LyraConfig, LyraProjectConfig } from '@/utils/lyraConfig';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
