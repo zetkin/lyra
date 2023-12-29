@@ -1,8 +1,7 @@
-import mock from 'mock-fs';
-import { afterEach, describe, expect, it } from '@jest/globals';
-
 import { type MessageData } from '.';
+import mock from 'mock-fs';
 import YamlMessageAdapter from './YamlMessageAdapter';
+import { afterEach, describe, expect, it } from '@jest/globals';
 
 describe('YamlMessageAdapter', () => {
   describe('getMessages()', () => {
