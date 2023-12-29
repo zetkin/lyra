@@ -1,10 +1,11 @@
 /* global globalThis */
 
 import { debug } from '@/utils/log';
+import { ProjectStore } from '@/store/ProjectStore';
 import { ServerConfig } from '@/utils/serverConfig';
+import {  Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { LyraConfig, LyraProjectConfig } from '@/utils/lyraConfig';
-import { ProjectStore, Store } from '@/store/Store';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 export class Cache {
