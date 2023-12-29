@@ -1,5 +1,5 @@
 import mock from 'mock-fs';
-import { ServerConfig } from './lyraConfig';
+import { ServerConfig } from './serverConfig';
 import { afterEach, describe, expect, it } from '@jest/globals';
 import { ProjectNameNotFoundError, ServerConfigReadingError } from '@/errors';
 
