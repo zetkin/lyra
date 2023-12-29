@@ -9,24 +9,20 @@ import { LyraConfig, LyraProjectConfig } from '@/utils/lyraConfig';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 export class Cache {
-  private static hasPulled: boolean = false;
+  private static hasPulled = new Set<string>();
 
   public static async getLanguage(projectName: string, lang: string) {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
-    const lyraConfig = await LyraConfig.readFromDir(
-      serverProjectConfig.repoPath,
-    );
-    if (!Cache.hasPulled) {
-      await Cache.gitPull(serverProjectConfig.repoPath, lyraConfig.baseBranch);
+    const repoPath = serverProjectConfig.repoPath;
+    const lyraConfig = await LyraConfig.readFromDir(repoPath);
+    if (!Cache.hasPulled.has(repoPath)) {
+      await Cache.gitPull(repoPath, lyraConfig.baseBranch);
     }
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
-    const store = await Cache.getProjectStore(
-      serverProjectConfig.repoPath,
-      lyraProjectConfig,
-    );
+    const store = await Cache.getProjectStore(repoPath, lyraProjectConfig);
     return store.getTranslations(lang);
   }
 
@@ -66,6 +62,6 @@ export class Cache {
     debug('git pull...');
     await git.pull();
     debug(`git done checkout ${branchName} branch and pull`);
-    Cache.hasPulled = true;
+    Cache.hasPulled.add(repoPath);
   }
 }
