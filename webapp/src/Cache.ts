@@ -1,50 +1,67 @@
 /* global globalThis */
 
 import { debug } from '@/utils/log';
-import { envVarNotFound } from '@/utils/util';
-import LyraConfig from '@/utils/config';
-import Store from '@/store/Store';
+import { ProjectStore } from '@/store/ProjectStore';
+import { ServerConfig } from '@/utils/serverConfig';
+import { Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
+import { LyraConfig, LyraProjectConfig } from '@/utils/lyraConfig';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
-const REPO_PATH = process.env.REPO_PATH ?? envVarNotFound('REPO_PATH');
-
 export class Cache {
-  private static hasPulled: boolean = false;
+  private static hasPulled = new Set<string>();
 
-  public static async getLanguage(lang: string) {
-    debug('read lyra.yml from project root...');
-    const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
-    if (!Cache.hasPulled) {
-      debug('Initializing languages');
-      const options: Partial<SimpleGitOptions> = {
-        baseDir: REPO_PATH,
-        binary: 'git',
-        maxConcurrentProcesses: 1,
-        trimmed: false,
-      };
-      const git: SimpleGit = simpleGit(options);
-      debug('git checkout main pull...');
-      await git.checkout(lyraConfig.baseBranch);
-      debug('git pull...');
-      await git.pull();
-      debug('git done checkout main branch and pull');
-      Cache.hasPulled = true;
+  public static async getLanguage(projectName: string, lang: string) {
+    const serverProjectConfig =
+      await ServerConfig.getProjectConfig(projectName);
+    const repoPath = serverProjectConfig.repoPath;
+    const lyraConfig = await LyraConfig.readFromDir(repoPath);
+    if (!Cache.hasPulled.has(repoPath)) {
+      await Cache.gitPull(repoPath, lyraConfig.baseBranch);
     }
-
-    const store = await Cache.getStore();
+    const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
+      serverProjectConfig.projectPath,
+    );
+    const store = await Cache.getProjectStore(repoPath, lyraProjectConfig);
     return store.getTranslations(lang);
   }
 
-  public static async getStore(): Promise<Store> {
+  public static async getProjectStore(
+    repoPath: string,
+    lyraProjectConfig: LyraProjectConfig,
+  ): Promise<ProjectStore> {
     if (!globalThis.store) {
-      // TODO: Implement differently for multi-repo/multi-project support
-      const lyraConfig = await LyraConfig.readFromDir(REPO_PATH);
-      globalThis.store = new Store(
-        new YamlTranslationAdapter(lyraConfig.projects[0].translationsPath),
+      globalThis.store = new Store();
+    }
+
+    if (!globalThis.store.hasProjectStore(repoPath, lyraProjectConfig.path)) {
+      const projectStore = new ProjectStore(
+        new YamlTranslationAdapter(lyraProjectConfig.translationsPath),
+      );
+      globalThis.store.addProjectStore(
+        repoPath,
+        lyraProjectConfig.path,
+        projectStore,
       );
     }
 
-    return globalThis.store;
+    return globalThis.store.getProjectStore(repoPath, lyraProjectConfig.path);
+  }
+
+  private static async gitPull(repoPath: string, branchName: string) {
+    debug('read lyra.yml from project root...');
+    const options: Partial<SimpleGitOptions> = {
+      baseDir: repoPath,
+      binary: 'git',
+      maxConcurrentProcesses: 1,
+      trimmed: false,
+    };
+    const git: SimpleGit = simpleGit(options);
+    debug(`git checkout ${branchName} branch...`);
+    await git.checkout(branchName);
+    debug('git pull...');
+    await git.pull();
+    debug(`git done checkout ${branchName} branch and pull`);
+    Cache.hasPulled.add(repoPath);
   }
 }
