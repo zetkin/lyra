@@ -3,7 +3,7 @@ import mock from 'mock-fs';
 import { describe, expect, it } from '@jest/globals';
 import LyraConfig, { MessageKind } from './config';
 
-describe('LyraConfig', () => {
+describe('ServerConfig', () => {
   describe('readFromDir()', () => {
     it('reads message kind and path from lyra.yml', async () => {
       mock({
