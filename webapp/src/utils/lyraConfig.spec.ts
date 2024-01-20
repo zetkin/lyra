@@ -116,8 +116,8 @@ describe('LyraConfig', () => {
         expect.assertions(1);
         mock({ '/path/to/repo/lyra.yml': '' });
 
-        const promise = () => LyraConfig.readFromDir('/path/to/repo');
-        await expect(promise).rejects.toThrow(LyraConfigReadingError);
+        const actual = LyraConfig.readFromDir('/path/to/repo');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
 
       it('throws for missing messages path', async () => {
@@ -133,8 +133,8 @@ describe('LyraConfig', () => {
             '    path: anyValue',
           ].join('\n'),
         });
-        const promise = () => LyraConfig.readFromDir('/path/to/repo');
-        await expect(promise).rejects.toThrow(LyraConfigReadingError);
+        const actual = LyraConfig.readFromDir('/path/to/repo');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
 
       it('throws for file not found', async () => {
@@ -151,8 +151,8 @@ describe('LyraConfig', () => {
             '    path: anyValue',
           ].join('\n'),
         });
-        const promise = () => LyraConfig.readFromDir('/path/to/repo');
-        await expect(promise).rejects.toThrow(LyraConfigReadingError);
+        const actual = LyraConfig.readFromDir('/path/to/repo');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
     });
   });

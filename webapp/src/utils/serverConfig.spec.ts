@@ -62,7 +62,7 @@ describe('ServerConfig', () => {
       mock({
         '../config/projects.yaml': '',
       });
-      const actual = () => ServerConfig.read();
+      const actual = ServerConfig.read();
       await expect(actual).rejects.toThrow();
     });
     it('throws for missing projects file', async () => {
@@ -79,7 +79,7 @@ describe('ServerConfig', () => {
           '    github_token: github_123245',
         ].join('\n'),
       });
-      const actual = () => ServerConfig.read();
+      const actual = ServerConfig.read();
       await expect(actual).rejects.toThrow(ServerConfigReadingError);
     });
   });
