@@ -1,16 +1,18 @@
 'use client';
 
-import { type ProjectItem } from '@/types';
+import { type ProjectsResponse } from '@/types';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [projectsResponse, setProjectsResponse] = useState<ProjectsResponse>({
+    projects: [],
+  });
 
   useEffect(() => {
     async function loadProjects() {
       const res = await fetch('/api/projects');
       const payload = await res.json();
-      setProjects(payload.projects);
+      setProjectsResponse(payload);
     }
 
     loadProjects();
@@ -20,7 +22,7 @@ export default function Home() {
     <main>
       <h1>Projects</h1>
       <ul>
-        {projects.map((project) => (
+        {projectsResponse.projects.map((project) => (
           <li key={project.name} className="project-item">
             <h2>{project.name}</h2>
             <p>host: {project.host}</p>
