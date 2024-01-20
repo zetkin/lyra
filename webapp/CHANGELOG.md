@@ -2,7 +2,7 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
-## [0.3.0] 2023-12-21
+## [0.3.0]
 
 ### Added
 
