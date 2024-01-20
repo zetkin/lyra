@@ -27,7 +27,7 @@
   http://example.com/projects/<projectName>/sv
   ```
 
-## [0.2.5] 2023-12-21
+## [0.2.5] 2023-12-20
 
 ### Changed
 
