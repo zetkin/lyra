@@ -27,4 +27,27 @@ describe('Store', () => {
       ).toThrowError('ProjectStore not found for path: repoPath/projectPath');
     });
   });
+  describe('hasProjectStore()', () => {
+    it('get ProjectStore for a path', async () => {
+      const store = new Store();
+      const projectStore = new ProjectStore({
+        getTranslations: async () => ({
+          de: {
+            'greeting.headline': {
+              sourceFile: '',
+              text: 'Hallo',
+            },
+          },
+        }),
+      });
+      store.addProjectStore('repoPath', 'projectPath', projectStore);
+      const actual = store.hasProjectStore('repoPath', 'projectPath');
+      const actualWrongRepo = store.hasProjectStore('wrong', 'projectPath2');
+      const actualWrongProject = store.hasProjectStore('repoPath', 'wrong');
+
+      expect(actual).toEqual(true);
+      expect(actualWrongRepo).toEqual(false);
+      expect(actualWrongProject).toEqual(false);
+    });
+  });
 });
