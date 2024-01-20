@@ -111,7 +111,7 @@ describe('LyraConfig', () => {
       expect(config.projects[1].messageKind).toEqual(MessageKind.TS);
     });
 
-    describe('throw LyraConfigReadingError for invalid content or file not found', () => {
+    describe('LyraConfigReadingError', () => {
       it('throws for empty file', async () => {
         expect.assertions(1);
         mock({ '/path/to/repo/lyra.yml': '' });
@@ -156,6 +156,7 @@ describe('LyraConfig', () => {
       });
     });
   });
+
   describe('getProjectConfigByPath()', () => {
     it('reads message kind and path from lyra.yml', async () => {
       mock({
@@ -179,8 +180,8 @@ describe('LyraConfig', () => {
       expect(config.baseBranch).toEqual('main'); // default value
     });
 
-    describe('throw ProjectPathNotFoundError for invalid project path', () => {
-      it('throws for wrong path', async () => {
+    describe('ProjectPathNotFoundError', () => {
+      it('throws for for invalid project path', async () => {
         mock({
           '/path/to/repo/lyra.yml': [
             'baseBranch: branch1',
