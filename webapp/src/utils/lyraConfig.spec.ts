@@ -181,7 +181,6 @@ describe('LyraConfig', () => {
 
     describe('throw ProjectPathNotFoundError for invalid project path', () => {
       it('throws for wrong path', async () => {
-        expect.assertions(1);
         mock({
           '/path/to/repo/lyra.yml': [
             'baseBranch: branch1',

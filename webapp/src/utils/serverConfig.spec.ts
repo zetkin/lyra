@@ -109,8 +109,7 @@ describe('ServerConfig', () => {
       expect(projectConfig.projectPath).toEqual('./project2');
     });
 
-    it('throw ProjectNameNotFoundError for invalid project path', async () => {
-      expect.assertions(1);
+    it('throws ProjectNameNotFoundError for invalid project path', async () => {
       mock({
         '../config/projects.yaml': [
           'projects:',
