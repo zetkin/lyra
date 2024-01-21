@@ -38,7 +38,7 @@ export async function POST(
   if (syncLock.get(repoPath) === true) {
     return NextResponse.json(
       {
-        message: `Another Request in progress for the same repository: ${serverProjectConfig.owner}/${serverProjectConfig.repo}`,
+        message: `Another Request in progress for project: ${projectName} or a project that share same git repository`,
       },
       { status: 400 },
     );
