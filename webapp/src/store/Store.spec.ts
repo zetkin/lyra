@@ -22,9 +22,9 @@ describe('Store', () => {
     });
     it('throws "ProjectStore not found for ..."', async () => {
       const store = new Store();
-      expect(() =>
-        store.getProjectStore('repoPath/projectPath'),
-      ).toThrowError('ProjectStore not found for path: repoPath/projectPath');
+      expect(() => store.getProjectStore('repoPath/projectPath')).toThrowError(
+        'ProjectStore not found for path: repoPath/projectPath',
+      );
     });
   });
   describe('hasProjectStore()', () => {
