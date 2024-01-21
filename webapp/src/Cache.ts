@@ -20,30 +20,25 @@ export class Cache {
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
-    const store = await Cache.getProjectStore(repoPath, lyraProjectConfig);
+    const store = await Cache.getProjectStore(lyraProjectConfig);
     return store.getTranslations(lang);
   }
 
   public static async getProjectStore(
-    repoPath: string,
     lyraProjectConfig: LyraProjectConfig,
   ): Promise<ProjectStore> {
     if (!globalThis.store) {
       globalThis.store = new Store();
     }
 
-    if (!globalThis.store.hasProjectStore(repoPath, lyraProjectConfig.path)) {
+    if (!globalThis.store.hasProjectStore(lyraProjectConfig.absPath)) {
       const projectStore = new ProjectStore(
-        new YamlTranslationAdapter(lyraProjectConfig.translationsPath),
+        new YamlTranslationAdapter(lyraProjectConfig.absTranslationsPath),
       );
-      globalThis.store.addProjectStore(
-        repoPath,
-        lyraProjectConfig.path,
-        projectStore,
-      );
+      globalThis.store.addProjectStore(lyraProjectConfig.absPath, projectStore);
     }
 
-    return globalThis.store.getProjectStore(repoPath, lyraProjectConfig.path);
+    return globalThis.store.getProjectStore(lyraProjectConfig.absPath);
   }
 
   private static async gitPullIfNeeded(repoPath: string, branchName: string) {

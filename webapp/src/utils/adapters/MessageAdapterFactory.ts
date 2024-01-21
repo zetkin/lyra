@@ -5,9 +5,9 @@ import { LyraProjectConfig, MessageKind } from '../lyraConfig';
 export default class MessageAdapterFactory {
   static createAdapter(config: LyraProjectConfig) {
     if (config.messageKind == MessageKind.TS) {
-      return new TsMessageAdapter(config.messagesPath);
+      return new TsMessageAdapter(config.absMessagesPath);
     } else {
-      return new YamlMessageAdapter(config.messagesPath);
+      return new YamlMessageAdapter(config.absMessagesPath);
     }
   }
 }

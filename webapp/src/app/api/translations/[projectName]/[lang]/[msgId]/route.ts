@@ -30,10 +30,7 @@ export async function PUT(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
-    const projectStore = await Cache.getProjectStore(
-      serverProjectConfig.repoPath,
-      projectConfig,
-    );
+    const projectStore = await Cache.getProjectStore(projectConfig);
     await projectStore.updateTranslation(lang, msgId, text);
   } catch (e) {
     if (

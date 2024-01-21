@@ -23,8 +23,8 @@ describe('LyraConfig', () => {
       });
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
-      expect(config.projects[0].messagesPath).toEqual('/path/to/repo/locale');
-      expect(config.projects[0].translationsPath).toEqual(
+      expect(config.projects[0].absMessagesPath).toEqual('/path/to/repo/locale');
+      expect(config.projects[0].absTranslationsPath).toEqual(
         '/path/to/repo/locale',
       );
       expect(config.baseBranch).toEqual('main'); // default value
@@ -44,10 +44,10 @@ describe('LyraConfig', () => {
       });
 
       const config = await LyraConfig.readFromDir('/path/to/repo');
-      expect(config.projects[0].messagesPath).toEqual(
+      expect(config.projects[0].absMessagesPath).toEqual(
         '/path/to/repo/project/locale',
       );
-      expect(config.projects[0].translationsPath).toEqual(
+      expect(config.projects[0].absTranslationsPath).toEqual(
         '/path/to/repo/project/locale',
       );
     });
@@ -92,20 +92,22 @@ describe('LyraConfig', () => {
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.projects.length).toEqual(2);
 
-      expect(config.projects[0].path).toEqual('project1');
-      expect(config.projects[0].messagesPath).toEqual(
+      expect(config.projects[0].relativePath).toEqual('project1');
+      expect(config.projects[0].absPath).toEqual('/path/to/repo/project1');
+      expect(config.projects[0].absMessagesPath).toEqual(
         '/path/to/repo/project1/locale1',
       );
-      expect(config.projects[0].translationsPath).toEqual(
+      expect(config.projects[0].absTranslationsPath).toEqual(
         '/path/to/repo/project1/locale1',
       );
       expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
 
-      expect(config.projects[1].path).toEqual('project2');
-      expect(config.projects[1].messagesPath).toEqual(
+      expect(config.projects[1].relativePath).toEqual('project2');
+      expect(config.projects[1].absPath).toEqual('/path/to/repo/project2');
+      expect(config.projects[1].absMessagesPath).toEqual(
         '/path/to/repo/project2/msg_locale2',
       );
-      expect(config.projects[1].translationsPath).toEqual(
+      expect(config.projects[1].absTranslationsPath).toEqual(
         '/path/to/repo/project2/trans_locale2',
       );
       expect(config.projects[1].messageKind).toEqual(MessageKind.TS);
@@ -173,8 +175,8 @@ describe('LyraConfig', () => {
       const config = await LyraConfig.readFromDir('/path/to/repo');
       const projectConfig = config.getProjectConfigByPath('foo');
       expect(projectConfig.messageKind).toEqual(MessageKind.YAML);
-      expect(projectConfig.messagesPath).toEqual('/path/to/repo/foo/locale');
-      expect(projectConfig.translationsPath).toEqual(
+      expect(projectConfig.absMessagesPath).toEqual('/path/to/repo/foo/locale');
+      expect(projectConfig.absTranslationsPath).toEqual(
         '/path/to/repo/foo/locale',
       );
       expect(config.baseBranch).toEqual('main'); // default value

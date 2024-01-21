@@ -38,7 +38,7 @@ export class LyraConfig {
 
   public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
     const projectConfig = this.projects.find(
-      (project) => project.path === projectPath,
+      (project) => project.relativePath === projectPath
     );
     if (projectConfig) {
       return projectConfig;
@@ -58,10 +58,11 @@ export class LyraConfig {
       return new LyraConfig(
         parsed.projects.map((project) => {
           return new LyraProjectConfig(
+            repoPath,
             project.path,
             KIND_BY_FORMAT_VALUE[project.messages.format],
-            path.join(repoPath, project.path, project.messages.path),
-            path.join(repoPath, project.path, project.translations.path),
+            project.messages.path,
+            project.translations.path,
           );
         }),
         parsed.baseBranch ?? 'main',
@@ -74,9 +75,27 @@ export class LyraConfig {
 
 export class LyraProjectConfig {
   constructor(
-    public readonly path: string,
+    private readonly repoPath: string,
+    private readonly path: string,
     public readonly messageKind: string,
-    public readonly messagesPath: string,
-    public readonly translationsPath: string,
-  ) {}
+    private readonly messagesPath: string,
+    private readonly translationsPath: string,
+  ) {
+  }
+
+  get absPath(): string {
+    return path.join(this.repoPath, this.path);
+  }
+
+  get relativePath(): string {
+    return path.normalize(this.path);
+  }
+
+  get absMessagesPath(): string {
+    return path.join(this.repoPath, this.path, this.messagesPath);
+  }
+
+  get absTranslationsPath(): string {
+    return path.join(this.repoPath, this.path, this.translationsPath);
+  }
 }

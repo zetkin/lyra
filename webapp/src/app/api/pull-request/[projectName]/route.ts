@@ -59,12 +59,15 @@ export async function POST(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
-    const projectStore = await Cache.getProjectStore(repoPath, projectConfig);
+    const projectStore = await Cache.getProjectStore(projectConfig);
     const languages = await projectStore.getLanguageData();
     const pathsToAdd: string[] = [];
     // TODO: use forEach and Promise.all
     for (const lang of Object.keys(languages)) {
-      const yamlPath = path.join(projectConfig.translationsPath, `${lang}.yml`);
+      const yamlPath = path.join(
+        projectConfig.absTranslationsPath,
+        `${lang}.yml`,
+      );
       const yamlOutput = stringify(unflatten(languages[lang]), {
         doubleQuotedAsJSON: true,
         singleQuote: true,
