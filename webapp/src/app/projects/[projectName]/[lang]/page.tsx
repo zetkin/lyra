@@ -78,7 +78,7 @@ export default function Home(context: {
         >
           First
         </Button>
-        <text />
+        <text> </text>
         <Button
           onClick={() => {
             setOffset((prevMsgOffset) => {
