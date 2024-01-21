@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import { parse } from 'yaml';
+import path from 'path';
 import { z } from 'zod';
 import { ProjectNameNotFoundError, ServerConfigReadingError } from '@/errors';
 
@@ -44,8 +45,8 @@ export class ServerConfig {
         parsed.projects.map((project) => {
           return new ServerProjectConfig(
             project.name,
-            project.repo_path,
-            project.project_path,
+            path.normalize(project.repo_path),
+            path.normalize(project.project_path),
             project.host,
             project.owner,
             project.repo,
