@@ -24,7 +24,7 @@ describe('ServerConfig', () => {
       const config = await ServerConfig.read();
       expect(config.projects[0].name).toEqual('foo');
       expect(config.projects[0].repoPath).toEqual('/path/to/repo');
-      expect(config.projects[0].projectPath).toEqual('./project');
+      expect(config.projects[0].projectPath).toEqual('project'); /** Note: path changed after normalization */
       expect(config.projects[0].host).toEqual('github.com');
       expect(config.projects[0].owner).toEqual('owner');
       expect(config.projects[0].repo).toEqual('app.zetkin.org');
@@ -53,9 +53,9 @@ describe('ServerConfig', () => {
       const config = await ServerConfig.read();
       expect(config.projects.length).toEqual(2);
       expect(config.projects[0].name).toEqual('foo');
-      expect(config.projects[0].projectPath).toEqual('./project1');
+      expect(config.projects[0].projectPath).toEqual('project1');
       expect(config.projects[1].name).toEqual('bar');
-      expect(config.projects[1].projectPath).toEqual('./project2');
+      expect(config.projects[1].projectPath).toEqual('project2');
     });
     it('throws for empty projects file', async () => {
       expect.assertions(1);
@@ -106,7 +106,7 @@ describe('ServerConfig', () => {
       });
       const projectConfig = await ServerConfig.getProjectConfig('bar');
       expect(projectConfig.repoPath).toEqual('/path/to/repo');
-      expect(projectConfig.projectPath).toEqual('./project2');
+      expect(projectConfig.projectPath).toEqual('project2');
     });
 
     it('throws ProjectNameNotFoundError for invalid project path', async () => {
