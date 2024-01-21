@@ -46,7 +46,7 @@ export class Cache {
       debug(`repoPath: ${repoPath} is already pulled`);
       return;
     }
-    debug('read lyra.yml from project root...');
+    debug(`prepare git options for path: ${repoPath}`);
     const options: Partial<SimpleGitOptions> = {
       baseDir: repoPath,
       binary: 'git',
