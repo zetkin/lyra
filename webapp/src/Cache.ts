@@ -16,9 +16,7 @@ export class Cache {
       await ServerConfig.getProjectConfig(projectName);
     const repoPath = serverProjectConfig.repoPath;
     const lyraConfig = await LyraConfig.readFromDir(repoPath);
-    if (!Cache.hasPulled.has(repoPath)) {
-      await Cache.gitPull(repoPath, lyraConfig.baseBranch);
-    }
+    await Cache.gitPullIfNeeded(repoPath, lyraConfig.baseBranch);
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
@@ -48,7 +46,11 @@ export class Cache {
     return globalThis.store.getProjectStore(repoPath, lyraProjectConfig.path);
   }
 
-  private static async gitPull(repoPath: string, branchName: string) {
+  private static async gitPullIfNeeded(repoPath: string, branchName: string) {
+    if (Cache.hasPulled.has(repoPath)) {
+      debug(`repoPath: ${repoPath} is already pulled`);
+      return;
+    }
     debug('read lyra.yml from project root...');
     const options: Partial<SimpleGitOptions> = {
       baseDir: repoPath,
