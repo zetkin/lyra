@@ -11,7 +11,6 @@ projects:
   - name: example-unique-name
     repo_path: << local path to repo >>
     project_path: .
-    host: github.com
     owner: amerharb
     repo: zetkin.app.zetkin.org
     github_token: << github token >>

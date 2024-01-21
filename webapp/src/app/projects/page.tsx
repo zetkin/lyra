@@ -25,7 +25,6 @@ export default function Home() {
         {projectsResponse.projects.map((project) => (
           <li key={project.name} className="project-item">
             <h2>{project.name}</h2>
-            <p>host: {project.host}</p>
             <p>owner: {project.owner}</p>
             <p>repo: {project.repo}</p>
             <p>Project path: {project.projectPath}</p>

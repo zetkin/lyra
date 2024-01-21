@@ -15,7 +15,6 @@ describe('ServerConfig', () => {
           '  - name: foo',
           '    repo_path: /path/to/repo',
           '    project_path: ./project',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',
@@ -25,7 +24,6 @@ describe('ServerConfig', () => {
       expect(config.projects[0].name).toEqual('foo');
       expect(config.projects[0].repoPath).toEqual('/path/to/repo');
       expect(config.projects[0].projectPath).toEqual('project'); /** Note: path changed after normalization */
-      expect(config.projects[0].host).toEqual('github.com');
       expect(config.projects[0].owner).toEqual('owner');
       expect(config.projects[0].repo).toEqual('app.zetkin.org');
       expect(config.projects[0].githubToken).toEqual('github_123245');
@@ -37,14 +35,12 @@ describe('ServerConfig', () => {
           '  - name: foo',
           '    repo_path: /path/to/repo',
           '    project_path: ./project1',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',
           '  - name: bar',
           '    repo_path: /path/to/repo',
           '    project_path: ./project2',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',
@@ -73,7 +69,6 @@ describe('ServerConfig', () => {
           '  - name: foo',
           '    repo_path: /path/to/repo',
           '    project_path: ./project',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',
@@ -91,14 +86,12 @@ describe('ServerConfig', () => {
           '  - name: foo',
           '    repo_path: /path/to/repo',
           '    project_path: ./project1',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',
           '  - name: bar',
           '    repo_path: /path/to/repo',
           '    project_path: ./project2',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',
@@ -116,7 +109,6 @@ describe('ServerConfig', () => {
           '  - name: foo',
           '    repo_path: /path/to/repo',
           '    project_path: ./project1',
-          '    host: github.com',
           '    owner: owner',
           '    repo: app.zetkin.org',
           '    github_token: github_123245',

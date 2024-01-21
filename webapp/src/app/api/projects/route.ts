@@ -8,7 +8,6 @@ export async function GET() {
     const serverConfig = await ServerConfig.read();
     return NextResponse.json<ProjectsResponse>({
       projects: serverConfig.projects.map<ProjectItem>((project) => ({
-        host: project.host,
         name: project.name,
         owner: project.owner,
         projectPath: project.projectPath,

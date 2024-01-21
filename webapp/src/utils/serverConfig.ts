@@ -8,7 +8,6 @@ const serverConfigSchema = z.object({
   projects: z.array(
     z.object({
       github_token: z.string(),
-      host: z.string(),
       name: z.string(),
       owner: z.string(),
       project_path: z.string(),
@@ -47,7 +46,6 @@ export class ServerConfig {
             project.name,
             path.normalize(project.repo_path),
             path.normalize(project.project_path),
-            project.host,
             project.owner,
             project.repo,
             project.github_token,
@@ -72,7 +70,6 @@ export class ServerProjectConfig {
     public readonly name: string,
     public readonly repoPath: string,
     public readonly projectPath: string,
-    public readonly host: string,
     public readonly owner: string,
     public readonly repo: string,
     public readonly githubToken: string,

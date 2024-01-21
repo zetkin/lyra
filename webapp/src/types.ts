@@ -8,7 +8,6 @@ declare global {
 }
 
 export type ProjectItem = {
-  host: string;
   name: string;
   owner: string;
   projectPath: string;
