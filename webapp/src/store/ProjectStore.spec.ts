@@ -10,8 +10,8 @@ describe('ProjectStore', () => {
       }),
     });
 
-    const translations = await projectStore.getTranslations('sv');
-    expect(translations).toEqual({});
+    const actual = await projectStore.getTranslations('sv');
+    expect(actual).toEqual({});
   });
 
   it('returns correct language', async () => {
@@ -32,8 +32,8 @@ describe('ProjectStore', () => {
       }),
     });
 
-    const translations = await projectStore.getTranslations('de');
-    expect(translations).toEqual({
+    const actual = await projectStore.getTranslations('de');
+    expect(actual).toEqual({
       'greeting.headline': 'Hallo',
     });
   });
@@ -44,8 +44,8 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({}),
     });
 
-    const promise = projectStore.getTranslations('fi');
-    await expect(promise).rejects.toThrowError(LanguageNotFound);
+    const actual = projectStore.getTranslations('fi');
+    await expect(actual).rejects.toThrowError(LanguageNotFound);
   });
 
   it('returns updated translations', async () => {
@@ -86,9 +86,9 @@ describe('ProjectStore', () => {
     });
 
     await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
-    const after = await projectStore.getTranslations('de');
+    const actual = await projectStore.getTranslations('de');
 
-    expect(after).toEqual({
+    expect(actual).toEqual({
       'greeting.headline': 'Hallo!',
     });
   });
@@ -99,13 +99,13 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({}),
     });
 
-    const promise = projectStore.updateTranslation(
+    const actual = projectStore.updateTranslation(
       'de',
       'greeting.headline',
       'Hallo!',
     );
 
-    await expect(promise).rejects.toThrowError(LanguageNotFound);
+    await expect(actual).rejects.toThrowError(LanguageNotFound);
   });
 
   it('throws exception for unknown message ID', async () => {
@@ -116,13 +116,13 @@ describe('ProjectStore', () => {
       }),
     });
 
-    const promise = projectStore.updateTranslation(
+    const actual = projectStore.updateTranslation(
       'de',
       'greeting.headline',
       'Hallo!',
     );
 
-    await expect(promise).rejects.toThrowError(MessageNotFound);
+    await expect(actual).rejects.toThrowError(MessageNotFound);
   });
 
   it('gives full access to all languages', async () => {
