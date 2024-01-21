@@ -5,9 +5,7 @@ import MessageForm from '@/components/MessageForm';
 import { Box, Button, Link, Typography } from '@mui/joy';
 import { useEffect, useState } from 'react';
 
-export default function Home({
-  params,
-}: {
+export default function Home(context: {
   params: { lang: string; projectName: string };
 }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
@@ -19,9 +17,13 @@ export default function Home({
     to: MESSAGES_PER_PAGE,
   });
 
+  const {
+    params: { lang, projectName },
+  } = context;
+
   useEffect(() => {
     async function loadMessages() {
-      const res = await fetch(`/api/messages/${params.projectName}`);
+      const res = await fetch(`/api/messages/${projectName}`);
       const payload = await res.json();
       setMessages(payload.data);
       setOffset((prevMsgOffset) => ({
@@ -38,9 +40,7 @@ export default function Home({
 
   useEffect(() => {
     async function loadTranslations() {
-      const res = await fetch(
-        `/api/translations/${params.projectName}/${params.lang}`,
-      );
+      const res = await fetch(`/api/translations/${projectName}/${lang}`);
       const payload = await res.json();
       setTranslations(payload.translations);
     }
@@ -53,7 +53,7 @@ export default function Home({
       <Typography level="h1">Messages</Typography>
       <Button
         onClick={async () => {
-          const res = await fetch(`/api/pull-request/${params.projectName}/`, {
+          const res = await fetch(`/api/pull-request/${projectName}/`, {
             method: 'POST',
           });
           const payload = await res.json();
@@ -121,7 +121,7 @@ export default function Home({
               message={msg}
               onSave={async (text) => {
                 await fetch(
-                  `/api/translations/${params.projectName}/${params.lang}/${msg.id}`,
+                  `/api/translations/${projectName}/${lang}/${msg.id}`,
                   {
                     body: JSON.stringify({
                       text,
