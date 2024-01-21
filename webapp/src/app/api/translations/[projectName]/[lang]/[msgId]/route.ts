@@ -24,11 +24,11 @@ export async function PUT(
   const { text } = payload;
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig.repoPath);
-  const projectConfig = lyraConfig.getProjectConfigByPath(
-    serverProjectConfig.projectPath,
-  );
 
   try {
+    const projectConfig = lyraConfig.getProjectConfigByPath(
+      serverProjectConfig.projectPath,
+    );
     const projectStore = await Cache.getProjectStore(
       serverProjectConfig.repoPath,
       projectConfig,
