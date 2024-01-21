@@ -3,10 +3,7 @@ import { ProjectStore } from '@/store/ProjectStore';
 export class Store {
   private data = new Map<string, ProjectStore>();
 
-  public addProjectStore(
-    projectPath: string,
-    projectStore: ProjectStore,
-  ) {
+  public addProjectStore(projectPath: string, projectStore: ProjectStore) {
     this.data.set(projectPath, projectStore);
   }
 

@@ -23,7 +23,9 @@ describe('LyraConfig', () => {
       });
       const config = await LyraConfig.readFromDir('/path/to/repo');
       expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
-      expect(config.projects[0].absMessagesPath).toEqual('/path/to/repo/locale');
+      expect(config.projects[0].absMessagesPath).toEqual(
+        '/path/to/repo/locale',
+      );
       expect(config.projects[0].absTranslationsPath).toEqual(
         '/path/to/repo/locale',
       );

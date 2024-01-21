@@ -38,7 +38,7 @@ export class LyraConfig {
 
   public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
     const projectConfig = this.projects.find(
-      (project) => project.relativePath === projectPath
+      (project) => project.relativePath === projectPath,
     );
     if (projectConfig) {
       return projectConfig;
@@ -80,8 +80,7 @@ export class LyraProjectConfig {
     public readonly messageKind: string,
     private readonly messagesPath: string,
     private readonly translationsPath: string,
-  ) {
-  }
+  ) {}
 
   get absPath(): string {
     return path.join(this.repoPath, this.path);
