@@ -1,7 +1,9 @@
 # Lyra web app
 
 ## Running in development
+
 In the root folder create file `./config/projects.yaml` with example content:
+
 ```yaml
 projects:
   - name: example-unique-name
@@ -12,7 +14,8 @@ projects:
     github_token: << github token >>
 ```
 
-also the project repository (client repository) needs to be cloned locally. and has in the root folder config file `lyra.yml` with the
+also the project repository (client repository) needs to be cloned locally. and has in the root folder config
+file `lyra.yml` with the
 example content:
 
 ```yaml

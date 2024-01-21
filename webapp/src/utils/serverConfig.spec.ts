@@ -23,7 +23,7 @@ describe('ServerConfig', () => {
       const config = await ServerConfig.read();
       expect(config.projects[0].name).toEqual('foo');
       expect(config.projects[0].repoPath).toEqual('/path/to/repo');
-      expect(config.projects[0].projectPath).toEqual('project'); /** Note: path changed after normalization */
+      expect(config.projects[0].projectPath).toEqual('project'); // Note: path changed after normalization
       expect(config.projects[0].owner).toEqual('owner');
       expect(config.projects[0].repo).toEqual('app.zetkin.org');
       expect(config.projects[0].githubToken).toEqual('github_123245');
