@@ -14,7 +14,7 @@ export class Store {
   public getProjectStore(projectPath: string): ProjectStore {
     const projectStore = this.data.get(projectPath);
     if (!projectStore) {
-      throw new Error(`ProjectStore not found for path: ${projectStore}`);
+      throw new Error(`ProjectStore not found for path: ${projectPath}`);
     }
     return projectStore;
   }
