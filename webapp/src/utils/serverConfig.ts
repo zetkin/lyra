@@ -68,7 +68,9 @@ export class ServerConfig {
 export class ServerProjectConfig {
   constructor(
     public readonly name: string,
+    /** absolute local path to repo */
     public readonly repoPath: string,
+    /** relative path of project from repo_path */
     public readonly projectPath: string,
     public readonly owner: string,
     public readonly repo: string,
