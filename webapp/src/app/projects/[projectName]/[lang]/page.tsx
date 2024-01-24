@@ -5,7 +5,9 @@ import MessageForm from '@/components/MessageForm';
 import { Box, Button, Link, Typography } from '@mui/joy';
 import { useEffect, useState } from 'react';
 
-export default function Home({ params }: { params: { lang: string } }) {
+export default function Home(context: {
+  params: { lang: string; projectName: string };
+}) {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
@@ -15,9 +17,13 @@ export default function Home({ params }: { params: { lang: string } }) {
     to: MESSAGES_PER_PAGE,
   });
 
+  const {
+    params: { lang, projectName },
+  } = context;
+
   useEffect(() => {
     async function loadMessages() {
-      const res = await fetch('/api/messages');
+      const res = await fetch(`/api/messages/${projectName}`);
       const payload = await res.json();
       setMessages(payload.data);
       setOffset((prevMsgOffset) => ({
@@ -34,7 +40,7 @@ export default function Home({ params }: { params: { lang: string } }) {
 
   useEffect(() => {
     async function loadTranslations() {
-      const res = await fetch(`/api/translations/${params.lang}`);
+      const res = await fetch(`/api/translations/${projectName}/${lang}`);
       const payload = await res.json();
       setTranslations(payload.translations);
     }
@@ -47,7 +53,7 @@ export default function Home({ params }: { params: { lang: string } }) {
       <Typography level="h1">Messages</Typography>
       <Button
         onClick={async () => {
-          const res = await fetch('/api/pull-request/', {
+          const res = await fetch(`/api/pull-request/${projectName}/`, {
             method: 'POST',
           });
           const payload = await res.json();
@@ -114,15 +120,18 @@ export default function Home({ params }: { params: { lang: string } }) {
               key={msg.id}
               message={msg}
               onSave={async (text) => {
-                await fetch(`/api/translations/${params.lang}/${msg.id}`, {
-                  body: JSON.stringify({
-                    text,
-                  }),
-                  headers: {
-                    'Content-Type': 'application/json',
+                await fetch(
+                  `/api/translations/${projectName}/${lang}/${msg.id}`,
+                  {
+                    body: JSON.stringify({
+                      text,
+                    }),
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'PUT',
                   },
-                  method: 'PUT',
-                });
+                );
 
                 setTranslations((cur) => ({
                   ...cur,

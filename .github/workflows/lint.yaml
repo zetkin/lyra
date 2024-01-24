@@ -8,13 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  # temporary workaround until move those value to API call or lyra.yml
-  REPO_PATH: "any value"
-  GITHUB_AUTH: "any value"
-  GITHUB_REPO: "any value"
-  GITHUB_OWNER: "any value"
-
 jobs:
   lint:
     name: Lint
@@ -24,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: 'yarn'
+          cache: "yarn"
       - run: yarn
       - run: yarn workspaces run build
       - run: yarn workspaces run test

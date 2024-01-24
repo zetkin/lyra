@@ -2,6 +2,31 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## [0.3.0]
+
+### Added
+
+- Server config file `./config/projects.yaml` to support multi project and multi repository
+- New API endpoint to get all projects in a list that is configured at server in `./config/projects.yaml`
+  ```http request
+  GET http://example.com/api/projects
+  ```
+- New page to list all projects and languages
+  ```
+  http://example.com/projects
+  ```
+
+### Changed
+
+- Api url to include project name in path
+  ```http request
+  GET http://example.com/api/translations/<projectName>/sv
+  ```
+- Web page url to include which project to load
+  ```
+  http://example.com/projects/<projectName>/sv
+  ```
+
 ## [0.2.5] 2023-12-20
 
 ### Changed
