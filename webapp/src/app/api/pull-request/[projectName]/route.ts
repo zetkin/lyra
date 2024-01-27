@@ -4,11 +4,11 @@ import { LyraConfig } from '@/utils/lyraConfig';
 import { Octokit } from '@octokit/rest';
 import packageJson from '@/../package.json';
 import path from 'path';
-import { ProjectNameNotFoundError } from '@/errors';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
 import { debug, info, warn } from '@/utils/log';
 import { NextRequest, NextResponse } from 'next/server';
+import { ProjectNameNotFoundError, WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
@@ -61,22 +61,7 @@ export async function POST(
     );
     const projectStore = await Cache.getProjectStore(projectConfig);
     const languages = await projectStore.getLanguageData();
-    const pathsToAdd: string[] = [];
-    await Promise.all(
-      Object.keys(languages).map(async (lang) => {
-        const yamlPath = path.join(
-          projectConfig.absTranslationsPath,
-          // TODO: what if language file were yaml not yml?
-          `${lang}.yml`,
-        );
-        const yamlOutput = stringify(unflatten(languages[lang]), {
-          doubleQuotedAsJSON: true,
-          singleQuote: true,
-        });
-        pathsToAdd.push(yamlPath);
-        await fs.writeFile(yamlPath, yamlOutput);
-      }),
-    );
+    const langFilePaths = await writeLangFiles(languages, projectConfig.absTranslationsPath);
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(
@@ -87,7 +72,7 @@ export async function POST(
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
     const branchName = 'lyra-translate-' + nowIso;
     await git.checkoutBranch(branchName, lyraConfig.baseBranch);
-    await git.add(pathsToAdd);
+    await git.add(langFilePaths);
     await git.commit('Lyra Translate: ' + nowIso);
     await git.push(['-u', 'origin', branchName]);
     const pullRequestUrl = await createPR(
@@ -144,5 +129,39 @@ export async function POST(
     });
 
     return response.data.html_url;
+  }
+
+  async function writeLangFiles(
+    languages: Record<string, Record<string, string>>,
+    translationsPath: string,
+  ): Promise<string[]> {
+    const paths: string[] = [];
+    const result = await Promise.allSettled(
+      Object.keys(languages).map(async (lang) => {
+        const yamlPath = path.join(
+          translationsPath,
+          // TODO: what if language file were yaml not yml?
+          `${lang}.yml`,
+        );
+        const yamlOutput = stringify(unflatten(languages[lang]), {
+          doubleQuotedAsJSON: true,
+          singleQuote: true,
+        });
+        try {
+          await fs.writeFile(yamlPath, yamlOutput);
+        } catch (e) {
+          throw new WriteLanguageFileError(yamlPath, e)
+        }
+        paths.push(yamlPath);
+      }),
+    );
+    if (result.some((r) => r.status === 'rejected')) {
+      throw new WriteLanguageFileErrors(
+          result
+            .filter((r) => r.status === 'rejected')
+            .map((r) => (r as PromiseRejectedResult).reason)
+      );
+    }
+    return paths;
   }
 }
