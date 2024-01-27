@@ -1,12 +1,8 @@
 import { Cache } from '@/Cache';
-import { createPR } from '@/git';
-import fs from 'fs/promises';
 import { LyraConfig } from '@/utils/lyraConfig';
-import path from 'path';
-import { stringify } from 'yaml';
-import { unflatten } from 'flat';
+import { ProjectNameNotFoundError } from '@/errors';
+import { createPR, writeLangFiles } from '@/git';
 import { NextRequest, NextResponse } from 'next/server';
-import { ProjectNameNotFoundError, WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
@@ -60,7 +56,10 @@ export async function POST(
     );
     const projectStore = await Cache.getProjectStore(projectConfig);
     const languages = await projectStore.getLanguageData();
-    const langFilePaths = await writeLangFiles(languages, projectConfig.absTranslationsPath);
+    const langFilePaths = await writeLangFiles(
+      languages,
+      projectConfig.absTranslationsPath,
+    );
     const status = await git.status();
     if (status.files.length == 0) {
       return NextResponse.json(
@@ -91,39 +90,5 @@ export async function POST(
     });
   } finally {
     syncLock.set(repoPath, false);
-  }
-
-  async function writeLangFiles(
-    languages: Record<string, Record<string, string>>,
-    translationsPath: string,
-  ): Promise<string[]> {
-    const paths: string[] = [];
-    const result = await Promise.allSettled(
-      Object.keys(languages).map(async (lang) => {
-        const yamlPath = path.join(
-          translationsPath,
-          // TODO: what if language file were yaml not yml?
-          `${lang}.yml`,
-        );
-        const yamlOutput = stringify(unflatten(languages[lang]), {
-          doubleQuotedAsJSON: true,
-          singleQuote: true,
-        });
-        try {
-          await fs.writeFile(yamlPath, yamlOutput);
-        } catch (e) {
-          throw new WriteLanguageFileError(yamlPath, e)
-        }
-        paths.push(yamlPath);
-      }),
-    );
-    if (result.some((r) => r.status === 'rejected')) {
-      throw new WriteLanguageFileErrors(
-          result
-            .filter((r) => r.status === 'rejected')
-            .map((r) => (r as PromiseRejectedResult).reason)
-      );
-    }
-    return paths;
   }
 }
