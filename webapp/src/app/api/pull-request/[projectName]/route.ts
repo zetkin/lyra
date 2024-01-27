@@ -1,12 +1,10 @@
 import { Cache } from '@/Cache';
+import { createPR } from '@/git';
 import fs from 'fs/promises';
 import { LyraConfig } from '@/utils/lyraConfig';
-import { Octokit } from '@octokit/rest';
-import packageJson from '@/../package.json';
 import path from 'path';
 import { stringify } from 'yaml';
 import { unflatten } from 'flat';
-import { debug, info, warn } from '@/utils/log';
 import { NextRequest, NextResponse } from 'next/server';
 import { ProjectNameNotFoundError, WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
@@ -46,6 +44,7 @@ export async function POST(
 
   try {
     syncLock.set(repoPath, true);
+    // TODO: move logic from here to a separate class
     const lyraConfig = await LyraConfig.readFromDir(repoPath);
     const options: Partial<SimpleGitOptions> = {
       baseDir: repoPath,
@@ -85,50 +84,13 @@ export async function POST(
     );
     await git.checkout(lyraConfig.baseBranch);
     await git.pull();
+    // TODO: to here
     return NextResponse.json({
       branchName,
       pullRequestUrl,
     });
   } finally {
     syncLock.set(repoPath, false);
-  }
-
-  async function createPR(
-    branchName: string,
-    baseBranch: string,
-    nowIso: string,
-    githubOwner: string,
-    githubRepo: string,
-    githubToken: string,
-  ): Promise<string> {
-    const octokit = new Octokit({
-      auth: githubToken,
-      baseUrl: 'https://api.github.com',
-      log: {
-        debug: debug,
-        error: () => {},
-        info: info,
-        warn: warn,
-      },
-      request: {
-        agent: undefined,
-        fetch: undefined,
-        timeout: 0,
-      },
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      userAgent: 'Lyra v' + packageJson.version,
-    });
-
-    const response = await octokit.rest.pulls.create({
-      base: baseBranch,
-      body: 'Created by LYRA at: ' + nowIso,
-      head: branchName,
-      owner: githubOwner,
-      repo: githubRepo,
-      title: 'LYRA Translate PR: ' + nowIso,
-    });
-
-    return response.data.html_url;
   }
 
   async function writeLangFiles(
