@@ -1,10 +1,7 @@
-import { Cache } from '@/Cache';
-import { LyraConfig } from '@/utils/lyraConfig';
 import { ProjectNameNotFoundError } from '@/errors';
-import { createPR, writeLangFiles } from '@/git';
+import { RepoGit } from '@/RepoGit';
 import { NextRequest, NextResponse } from 'next/server';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 /** used to prevent multiple requests from running at the same time */
 const syncLock = new Map<string, boolean>();
@@ -40,50 +37,36 @@ export async function POST(
 
   try {
     syncLock.set(repoPath, true);
-    // TODO: move logic from here to a separate class
-    const lyraConfig = await LyraConfig.readFromDir(repoPath);
-    const options: Partial<SimpleGitOptions> = {
-      baseDir: repoPath,
-      binary: 'git',
-      maxConcurrentProcesses: 1,
-      trimmed: false,
-    };
-    const git: SimpleGit = simpleGit(options);
-    await git.checkout(lyraConfig.baseBranch);
-    await git.pull();
-    const projectConfig = lyraConfig.getProjectConfigByPath(
+    const repoGit = new RepoGit(repoPath);
+    const baseBranch = await repoGit.checkoutBaseAndPull();
+    const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,
     );
-    const projectStore = await Cache.getProjectStore(projectConfig);
-    const languages = await projectStore.getLanguageData();
-    const langFilePaths = await writeLangFiles(
-      languages,
-      projectConfig.absTranslationsPath,
-    );
-    const status = await git.status();
-    if (status.files.length == 0) {
+
+    if (await repoGit.statusChanged()) {
       return NextResponse.json(
-        { message: `There are no changes in ${lyraConfig.baseBranch} branch` },
+        { message: `There are no changes in ${baseBranch} branch` },
         { status: 400 },
       );
     }
+
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
     const branchName = 'lyra-translate-' + nowIso;
-    await git.checkoutBranch(branchName, lyraConfig.baseBranch);
-    await git.add(langFilePaths);
-    await git.commit('Lyra Translate: ' + nowIso);
-    await git.push(['-u', 'origin', branchName]);
-    const pullRequestUrl = await createPR(
+    await repoGit.newBranchCommitAndPush(
       branchName,
-      lyraConfig.baseBranch,
-      nowIso,
+      langFilePaths,
+      `Lyra translate: ${nowIso}`,
+    );
+
+    const pullRequestUrl = await repoGit.createPR(
+      branchName,
+      'LYRA Translate PR: ' + nowIso,
+      'Created by LYRA at: ' + nowIso,
       serverProjectConfig.owner,
       serverProjectConfig.repo,
       serverProjectConfig.githubToken,
     );
-    await git.checkout(lyraConfig.baseBranch);
-    await git.pull();
-    // TODO: to here
+    await repoGit.checkoutBaseAndPull();
     return NextResponse.json({
       branchName,
       pullRequestUrl,
