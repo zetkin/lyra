@@ -43,7 +43,7 @@ export async function POST(
       serverProjectConfig.projectPath,
     );
 
-    if (await repoGit.statusChanged()) {
+    if (!(await repoGit.statusChanged())) {
       return NextResponse.json(
         { message: `There are no changes in ${baseBranch} branch` },
         { status: 400 },
