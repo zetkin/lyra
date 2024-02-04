@@ -43,7 +43,7 @@ export class RepoGit {
   }
 
   public async statusChanged(): Promise<boolean> {
-    return await this.git.statusChanged()
+    return await this.git.statusChanged();
   }
 
   public async newBranchCommitAndPush(
