@@ -19,27 +19,51 @@ describe('unflattenObject()', () => {
       'a.b.c': 'd',
       'a.b.e': 'f',
     });
-    expect(actual).toEqual({
+    const expected = {
       a: {
         b: {
           c: 'd',
           e: 'f',
         },
       },
+    };
+    expect(actual).toEqual(expected);
+  });
+  it('unflat four properties obj', () => {
+    const actual = unflattenObject({
+      'a.b.c': 'v1',
+      'f.g': 'v2',
+      k: 'v3',
+      // eslint-disable-next-line sort-keys -- so we can test if object were not sorted
+      'a.b.e': 'v4.xx.x',
     });
+    const expected = {
+      a: {
+        b: {
+          c: 'v1',
+          e: 'v4.xx.x',
+        },
+      },
+      f: {
+        g: 'v2',
+      },
+      k: 'v3',
+    };
+    expect(actual).toEqual(expected);
   });
   it('unflat properties string and obj', () => {
     const actual = unflattenObject({
       'a.b.c': 'd',
       e: 'f',
     });
-    expect(actual).toEqual({
+    const expected = {
       a: {
         b: {
           c: 'd',
         },
       },
       e: 'f',
-    });
+    };
+    expect(actual).toEqual(expected);
   });
 });
