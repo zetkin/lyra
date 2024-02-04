@@ -1,27 +1,22 @@
 import { Cache } from '@/Cache';
 import fs from 'fs/promises';
+import { IGit } from '@/utils/git/IGit';
 import { LyraConfig } from '@/utils/lyraConfig';
 import { Octokit } from '@octokit/rest';
 import packageJson from '../package.json';
 import path from 'path';
+import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { stringify } from 'yaml';
 import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 
 export class RepoGit {
-  private readonly git: SimpleGit;
+  private readonly git: IGit;
   private lyraConfig?: LyraConfig;
 
   constructor(public readonly repoPath: string) {
-    const options: Partial<SimpleGitOptions> = {
-      baseDir: repoPath,
-      binary: 'git',
-      maxConcurrentProcesses: 1,
-      trimmed: false,
-    };
-    this.git = simpleGit(options);
+    this.git = new SimpleGitWrapper(repoPath);
   }
 
   /**
@@ -48,8 +43,7 @@ export class RepoGit {
   }
 
   public async statusChanged(): Promise<boolean> {
-    const status = await this.git.status();
-    return status.files.length > 0;
+    return await this.git.statusChanged()
   }
 
   public async newBranchCommitAndPush(
@@ -58,10 +52,10 @@ export class RepoGit {
     commitMsg: string,
   ): Promise<void> {
     const lyraConfig = await this.getLyraConfig();
-    await this.git.checkoutBranch(branchName, lyraConfig.baseBranch);
+    await this.git.newBranch(branchName, lyraConfig.baseBranch);
     await this.git.add(addFiles);
     await this.git.commit(commitMsg);
-    await this.git.push(['-u', 'origin', branchName]);
+    await this.git.push(branchName);
   }
 
   public async createPR(
