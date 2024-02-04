@@ -33,3 +33,22 @@ export class ProjectNameNotFoundError extends Error {
     super(`Project name: [${projectName}] not found`);
   }
 }
+
+export class WriteLanguageFileError extends Error {
+  constructor(
+    public langFilename: string,
+    public error: unknown,
+  ) {
+    super(`Error writing language file: [${langFilename}]`);
+  }
+}
+
+export class WriteLanguageFileErrors extends Error {
+  constructor(public errors: WriteLanguageFileError[]) {
+    super(
+      `Error writing language file(s): [${errors
+        .map((e) => e.langFilename)
+        .join(', ')}]`,
+    );
+  }
+}
