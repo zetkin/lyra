@@ -31,14 +31,7 @@ describe('flattenObject()', () => {
     expect(actual).toEqual(expected);
   });
   it('flatten four properties obj', () => {
-    const actual = {
-      'a.b.c': 'v1',
-      'f.g': 'v2',
-      k: 'v3',
-      // eslint-disable-next-line sort-keys -- so we can test if object were not sorted
-      'a.b.e': 'v4.xx.x',
-    };
-    const expected = flattenObject({
+    const actual = flattenObject({
       a: {
         b: {
           c: 'v1',
@@ -50,6 +43,13 @@ describe('flattenObject()', () => {
       },
       k: 'v3',
     });
+    const expected = {
+      'a.b.c': 'v1',
+      'f.g': 'v2',
+      k: 'v3',
+      // eslint-disable-next-line sort-keys -- so we can test if object were not sorted
+      'a.b.e': 'v4.xx.x',
+    };
     expect(actual).toEqual(expected);
   });
   it('flatten properties string and obj', () => {
