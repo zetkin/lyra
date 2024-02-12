@@ -5,7 +5,7 @@ import { Octokit } from '@octokit/rest';
 import packageJson from '../package.json';
 import path from 'path';
 import { stringify } from 'yaml';
-import { unflatten } from 'flat';
+import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
@@ -123,7 +123,7 @@ export class RepoGit {
           // TODO: what if language file were yaml not yml?
           `${lang}.yml`,
         );
-        const yamlOutput = stringify(unflatten(languages[lang]), {
+        const yamlOutput = stringify(unflattenObject(languages[lang]), {
           doubleQuotedAsJSON: true,
           singleQuote: true,
         });
