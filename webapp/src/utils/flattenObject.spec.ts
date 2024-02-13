@@ -45,10 +45,9 @@ describe('flattenObject()', () => {
     });
     const expected = {
       'a.b.c': 'v1',
+      'a.b.e': 'v4.xx.x',
       'f.g': 'v2',
       k: 'v3',
-      // eslint-disable-next-line sort-keys -- so we can test if object were not sorted
-      'a.b.e': 'v4.xx.x',
     };
     expect(actual).toEqual(expected);
   });
