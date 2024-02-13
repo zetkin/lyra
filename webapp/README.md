@@ -28,4 +28,3 @@ projects:
     translations:
       path: src/locale # relative path of translations folder relative from above project path
 ```
-
