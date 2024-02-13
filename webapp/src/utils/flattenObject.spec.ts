@@ -4,11 +4,13 @@ import { describe, expect, it } from '@jest/globals';
 describe('flattenObject()', () => {
   it('returns empty object for empty obj', () => {
     const actual = flattenObject({});
-    expect(actual).toEqual({});
+    const expected = {};
+    expect(actual).toEqual(expected);
   });
   it('flatten obj one string property', () => {
     const actual = flattenObject({ a: 'b' });
-    expect(actual).toEqual({ a: 'b' });
+    const expected = { a: 'b' };
+    expect(actual).toEqual(expected);
   });
   it('flatten simple obj one object property', () => {
     const actual = flattenObject({ a: { b: { c: 'd' } } });
