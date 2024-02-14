@@ -1,9 +1,13 @@
 import mock from 'mock-fs';
 import YamlTranslationAdapter from './YamlTranslationAdapter';
-import { describe, expect, it } from '@jest/globals';
+import { afterEach, describe, expect, it } from '@jest/globals';
 
 describe('YamlTranslationAdapter', () => {
   describe('getTranslations()', () => {
+    afterEach(() => {
+      mock.restore();
+    });
+
     it('Reads translations for multiple languages', async () => {
       mock({
         '/path/to/repo/locale/de.yml': 'no: Nein',
