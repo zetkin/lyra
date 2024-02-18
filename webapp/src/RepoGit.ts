@@ -96,10 +96,9 @@ export class RepoGit {
   }
 
   private async getLyraConfig(): Promise<LyraConfig> {
-    if (this.lyraConfig) {
-      return this.lyraConfig;
+    if (this.lyraConfig === undefined) {
+      this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
     }
-    this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
     return this.lyraConfig;
   }
 
