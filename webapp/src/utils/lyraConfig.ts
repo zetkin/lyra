@@ -82,7 +82,7 @@ export class LyraProjectConfig {
     public readonly messageKind: string,
     private readonly messagesPath: string,
     private readonly translationsPath: string,
-    public readonly languages: string[], // languages in iso code format (en, fr, de, etc.)
+    public readonly languages: string[], // languages in ISO 639-1 code format (en, fr, de, etc.)
   ) {}
 
   get absPath(): string {
