@@ -2,6 +2,7 @@
 
 import { debug } from '@/utils/log';
 import { IGit } from '@/utils/git/IGit';
+import { LanguageNotSupported } from '@/errors';
 import { ProjectStore } from '@/store/ProjectStore';
 import { ServerConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
@@ -17,10 +18,13 @@ export class Cache {
       await ServerConfig.getProjectConfig(projectName);
     const repoPath = serverProjectConfig.repoPath;
     const lyraConfig = await LyraConfig.readFromDir(repoPath);
-    await Cache.gitPullIfNeeded(repoPath, lyraConfig.baseBranch);
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
+    if (!lyraProjectConfig.isLanguageSupported(lang)) {
+      throw new LanguageNotSupported(lang, projectName);
+    }
+    await Cache.gitPullIfNeeded(repoPath, lyraConfig.baseBranch);
     const store = await Cache.getProjectStore(lyraProjectConfig);
     return store.getTranslations(lang);
   }

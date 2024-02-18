@@ -4,6 +4,12 @@ export class LanguageNotFound extends Error {
   }
 }
 
+export class LanguageNotSupported extends Error {
+  constructor(lang: string, projectName: string) {
+    super(`Language ${lang} is not supported in project ${projectName}`);
+  }
+}
+
 export class MessageNotFound extends Error {
   constructor(lang: string, msgId: string) {
     super(`Message ${msgId} for language ${lang} not found`);

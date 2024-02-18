@@ -3,6 +3,7 @@ import { LyraConfig } from '@/utils/lyraConfig';
 import { ServerConfig } from '@/utils/serverConfig';
 import {
   LanguageNotFound,
+  LanguageNotSupported,
   MessageNotFound,
   ProjectNameNotFoundError,
   ProjectPathNotFoundError,
@@ -30,11 +31,15 @@ export async function PUT(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
+    if (!projectConfig.isLanguageSupported(lang)) {
+      throw new LanguageNotSupported(lang, projectName);
+    }
     const projectStore = await Cache.getProjectStore(projectConfig);
     await projectStore.updateTranslation(lang, msgId, text);
   } catch (e) {
     if (
       e instanceof LanguageNotFound ||
+      e instanceof LanguageNotSupported ||
       e instanceof MessageNotFound ||
       e instanceof ProjectNameNotFoundError ||
       e instanceof ProjectPathNotFoundError

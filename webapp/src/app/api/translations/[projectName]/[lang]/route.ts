@@ -1,5 +1,9 @@
 import { Cache } from '@/Cache';
-import { LanguageNotFound, ProjectNameNotFoundError } from '@/errors';
+import {
+  LanguageNotFound,
+  LanguageNotSupported,
+  ProjectNameNotFoundError,
+} from '@/errors';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -16,6 +20,7 @@ export async function GET(
   } catch (e) {
     if (
       e instanceof LanguageNotFound ||
+      e instanceof LanguageNotSupported ||
       e instanceof ProjectNameNotFoundError
     ) {
       return NextResponse.json({ message: e.message }, { status: 404 });

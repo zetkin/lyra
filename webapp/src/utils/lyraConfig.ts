@@ -18,6 +18,7 @@ const lyraConfigSchema = z.object({
   baseBranch: z.optional(z.string()),
   projects: z.array(
     z.object({
+      languages: z.optional(z.array(z.string()).min(1)),
       messages: z.object({
         format: z.enum(['ts', 'yaml']),
         path: z.string(),
@@ -63,9 +64,10 @@ export class LyraConfig {
             KIND_BY_FORMAT_VALUE[project.messages.format],
             project.messages.path,
             project.translations.path,
+            project.languages ?? ['en'], // default language to be english if not provided
           );
         }),
-        parsed.baseBranch ?? 'main',
+        parsed.baseBranch ?? 'main', // default base branch to be main if not provided
       );
     } catch (e) {
       throw new LyraConfigReadingError(filename);
@@ -80,6 +82,7 @@ export class LyraProjectConfig {
     public readonly messageKind: string,
     private readonly messagesPath: string,
     private readonly translationsPath: string,
+    public readonly languages: string[], // languages in ISO 639-1 code format (en, fr, de, etc.)
   ) {}
 
   get absPath(): string {
@@ -96,5 +99,9 @@ export class LyraProjectConfig {
 
   get absTranslationsPath(): string {
     return path.join(this.repoPath, this.path, this.translationsPath);
+  }
+
+  isLanguageSupported(lang: string): boolean {
+    return this.languages.includes(lang);
   }
 }
