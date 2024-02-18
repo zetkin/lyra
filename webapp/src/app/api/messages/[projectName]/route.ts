@@ -30,13 +30,13 @@ export async function GET(
     });
   } catch (e) {
     if (e instanceof LyraConfigReadingError) {
-      return getResponse500('error while reading lyra config');
+      return getResponse500('Error while reading lyra config');
     } else if (e instanceof ProjectNameNotFoundError) {
       return getResponse404(e.message);
     } else if (e instanceof ProjectPathNotFoundError) {
       return getResponse500(e.message);
     }
-    return getResponse500('error reading messages error');
+    return getResponse500('Error while reading messages');
   }
 }
 
