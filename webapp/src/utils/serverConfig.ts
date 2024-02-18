@@ -7,6 +7,7 @@ import { ProjectNameNotFoundError, ServerConfigReadingError } from '@/errors';
 const serverConfigSchema = z.object({
   projects: z.array(
     z.object({
+      base_branch: z.string().optional(),
       github_token: z.string(),
       name: z.string(),
       owner: z.string(),
@@ -45,6 +46,7 @@ export class ServerConfig {
           return new ServerProjectConfig(
             project.name,
             path.normalize(project.repo_path),
+            project.base_branch ?? 'main',
             path.normalize(project.project_path),
             project.owner,
             project.repo,
@@ -70,6 +72,8 @@ export class ServerProjectConfig {
     public readonly name: string,
     /** absolute local path to repo */
     public readonly repoPath: string,
+    /** following GitHub terminology target branch called base branch */
+    public readonly baseBranch: string,
     /** relative path of project from repo_path */
     public readonly projectPath: string,
     public readonly owner: string,

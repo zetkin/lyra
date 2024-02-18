@@ -32,10 +32,7 @@ const lyraConfigSchema = z.object({
 });
 
 export class LyraConfig {
-  private constructor(
-    public readonly projects: LyraProjectConfig[],
-    public readonly baseBranch: string, // following GitHub terminology target branch called base branch
-  ) {}
+  private constructor(public readonly projects: LyraProjectConfig[]) {}
 
   public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
     const projectConfig = this.projects.find(
@@ -67,7 +64,6 @@ export class LyraConfig {
             project.languages ?? ['en'], // default language to be english if not provided
           );
         }),
-        parsed.baseBranch ?? 'main', // default base branch to be main if not provided
       );
     } catch (e) {
       throw new LyraConfigReadingError(filename);
