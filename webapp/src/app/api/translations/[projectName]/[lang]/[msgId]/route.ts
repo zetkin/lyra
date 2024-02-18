@@ -30,6 +30,14 @@ export async function PUT(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
+    if (!projectConfig.isLanguageSupported(lang)) {
+      return NextResponse.json(
+        {
+          message: `Language ${lang} is not supported in project ${projectName}`,
+        },
+        { status: 404 },
+      );
+    }
     const projectStore = await Cache.getProjectStore(projectConfig);
     await projectStore.updateTranslation(lang, msgId, text);
   } catch (e) {

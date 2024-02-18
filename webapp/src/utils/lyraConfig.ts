@@ -64,10 +64,10 @@ export class LyraConfig {
             KIND_BY_FORMAT_VALUE[project.messages.format],
             project.messages.path,
             project.translations.path,
-            project.languages ?? ['en'],
+            project.languages ?? ['en'], // default language to be english if not provided
           );
         }),
-        parsed.baseBranch ?? 'main',
+        parsed.baseBranch ?? 'main', // default base branch to be main if not provided
       );
     } catch (e) {
       throw new LyraConfigReadingError(filename);
@@ -99,5 +99,9 @@ export class LyraProjectConfig {
 
   get absTranslationsPath(): string {
     return path.join(this.repoPath, this.path, this.translationsPath);
+  }
+
+  isLanguageSupported(lang: string): boolean {
+    return this.languages.includes(lang);
   }
 }

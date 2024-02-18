@@ -247,7 +247,13 @@ describe('LyraConfig', () => {
       const projectConfig2 = config.getProjectConfigByPath('foo2');
 
       expect(projectConfig1.languages).toEqual(['en', 'fr']);
+      expect(projectConfig1.isLanguageSupported('en')).toBeTruthy();
+      expect(projectConfig1.isLanguageSupported('fr')).toBeTruthy();
+      expect(projectConfig1.isLanguageSupported('sv')).toBeFalsy();
       expect(projectConfig2.languages).toEqual(['en', 'sv']);
+      expect(projectConfig2.isLanguageSupported('en')).toBeTruthy();
+      expect(projectConfig2.isLanguageSupported('sv')).toBeTruthy();
+      expect(projectConfig2.isLanguageSupported('fr')).toBeFalsy();
     });
 
     describe('ProjectPathNotFoundError', () => {
