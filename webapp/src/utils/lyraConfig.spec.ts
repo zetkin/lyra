@@ -30,6 +30,7 @@ describe('LyraConfig', () => {
         '/path/to/repo/locale',
       );
       expect(config.baseBranch).toEqual('main'); // default value
+      expect(config.projects[0].languages).toEqual(['en']); // default value
     });
 
     it('combines project path with messages path', async () => {
@@ -219,6 +220,34 @@ describe('LyraConfig', () => {
         '/path/to/repo/foo2/locale2',
       );
       expect(config.baseBranch).toEqual('main'); // default value
+    });
+
+    it('reads languages from lyra.yml with multi projects', async () => {
+      mock({
+        '/path/to/repo/lyra.yml': [
+          'projects:',
+          '- path: foo1',
+          '  languages: [en, fr]',
+          '  messages:',
+          '    format: yaml',
+          '    path: locale1',
+          '  translations:',
+          '    path: locale1',
+          '- path: foo2',
+          '  languages: [en, sv]',
+          '  messages:',
+          '    format: ts',
+          '    path: src',
+          '  translations:',
+          '    path: locale2',
+        ].join('\n'),
+      });
+      const config = await LyraConfig.readFromDir('/path/to/repo');
+      const projectConfig1 = config.getProjectConfigByPath('foo1');
+      const projectConfig2 = config.getProjectConfigByPath('foo2');
+
+      expect(projectConfig1.languages).toEqual(['en', 'fr']);
+      expect(projectConfig2.languages).toEqual(['en', 'sv']);
     });
 
     describe('ProjectPathNotFoundError', () => {

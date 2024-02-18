@@ -18,6 +18,7 @@ const lyraConfigSchema = z.object({
   baseBranch: z.optional(z.string()),
   projects: z.array(
     z.object({
+      languages: z.optional(z.array(z.string()).min(1)),
       messages: z.object({
         format: z.enum(['ts', 'yaml']),
         path: z.string(),
@@ -63,6 +64,7 @@ export class LyraConfig {
             KIND_BY_FORMAT_VALUE[project.messages.format],
             project.messages.path,
             project.translations.path,
+            project.languages ?? ['en'],
           );
         }),
         parsed.baseBranch ?? 'main',
@@ -80,6 +82,7 @@ export class LyraProjectConfig {
     public readonly messageKind: string,
     private readonly messagesPath: string,
     private readonly translationsPath: string,
+    public readonly languages: string[], // languages in iso code format (en, fr, de, etc.)
   ) {}
 
   get absPath(): string {
