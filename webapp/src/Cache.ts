@@ -1,12 +1,13 @@
 /* global globalThis */
 
 import { debug } from '@/utils/log';
+import { IGit } from '@/utils/git/IGit';
 import { ProjectStore } from '@/store/ProjectStore';
 import { ServerConfig } from '@/utils/serverConfig';
+import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { LyraConfig, LyraProjectConfig } from '@/utils/lyraConfig';
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
 
 export class Cache {
   private static hasPulled = new Set<string>();
@@ -47,13 +48,7 @@ export class Cache {
       return;
     }
     debug(`prepare git options for path: ${repoPath}`);
-    const options: Partial<SimpleGitOptions> = {
-      baseDir: repoPath,
-      binary: 'git',
-      maxConcurrentProcesses: 1,
-      trimmed: false,
-    };
-    const git: SimpleGit = simpleGit(options);
+    const git: IGit = new SimpleGitWrapper(repoPath);
     debug(`git checkout ${branchName} branch...`);
     await git.checkout(branchName);
     debug('git pull...');
