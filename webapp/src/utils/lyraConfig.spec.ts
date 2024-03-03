@@ -122,6 +122,24 @@ describe('LyraConfig', () => {
         await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
 
+      it('throws for define deprecated property baseBranch', async () => {
+        expect.assertions(1);
+        mock({
+          '/path/to/repo/lyra.yml': [
+            'baseBranch: anyValue', // deprecated
+            'projects:',
+            '- path: project',
+            '  messages:',
+            '    format: ts',
+            '    path: anyValue',
+            '  translations:',
+            '    path: anyValue',
+          ].join('\n'),
+        });
+        const actual = LyraConfig.readFromDir('/path/to/repo');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
+      });
+
       it('throws for file not found', async () => {
         expect.assertions(1);
         mock({

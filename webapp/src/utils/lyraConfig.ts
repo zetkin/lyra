@@ -15,7 +15,8 @@ const KIND_BY_FORMAT_VALUE: Record<'ts' | 'yaml', MessageKind> = {
 };
 
 const lyraConfigSchema = z.object({
-  baseBranch: z.optional(z.string()),
+  /** @deprecated baseBranch has been moved to serverConfigSchema as base_branch */
+  baseBranch: z.undefined(),
   projects: z.array(
     z.object({
       languages: z.optional(z.array(z.string()).min(1)),
