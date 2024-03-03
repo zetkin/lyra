@@ -47,7 +47,10 @@ export class ProjectNameNotFoundError extends Error {
 }
 
 export class WriteLanguageFileError extends Error {
-  constructor(public langFilename: string) {
+  constructor(
+    public langFilename: string,
+    public error: unknown,
+  ) {
     super(`Error writing language file: [${langFilename}]`);
   }
 }
