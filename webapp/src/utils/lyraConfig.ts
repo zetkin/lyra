@@ -67,7 +67,7 @@ export class LyraConfig {
         }),
       );
     } catch (e) {
-      throw new LyraConfigReadingError(filename);
+      throw new LyraConfigReadingError(filename, e);
     }
   }
 }
