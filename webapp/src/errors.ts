@@ -51,7 +51,10 @@ export class WriteLanguageFileError extends Error {
     public langFilename: string,
     public error: unknown,
   ) {
-    super(`Error writing language file: [${langFilename}]`);
+    const errorMessage =
+      error instanceof Error ? ', error message: ' + error.message : '';
+
+    super(`Error writing language file: [${langFilename}]${errorMessage}`);
   }
 }
 
