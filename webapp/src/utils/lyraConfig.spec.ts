@@ -29,7 +29,6 @@ describe('LyraConfig', () => {
       expect(config.projects[0].absTranslationsPath).toEqual(
         '/path/to/repo/locale',
       );
-      expect(config.baseBranch).toEqual('main'); // default value
       expect(config.projects[0].languages).toEqual(['en']); // default value
     });
 
@@ -53,24 +52,6 @@ describe('LyraConfig', () => {
       expect(config.projects[0].absTranslationsPath).toEqual(
         '/path/to/repo/project/locale',
       );
-    });
-
-    it('reads baseBranch', async () => {
-      mock({
-        '/path/to/repo/lyra.yml': [
-          'baseBranch: branch1',
-          'projects:',
-          '- path: project',
-          '  messages:',
-          '    format: ts',
-          '    path: anyValue',
-          '  translations:',
-          '    path: anyValue',
-        ].join('\n'),
-      });
-
-      const config = await LyraConfig.readFromDir('/path/to/repo');
-      expect(config.baseBranch).toEqual('branch1');
     });
 
     it('reads more than one projects', async () => {
@@ -129,7 +110,6 @@ describe('LyraConfig', () => {
         expect.assertions(1);
         mock({
           '/path/to/repo/lyra.yml': [
-            'baseBranch: branch1',
             'projects:',
             '- path: project',
             '  messages:',
@@ -142,11 +122,28 @@ describe('LyraConfig', () => {
         await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
 
+      it('throws for define deprecated property baseBranch', async () => {
+        expect.assertions(1);
+        mock({
+          '/path/to/repo/lyra.yml': [
+            'baseBranch: anyValue', // deprecated
+            'projects:',
+            '- path: project',
+            '  messages:',
+            '    format: ts',
+            '    path: anyValue',
+            '  translations:',
+            '    path: anyValue',
+          ].join('\n'),
+        });
+        const actual = LyraConfig.readFromDir('/path/to/repo');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
+      });
+
       it('throws for file not found', async () => {
         expect.assertions(1);
         mock({
           '/path/to/repo/xxx.yml': [
-            'baseBranch: branch1',
             'projects:',
             '- path: project',
             '  messages:',
@@ -180,7 +177,6 @@ describe('LyraConfig', () => {
       expect(projectConfig.messageKind).toEqual(MessageKind.YAML);
       expect(projectConfig.absMessagesPath).toEqual('/path/to/repo/locale');
       expect(projectConfig.absTranslationsPath).toEqual('/path/to/repo/locale');
-      expect(config.baseBranch).toEqual('main'); // default value
       expect(projectConfig.languages).toEqual(['en']); // default value
     });
     it('reads message kind and path from lyra.yml', async () => {
@@ -202,7 +198,6 @@ describe('LyraConfig', () => {
       expect(projectConfig.absTranslationsPath).toEqual(
         '/path/to/repo/foo/locale',
       );
-      expect(config.baseBranch).toEqual('main'); // default value
     });
 
     it('reads message kind and path from lyra.yml with multi projects', async () => {
@@ -239,7 +234,6 @@ describe('LyraConfig', () => {
       expect(projectConfig2.absTranslationsPath).toEqual(
         '/path/to/repo/foo2/locale2',
       );
-      expect(config.baseBranch).toEqual('main'); // default value
     });
 
     it('reads languages from lyra.yml with multi projects', async () => {
@@ -280,7 +274,6 @@ describe('LyraConfig', () => {
       it('throws for for invalid project path', async () => {
         mock({
           '/path/to/repo/lyra.yml': [
-            'baseBranch: branch1',
             'projects:',
             '- path: project',
             '  messages:',

@@ -17,8 +17,14 @@ export class MessageNotFound extends Error {
 }
 
 export class LyraConfigReadingError extends Error {
-  constructor(filename: string) {
-    super(`Error reading file: [${filename}]`);
+  constructor(filename: string, error?: unknown) {
+    if (error instanceof Error) {
+      super(
+        `Error reading file: [${filename}], error message:${error.message}`,
+      );
+    } else {
+      super(`Error reading file: [${filename}]`);
+    }
   }
 }
 
@@ -45,7 +51,10 @@ export class WriteLanguageFileError extends Error {
     public langFilename: string,
     public error: unknown,
   ) {
-    super(`Error writing language file: [${langFilename}]`);
+    const errorMessage =
+      error instanceof Error ? ', error message: ' + error.message : '';
+
+    super(`Error writing language file: [${langFilename}]${errorMessage}`);
   }
 }
 

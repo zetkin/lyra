@@ -5,6 +5,7 @@ import { LyraConfig } from '@/utils/lyraConfig';
 import { Octokit } from '@octokit/rest';
 import packageJson from '../package.json';
 import path from 'path';
+import { ServerProjectConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { stringify } from 'yaml';
 import { unflattenObject } from '@/utils/unflattenObject';
@@ -15,8 +16,8 @@ export class RepoGit {
   private readonly git: IGit;
   private lyraConfig?: LyraConfig;
 
-  constructor(public readonly repoPath: string) {
-    this.git = new SimpleGitWrapper(repoPath);
+  constructor(public readonly spConfig: ServerProjectConfig) {
+    this.git = new SimpleGitWrapper(spConfig.repoPath);
   }
 
   /**
@@ -24,10 +25,9 @@ export class RepoGit {
    * @returns base branch name
    */
   public async checkoutBaseAndPull(): Promise<string> {
-    const lyraConfig = await this.getLyraConfig();
-    await this.git.checkout(lyraConfig.baseBranch);
+    await this.git.checkout(this.spConfig.baseBranch);
     await this.git.pull();
-    return lyraConfig.baseBranch;
+    return this.spConfig.baseBranch;
   }
 
   public async saveLanguageFiles(projectPath: string): Promise<string[]> {
@@ -51,8 +51,7 @@ export class RepoGit {
     addFiles: string[],
     commitMsg: string,
   ): Promise<void> {
-    const lyraConfig = await this.getLyraConfig();
-    await this.git.newBranch(branchName, lyraConfig.baseBranch);
+    await this.git.newBranch(branchName, this.spConfig.baseBranch);
     await this.git.add(addFiles);
     await this.git.commit(commitMsg);
     await this.git.push(branchName);
@@ -66,7 +65,6 @@ export class RepoGit {
     githubRepo: string,
     githubToken: string,
   ): Promise<string> {
-    const lyraConfig = await this.getLyraConfig();
     const octokit = new Octokit({
       auth: githubToken,
       baseUrl: 'https://api.github.com',
@@ -86,7 +84,7 @@ export class RepoGit {
     });
 
     const response = await octokit.rest.pulls.create({
-      base: lyraConfig.baseBranch,
+      base: this.spConfig.baseBranch,
       body: prBody,
       head: branchName,
       owner: githubOwner,
@@ -98,10 +96,9 @@ export class RepoGit {
   }
 
   private async getLyraConfig(): Promise<LyraConfig> {
-    if (this.lyraConfig) {
-      return this.lyraConfig;
+    if (this.lyraConfig === undefined) {
+      this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
     }
-    this.lyraConfig = await LyraConfig.readFromDir(this.repoPath);
     return this.lyraConfig;
   }
 

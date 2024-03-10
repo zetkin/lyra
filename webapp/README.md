@@ -8,6 +8,7 @@ In the root folder create file `./config/projects.yaml` with example content:
 projects:
   - name: example-unique-name
     repo_path: /Users/username/fooRepo # absolute path to repo
+    base_branch: main
     project_path: . # relative path of project from repo_path
     owner: amerharb
     repo: zetkin.app.zetkin.org
@@ -19,7 +20,6 @@ file `lyra.yml` with the
 example content:
 
 ```yaml
-baseBranch: main
 projects:
   - path: . # relative path to project in repo
     messages:

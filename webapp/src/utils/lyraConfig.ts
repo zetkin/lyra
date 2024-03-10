@@ -15,7 +15,8 @@ const KIND_BY_FORMAT_VALUE: Record<'ts' | 'yaml', MessageKind> = {
 };
 
 const lyraConfigSchema = z.object({
-  baseBranch: z.optional(z.string()),
+  /** @deprecated baseBranch has been moved to serverConfigSchema as base_branch */
+  baseBranch: z.undefined(),
   projects: z.array(
     z.object({
       languages: z.optional(z.array(z.string()).min(1)),
@@ -32,10 +33,7 @@ const lyraConfigSchema = z.object({
 });
 
 export class LyraConfig {
-  private constructor(
-    public readonly projects: LyraProjectConfig[],
-    public readonly baseBranch: string, // following GitHub terminology target branch called base branch
-  ) {}
+  private constructor(public readonly projects: LyraProjectConfig[]) {}
 
   public getProjectConfigByPath(projectPath: string): LyraProjectConfig {
     const projectConfig = this.projects.find(
@@ -67,10 +65,9 @@ export class LyraConfig {
             project.languages ?? ['en'], // default language to be english if not provided
           );
         }),
-        parsed.baseBranch ?? 'main', // default base branch to be main if not provided
       );
     } catch (e) {
-      throw new LyraConfigReadingError(filename);
+      throw new LyraConfigReadingError(filename, e);
     }
   }
 }

@@ -17,6 +17,7 @@ export class Cache {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
     const repoPath = serverProjectConfig.repoPath;
+    await Cache.gitPullIfNeeded(repoPath, serverProjectConfig.baseBranch);
     const lyraConfig = await LyraConfig.readFromDir(repoPath);
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
@@ -24,7 +25,6 @@ export class Cache {
     if (!lyraProjectConfig.isLanguageSupported(lang)) {
       throw new LanguageNotSupported(lang, projectName);
     }
-    await Cache.gitPullIfNeeded(repoPath, lyraConfig.baseBranch);
     const store = await Cache.getProjectStore(lyraProjectConfig);
     return store.getTranslations(lang);
   }
