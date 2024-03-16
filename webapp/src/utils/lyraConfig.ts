@@ -1,6 +1,9 @@
-import fs from 'fs/promises';
+import fs from 'fs';
+import fsp from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
+import { RepoGit } from '@/RepoGit';
+import { ServerProjectConfig } from '@/utils/serverConfig';
 import { z } from 'zod';
 import { LyraConfigReadingError, ProjectPathNotFoundError } from '@/errors';
 
@@ -45,11 +48,15 @@ export class LyraConfig {
     throw new ProjectPathNotFoundError(projectPath);
   }
 
-  static async readFromDir(repoPath: string): Promise<LyraConfig> {
+  static async readFromDir(spConfig: ServerProjectConfig): Promise<LyraConfig> {
+    if (!fs.existsSync(spConfig.repoPath)) {
+      await RepoGit.clone(spConfig);
+    }
+
     // TODO: cache this call with TTL
-    const filename = path.join(repoPath, 'lyra.yml');
+    const filename = path.join(spConfig.repoPath, 'lyra.yml');
     try {
-      const ymlBuf = await fs.readFile(filename);
+      const ymlBuf = await fsp.readFile(filename);
       const configData = parse(ymlBuf.toString());
 
       const parsed = lyraConfigSchema.parse(configData);
@@ -57,7 +64,7 @@ export class LyraConfig {
       return new LyraConfig(
         parsed.projects.map((project) => {
           return new LyraProjectConfig(
-            repoPath,
+            spConfig.repoPath,
             project.path,
             KIND_BY_FORMAT_VALUE[project.messages.format],
             project.messages.path,

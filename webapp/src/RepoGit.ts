@@ -1,5 +1,5 @@
 import { Cache } from '@/Cache';
-import fs from 'fs/promises';
+import fsp from 'fs/promises';
 import { IGit } from '@/utils/git/IGit';
 import { LyraConfig } from '@/utils/lyraConfig';
 import { Octokit } from '@octokit/rest';
@@ -16,8 +16,20 @@ export class RepoGit {
   private readonly git: IGit;
   private lyraConfig?: LyraConfig;
 
-  constructor(public readonly spConfig: ServerProjectConfig) {
+  constructor(private readonly spConfig: ServerProjectConfig) {
     this.git = new SimpleGitWrapper(spConfig.repoPath);
+  }
+
+  static async clone(spConfig: ServerProjectConfig): Promise<void> {
+    debug(`create directory: ${spConfig.repoPath} ...`);
+    await fsp.mkdir(spConfig.repoPath, { recursive: true });
+    const git = new SimpleGitWrapper(spConfig.repoPath);
+    debug(`Cloning repo: ${spConfig.repoPath} ...`);
+    await git.clone(spConfig.cloneUrl, spConfig.repoPath);
+    debug(`Cloned repo: ${spConfig.repoPath}`);
+    debug(`Checkout base branch: ${spConfig.baseBranch} ...`);
+    await git.checkout(spConfig.baseBranch);
+    debug(`Checked out base branch: ${spConfig.baseBranch}`);
   }
 
   /**
@@ -97,7 +109,7 @@ export class RepoGit {
 
   private async getLyraConfig(): Promise<LyraConfig> {
     if (this.lyraConfig === undefined) {
-      this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
+      this.lyraConfig = await LyraConfig.readFromDir(this.spConfig);
     }
     return this.lyraConfig;
   }
@@ -119,7 +131,7 @@ export class RepoGit {
           singleQuote: true,
         });
         try {
-          await fs.writeFile(yamlPath, yamlOutput);
+          await fsp.writeFile(yamlPath, yamlOutput);
         } catch (e) {
           throw new WriteLanguageFileError(yamlPath, e);
         }

@@ -16,9 +16,11 @@ export class Cache {
   public static async getLanguage(projectName: string, lang: string) {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
-    const repoPath = serverProjectConfig.repoPath;
-    await Cache.gitPullIfNeeded(repoPath, serverProjectConfig.baseBranch);
-    const lyraConfig = await LyraConfig.readFromDir(repoPath);
+    await Cache.gitPullIfNeeded(
+      serverProjectConfig.repoPath,
+      serverProjectConfig.baseBranch,
+    );
+    const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig);
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
