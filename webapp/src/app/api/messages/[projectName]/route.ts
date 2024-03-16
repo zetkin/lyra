@@ -1,7 +1,7 @@
 import { LyraConfig } from '@/utils/lyraConfig';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
-import { ServerConfig } from '@/utils/serverConfig';
 import { RepoGit } from '@/RepoGit';
+import { ServerConfig } from '@/utils/serverConfig';
 import {
   LyraConfigReadingError,
   ProjectNameNotFoundError,

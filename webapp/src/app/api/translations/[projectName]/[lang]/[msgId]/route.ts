@@ -1,7 +1,7 @@
 import { Cache } from '@/Cache';
 import { LyraConfig } from '@/utils/lyraConfig';
-import { ServerConfig } from '@/utils/serverConfig';
 import { RepoGit } from '@/RepoGit';
+import { ServerConfig } from '@/utils/serverConfig';
 import {
   LanguageNotFound,
   LanguageNotSupported,
