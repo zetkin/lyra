@@ -1,6 +1,7 @@
 import { LyraConfig } from '@/utils/lyraConfig';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { ServerConfig } from '@/utils/serverConfig';
+import { RepoGit } from '@/RepoGit';
 import {
   LyraConfigReadingError,
   ProjectNameNotFoundError,
@@ -16,7 +17,10 @@ export async function GET(
     const projectName = context.params.projectName;
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
-    const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig);
+    await RepoGit.cloneIfNotExist(serverProjectConfig);
+    const lyraConfig = await LyraConfig.readFromDir(
+      serverProjectConfig.repoPath,
+    );
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );

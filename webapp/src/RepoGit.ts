@@ -1,4 +1,5 @@
 import { Cache } from '@/Cache';
+import fs from 'fs';
 import fsp from 'fs/promises';
 import { IGit } from '@/utils/git/IGit';
 import { LyraConfig } from '@/utils/lyraConfig';
@@ -20,7 +21,15 @@ export class RepoGit {
     this.git = new SimpleGitWrapper(spConfig.repoPath);
   }
 
-  static async clone(spConfig: ServerProjectConfig): Promise<void> {
+  public static async cloneIfNotExist(
+    spConfig: ServerProjectConfig,
+  ): Promise<void> {
+    if (!fs.existsSync(spConfig.repoPath)) {
+      await RepoGit.clone(spConfig);
+    }
+  }
+
+  private static async clone(spConfig: ServerProjectConfig): Promise<void> {
     debug(`create directory: ${spConfig.repoPath} ...`);
     await fsp.mkdir(spConfig.repoPath, { recursive: true });
     const git = new SimpleGitWrapper(spConfig.repoPath);
@@ -109,7 +118,8 @@ export class RepoGit {
 
   private async getLyraConfig(): Promise<LyraConfig> {
     if (this.lyraConfig === undefined) {
-      this.lyraConfig = await LyraConfig.readFromDir(this.spConfig);
+      await RepoGit.cloneIfNotExist(this.spConfig);
+      this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
     }
     return this.lyraConfig;
   }

@@ -20,7 +20,9 @@ export class Cache {
       serverProjectConfig.repoPath,
       serverProjectConfig.baseBranch,
     );
-    const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig);
+    const lyraConfig = await LyraConfig.readFromDir(
+      serverProjectConfig.repoPath,
+    );
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
