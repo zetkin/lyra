@@ -4,11 +4,12 @@ import { debug } from '@/utils/log';
 import { IGit } from '@/utils/git/IGit';
 import { LanguageNotSupported } from '@/errors';
 import { ProjectStore } from '@/store/ProjectStore';
-import { ServerConfig } from '@/utils/serverConfig';
+import { RepoGit } from '@/RepoGit';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { LyraConfig, LyraProjectConfig } from '@/utils/lyraConfig';
+import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 
 export class Cache {
   private static hasPulled = new Set<string>();
@@ -16,9 +17,10 @@ export class Cache {
   public static async getLanguage(projectName: string, lang: string) {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
-    const repoPath = serverProjectConfig.repoPath;
-    await Cache.gitPullIfNeeded(repoPath, serverProjectConfig.baseBranch);
-    const lyraConfig = await LyraConfig.readFromDir(repoPath);
+    await Cache.gitPullIfNeeded(serverProjectConfig);
+    const lyraConfig = await LyraConfig.readFromDir(
+      serverProjectConfig.repoPath,
+    );
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
@@ -46,18 +48,20 @@ export class Cache {
     return globalThis.store.getProjectStore(lyraProjectConfig.absPath);
   }
 
-  private static async gitPullIfNeeded(repoPath: string, branchName: string) {
+  private static async gitPullIfNeeded(spConfig: ServerProjectConfig) {
+    const { repoPath, baseBranch } = spConfig;
     if (Cache.hasPulled.has(repoPath)) {
       debug(`repoPath: ${repoPath} is already pulled`);
       return;
     }
+    await RepoGit.cloneIfNotExist(spConfig);
     debug(`prepare git options for path: ${repoPath}`);
     const git: IGit = new SimpleGitWrapper(repoPath);
-    debug(`git checkout ${branchName} branch...`);
-    await git.checkout(branchName);
+    debug(`git checkout ${baseBranch} branch...`);
+    await git.checkout(baseBranch);
     debug('git pull...');
     await git.pull();
-    debug(`git done checkout ${branchName} branch and pull`);
+    debug(`git done checkout ${baseBranch} branch and pull`);
     Cache.hasPulled.add(repoPath);
   }
 }

@@ -80,4 +80,9 @@ export class ServerProjectConfig {
     public readonly repo: string,
     public readonly githubToken: string,
   ) {}
+
+  public get cloneUrl(): string {
+    // TODO: support other provider than github
+    return `git@github.com:${this.owner}/${this.repo}.git`;
+  }
 }
