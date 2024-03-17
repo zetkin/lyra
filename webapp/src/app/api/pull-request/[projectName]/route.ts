@@ -1,5 +1,5 @@
+import { getRepoGit } from '@/RepoGit';
 import { ProjectNameNotFoundError } from '@/errors';
-import { RepoGit } from '@/RepoGit';
 import { NextRequest, NextResponse } from 'next/server';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 
@@ -37,7 +37,7 @@ export async function POST(
 
   try {
     syncLock.set(repoPath, true);
-    const repoGit = new RepoGit(serverProjectConfig);
+    const repoGit = await getRepoGit(serverProjectConfig);
     const baseBranch = await repoGit.checkoutBaseAndPull();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,

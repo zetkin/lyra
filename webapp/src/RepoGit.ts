@@ -14,11 +14,29 @@ import { debug, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 
 export class RepoGit {
+  private static repositories: {
+    [name: string]: Promise<RepoGit>;
+  } = {};
+
   private readonly git: IGit;
   private lyraConfig?: LyraConfig;
 
-  constructor(private readonly spConfig: ServerProjectConfig) {
+  private constructor(private readonly spConfig: ServerProjectConfig) {
     this.git = new SimpleGitWrapper(spConfig.repoPath);
+  }
+
+  static async getRepoGit(config: ServerProjectConfig): Promise<RepoGit> {
+    const key = config.repoPath;
+    if (key in RepoGit.repositories) {
+      return RepoGit.repositories[key];
+    }
+    const { promise, resolve, reject } = Promise.withResolvers<RepoGit>();
+    RepoGit.repositories[key] = promise;
+
+    const repository = new RepoGit(config);
+    repository.checkoutBaseAndPull().then(() => resolve(repository), reject);
+
+    return promise;
   }
 
   public static async cloneIfNotExist(
@@ -116,7 +134,7 @@ export class RepoGit {
     return response.data.html_url;
   }
 
-  private async getLyraConfig(): Promise<LyraConfig> {
+  async getLyraConfig(): Promise<LyraConfig> {
     if (this.lyraConfig === undefined) {
       await RepoGit.cloneIfNotExist(this.spConfig);
       this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
@@ -157,4 +175,10 @@ export class RepoGit {
     }
     return paths;
   }
+}
+
+export async function getRepoGit(
+  config: ServerProjectConfig,
+): Promise<RepoGit> {
+  return RepoGit.getRepoGit(config);
 }
