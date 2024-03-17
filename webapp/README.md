@@ -15,7 +15,11 @@ projects:
     github_token: << github token >>
 ```
 
-also the project repository (client repository) needs to be cloned locally. and has in the root folder config
+Multiple projects are supported, and multiple projects in the same local git repository
+are supported, but configuring multiple porjects with different `repo_path`, resolving to
+same local git repository, is _not_ supported.
+
+The project repository (client repository) needs to be cloned locally. and has in the root folder config
 file `lyra.yml` with the
 example content:
 
