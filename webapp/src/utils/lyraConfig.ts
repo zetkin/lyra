@@ -1,4 +1,4 @@
-import fsp from 'fs/promises';
+import fs from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
 import { z } from 'zod';
@@ -49,7 +49,7 @@ export class LyraConfig {
     // TODO: cache this call with TTL
     const filename = path.join(repoPath, 'lyra.yml');
     try {
-      const ymlBuf = await fsp.readFile(filename);
+      const ymlBuf = await fs.readFile(filename);
       const configData = parse(ymlBuf.toString());
 
       const parsed = lyraConfigSchema.parse(configData);

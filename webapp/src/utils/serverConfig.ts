@@ -82,6 +82,7 @@ export class ServerProjectConfig {
   ) {}
 
   public get cloneUrl(): string {
+    // TODO: support other provider than github
     return `git@github.com:${this.owner}/${this.repo}.git`;
   }
 }
