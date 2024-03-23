@@ -176,9 +176,3 @@ export class RepoGit {
     return paths;
   }
 }
-
-export async function getRepoGit(
-  config: ServerProjectConfig,
-): Promise<RepoGit> {
-  return RepoGit.getRepoGit(config);
-}
