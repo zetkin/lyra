@@ -12,8 +12,8 @@ export class Cache {
   public static async getLanguage(projectName: string, lang: string) {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
-    const repo = await RepoGit.getRepoGit(serverProjectConfig);
-    const lyraConfig = await repo.getLyraConfig();
+    const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
+    const lyraConfig = await repoGit.getLyraConfig();
     const lyraProjectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );

@@ -17,8 +17,8 @@ export async function GET(
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
     await RepoGit.cloneIfNotExist(serverProjectConfig);
-    const repo = await RepoGit.getRepoGit(serverProjectConfig);
-    const lyraConfig = await repo.getLyraConfig();
+    const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
+    const lyraConfig = await repoGit.getLyraConfig();
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );

@@ -26,8 +26,8 @@ export async function PUT(
   // TODO: include getProjectConfig & readFromDir in a try/catch block and check for error to return a certain 500 error
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   await RepoGit.cloneIfNotExist(serverProjectConfig);
-  const repo = await RepoGit.getRepoGit(serverProjectConfig);
-  const lyraConfig = await repo.getLyraConfig();
+  const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
+  const lyraConfig = await repoGit.getLyraConfig();
 
   try {
     const projectConfig = lyraConfig.getProjectConfigByPath(
