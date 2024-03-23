@@ -25,15 +25,15 @@ export class RepoGit {
     this.git = new SimpleGitWrapper(spConfig.repoPath);
   }
 
-  static async getRepoGit(config: ServerProjectConfig): Promise<RepoGit> {
-    const key = config.repoPath;
+  static async getRepoGit(spConfig: ServerProjectConfig): Promise<RepoGit> {
+    const key = spConfig.repoPath;
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
     }
     const { promise, resolve, reject } = Promise.withResolvers<RepoGit>();
     RepoGit.repositories[key] = promise;
 
-    const repository = new RepoGit(config);
+    const repository = new RepoGit(spConfig);
     repository.checkoutBaseAndPull().then(() => resolve(repository), reject);
 
     return promise;
