@@ -30,7 +30,6 @@ export class RepoGit {
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
     }
-    await RepoGit.cloneIfNotExist(spConfig);
     const { promise, resolve, reject } = Promise.withResolvers<RepoGit>();
     RepoGit.repositories[key] = promise;
 
@@ -40,7 +39,7 @@ export class RepoGit {
     return promise;
   }
 
-  private static async cloneIfNotExist(
+  public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
   ): Promise<void> {
     if (!fs.existsSync(spConfig.repoPath)) {
