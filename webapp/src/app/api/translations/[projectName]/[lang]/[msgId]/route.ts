@@ -23,7 +23,7 @@ export async function PUT(
   const { lang, msgId, projectName } = context.params;
   const payload = await req.json();
   const { text } = payload;
-  // TODO: include getProjectConfig() in a try/catch block and check for error to return a certain 500 error
+  // TODO: include getProjectConfig() and getLyraConfig() in a try/catch block and check for error to return a certain 500 error
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   await RepoGit.cloneIfNotExist(serverProjectConfig);
   const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
