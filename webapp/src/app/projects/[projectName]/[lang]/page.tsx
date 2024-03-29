@@ -38,6 +38,10 @@ export default function Home(context: {
           };
         } catch (error) {
           setError(true);
+          return {
+            from: 0,
+            to: MESSAGES_PER_PAGE,
+          };
         }
       });
     }
