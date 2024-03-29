@@ -3,12 +3,13 @@
 import { type MessageData } from '@/utils/adapters';
 import MessageForm from '@/components/MessageForm';
 import { SafeRecord } from '@/utils/types';
-import { Box, Button, Link, Typography } from '@mui/joy';
+import { Box, Button, Input, Link, Typography } from '@mui/joy';
 import { useEffect, useMemo, useState } from 'react';
 
 export default function Home(context: {
   params: { lang: string; projectName: string };
 }) {
+  const [filterText, setFilterText] = useState('');
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [translations, setTranslations] = useState<SafeRecord<string, string>>(
     {},
@@ -34,6 +35,19 @@ export default function Home(context: {
       }
     });
   }, [messages]);
+
+  const filteredMessages = useMemo(() => {
+    return sortedMessages.filter((message) => {
+      const trans = translations[message.id]?.toLowerCase();
+      const filterQuery = filterText.toLowerCase();
+
+      return (
+        trans?.includes(filterQuery) ||
+        message.defaultMessage.includes(filterQuery) ||
+        message.id.includes(filterQuery)
+      );
+    });
+  }, [sortedMessages, filterText]);
 
   const {
     params: { lang, projectName },
@@ -130,9 +144,17 @@ export default function Home(context: {
         >
           Next
         </Button>
+        <Box>
+          <Input
+            onChange={(ev) => {
+              setFilterText(ev.target.value);
+            }}
+            value={filterText}
+          />
+        </Box>
       </Box>
       <Box>
-        {sortedMessages.slice(msgOffset.from, msgOffset.to).map((msg) => {
+        {filteredMessages.slice(msgOffset.from, msgOffset.to).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
