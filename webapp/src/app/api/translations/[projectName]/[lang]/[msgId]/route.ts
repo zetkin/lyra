@@ -1,6 +1,6 @@
 import { Cache } from '@/Cache';
+import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
-import { getRepoGit, RepoGit } from '@/RepoGit';
 import {
   LanguageNotFound,
   LanguageNotSupported,
@@ -23,11 +23,11 @@ export async function PUT(
   const { lang, msgId, projectName } = context.params;
   const payload = await req.json();
   const { text } = payload;
-  // TODO: include getProjectConfig & readFromDir in a try/catch block and check for error to return a certain 500 error
+  // TODO: include getProjectConfig() and getLyraConfig() in a try/catch block and check for error to return a certain 500 error
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   await RepoGit.cloneIfNotExist(serverProjectConfig);
-  const repo = await getRepoGit(serverProjectConfig);
-  const lyraConfig = await repo.getLyraConfig();
+  const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
+  const lyraConfig = await repoGit.getLyraConfig();
 
   try {
     const projectConfig = lyraConfig.getProjectConfigByPath(
