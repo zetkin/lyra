@@ -2,20 +2,38 @@
 
 import { type MessageData } from '@/utils/adapters';
 import MessageForm from '@/components/MessageForm';
+import { SafeRecord } from '@/utils/types';
 import { Box, Button, Link, Typography } from '@mui/joy';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function Home(context: {
   params: { lang: string; projectName: string };
 }) {
   const [messages, setMessages] = useState<MessageData[]>([]);
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [translations, setTranslations] = useState<SafeRecord<string, string>>(
+    {},
+  );
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
   const MESSAGES_PER_PAGE = 50; // number of messages to show per page
   const [msgOffset, setOffset] = useState<{ from: number; to: number }>({
     from: 0,
     to: MESSAGES_PER_PAGE,
   });
+
+  const sortedMessages = useMemo(() => {
+    return messages.sort((m0, m1) => {
+      const trans0 = translations[m0.id]?.trim() ?? '';
+      const trans1 = translations[m1.id]?.trim() ?? '';
+
+      if (!trans0) {
+        return -1;
+      } else if (trans1) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }, [messages]);
 
   const {
     params: { lang, projectName },
@@ -114,7 +132,7 @@ export default function Home(context: {
         </Button>
       </Box>
       <Box>
-        {messages.slice(msgOffset.from, msgOffset.to).map((msg) => {
+        {sortedMessages.slice(msgOffset.from, msgOffset.to).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
