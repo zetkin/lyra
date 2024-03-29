@@ -103,7 +103,7 @@ export default function Home(context: {
             setOffset(() => {
               return {
                 from: 0,
-                to: Math.min(MESSAGES_PER_PAGE, messages.length),
+                to: Math.min(MESSAGES_PER_PAGE, filteredMessages.length),
               };
             });
           }}
@@ -126,18 +126,18 @@ export default function Home(context: {
         </Button>
         <text>
           From: {msgOffset.from + 1} to: {msgOffset.to} of total:{' '}
-          {messages.length}
+          {filteredMessages.length}
         </text>
         <Button
           onClick={() => {
             setOffset((prevMsgOffset) => {
-              if (prevMsgOffset.to >= messages.length) {
+              if (prevMsgOffset.to >= filteredMessages.length) {
                 return prevMsgOffset;
               }
               const from = Math.max(0, prevMsgOffset.from + MESSAGES_PER_PAGE);
               return {
                 from,
-                to: Math.min(from + MESSAGES_PER_PAGE, messages.length),
+                to: Math.min(from + MESSAGES_PER_PAGE, filteredMessages.length),
               };
             });
           }}
