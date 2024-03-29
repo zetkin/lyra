@@ -34,7 +34,7 @@ export default function Home(context: {
         return 0;
       }
     });
-  }, [messages]);
+  }, [messages, translations]);
 
   const filteredMessages = useMemo(() => {
     return sortedMessages.filter((message) => {
