@@ -37,7 +37,7 @@ export async function POST(
 
   try {
     syncLock.set(repoPath, true);
-    const repoGit = new RepoGit(serverProjectConfig);
+    const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
     const baseBranch = await repoGit.checkoutBaseAndPull();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,

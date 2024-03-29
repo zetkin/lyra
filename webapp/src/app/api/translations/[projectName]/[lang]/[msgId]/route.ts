@@ -1,5 +1,4 @@
 import { Cache } from '@/Cache';
-import { LyraConfig } from '@/utils/lyraConfig';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
 import {
@@ -24,10 +23,11 @@ export async function PUT(
   const { lang, msgId, projectName } = context.params;
   const payload = await req.json();
   const { text } = payload;
-  // TODO: include getProjectConfig & readFromDir in a try/catch block and check for error to return a certain 500 error
+  // TODO: include getProjectConfig() and getLyraConfig() in a try/catch block and check for error to return a certain 500 error
   const serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   await RepoGit.cloneIfNotExist(serverProjectConfig);
-  const lyraConfig = await LyraConfig.readFromDir(serverProjectConfig.repoPath);
+  const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
+  const lyraConfig = await repoGit.getLyraConfig();
 
   try {
     const projectConfig = lyraConfig.getProjectConfigByPath(
