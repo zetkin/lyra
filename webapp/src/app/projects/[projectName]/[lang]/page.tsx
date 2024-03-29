@@ -16,6 +16,7 @@ export default function Home(context: {
     from: 0,
     to: MESSAGES_PER_PAGE,
   });
+  const [error, setError] = useState(false);
 
   const {
     params: { lang, projectName },
@@ -26,13 +27,19 @@ export default function Home(context: {
       const res = await fetch(`/api/messages/${projectName}`);
       const payload = await res.json();
       setMessages(payload.data);
-      setOffset((prevMsgOffset) => ({
-        from: 0,
-        to: Math.min(
-          prevMsgOffset.from + MESSAGES_PER_PAGE,
-          payload.data.length,
-        ),
-      }));
+      setOffset((prevMsgOffset) => {
+        try {
+          return {
+            from: 0,
+            to: Math.min(
+              prevMsgOffset.from + MESSAGES_PER_PAGE,
+              payload.data.length,
+            ),
+          };
+        } catch (error) {
+          setError(true);
+        }
+      });
     }
 
     loadMessages();
@@ -41,14 +48,22 @@ export default function Home(context: {
   useEffect(() => {
     async function loadTranslations() {
       const res = await fetch(`/api/translations/${projectName}/${lang}`);
-      const payload = await res.json();
-      setTranslations(payload.translations);
+
+      try {
+        const payload = await res.json();
+
+        setTranslations(payload.translations);
+      } catch (error) {
+        setError(true);
+      }
     }
 
     loadTranslations();
   }, []);
 
-  return (
+  return error ? (
+    'Error: Please refer to server log'
+  ) : (
     <main>
       <Typography level="h1">Messages</Typography>
       <Button
