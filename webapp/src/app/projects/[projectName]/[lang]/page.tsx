@@ -2,20 +2,52 @@
 
 import { type MessageData } from '@/utils/adapters';
 import MessageForm from '@/components/MessageForm';
-import { Box, Button, Link, Typography } from '@mui/joy';
-import { useEffect, useState } from 'react';
+import { SafeRecord } from '@/utils/types';
+import { Box, Button, Input, Link, Typography } from '@mui/joy';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function Home(context: {
   params: { lang: string; projectName: string };
 }) {
+  const [filterText, setFilterText] = useState('');
   const [messages, setMessages] = useState<MessageData[]>([]);
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [translations, setTranslations] = useState<SafeRecord<string, string>>(
+    {},
+  );
   const [pullRequestUrl, setPullRequestUrl] = useState<string>('');
   const MESSAGES_PER_PAGE = 50; // number of messages to show per page
   const [msgOffset, setOffset] = useState<{ from: number; to: number }>({
     from: 0,
     to: MESSAGES_PER_PAGE,
   });
+
+  const sortedMessages = useMemo(() => {
+    return messages.sort((m0, m1) => {
+      const trans0 = translations[m0.id]?.trim() ?? '';
+      const trans1 = translations[m1.id]?.trim() ?? '';
+
+      if (!trans0) {
+        return -1;
+      } else if (trans1) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }, [messages, translations]);
+
+  const filteredMessages = useMemo(() => {
+    return sortedMessages.filter((message) => {
+      const trans = translations[message.id]?.toLowerCase();
+      const filterQuery = filterText.toLowerCase();
+
+      return (
+        trans?.includes(filterQuery) ||
+        message.defaultMessage.includes(filterQuery) ||
+        message.id.includes(filterQuery)
+      );
+    });
+  }, [sortedMessages, filterText]);
 
   const {
     params: { lang, projectName },
@@ -112,9 +144,17 @@ export default function Home(context: {
         >
           Next
         </Button>
+        <Box>
+          <Input
+            onChange={(ev) => {
+              setFilterText(ev.target.value);
+            }}
+            value={filterText}
+          />
+        </Box>
       </Box>
       <Box>
-        {messages.slice(msgOffset.from, msgOffset.to).map((msg) => {
+        {filteredMessages.slice(msgOffset.from, msgOffset.to).map((msg) => {
           return (
             <MessageForm
               key={msg.id}
