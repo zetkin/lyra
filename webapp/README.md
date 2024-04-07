@@ -1,5 +1,37 @@
 # Lyra web app
 
+## Setup
+
+1. Install yarn
+2. Install dependencies: `yarn install`
+
+### Visual Studio Code
+
+If you are using Visual Studio Code, there are a few more optional steps
+you can take to setup your develop environment.
+
+#### Prettier
+
+1. Install the extension `Prettier - Code formatter`.
+   It has an identifier `esbenp.prettier-vscode`.
+2. Configure the extension with the path to our
+   configuration file `webapp/.prettierrc.json`.
+3. Configure Prettier as the default formatter.
+
+Steps 2 and 3 can be done with a `.vscode/settings.json`:
+
+```
+{
+    "prettier.configPath": "webapp/.prettierrc.json",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
+```
+
+#### PlantUML
+
+1. Install the extension `PlantUML` (Id: `jebbs.plantuml`).
+2. Follow its documentation for setting up its requirments.
+
 ## Running in development
 
 In the root folder create file `./config/projects.yaml` with example content:
