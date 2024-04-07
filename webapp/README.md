@@ -31,4 +31,7 @@ projects:
       path: src # relative path of messages folder relative from above project path
     translations:
       path: src/locale # relative path of translations folder relative from above project path
+    languages: # list of language codes supported in the project
+      - sv
+      - de
 ```
