@@ -10,14 +10,29 @@ import {
 } from '@mui/joy';
 import { FC, useEffect, useState } from 'react';
 
-type Props = {
+type MessageFormProps = {
+  /**
+   * The message to be edited.
+   */
   message: MessageData;
-  // eslint-disable-next-line no-unused-vars
+
+  /**
+   * Callback to save the edited message.
+   */
   onSave: (text: string) => void;
+
+  /**
+   * The current translation of the message.
+   */
   translation: string;
 };
 
-const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
+/**
+ * The form translators use to edit a message. Displays the default message from
+ * the source code on the left for reference, and the current translation on the
+ * right.
+ */
+const MessageForm: FC<MessageFormProps> = ({ message, onSave, translation }) => {
   const [text, setText] = useState(translation);
 
   useEffect(() => {
