@@ -26,7 +26,7 @@ const ProjectsDashboard: FC<ProjectsDashboardProps> = ({ projects }) => {
             alignContent: 'center',
             columnGap: 2,
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, minmax(200px, 300px))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 300px));',
             justifyContent: 'center',
           },
           alignItems: 'center',

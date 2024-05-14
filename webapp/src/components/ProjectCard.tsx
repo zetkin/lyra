@@ -11,8 +11,21 @@ export type ProjectCardProps = {
    * The project's languages and their translation progress.
    */
   languages: {
+    /**
+     * The URL of the page containing the project's messages in this language.
+     */
+
     href: string;
+
+    /**
+     * The name of the language.
+     */
     language: string;
+
+    /**
+     * The percentage of messages translated in this language. 0 means none, 100
+     * means all of them.
+     */
     progress: number;
   }[];
 
@@ -92,11 +105,14 @@ const ProjectCard: FC<ProjectCardProps> = ({
         <Box
           columnGap={1}
           component="ul"
-          display="flex"
-          flexWrap="wrap"
+          display="grid"
           margin={0}
           padding={0}
           rowGap={1}
+          sx={{
+            gridTemplateColumns: 'repeat(auto-fit, minmax(30px, 120px));',
+            width: '100%',
+          }}
         >
           {languages.map(({ href, language, progress }) => (
             <Box
@@ -136,7 +152,14 @@ const ProjectCard: FC<ProjectCardProps> = ({
                 >
                   {language}
                 </Link>
-                <LinearProgress determinate value={progress} />
+                <LinearProgress
+                  determinate
+                  size='lg'
+                  sx={{ backgroundColor: '#ffffff' }}
+                  thickness={8}
+                  value={Math.min(progress, 100)}
+                  variant='outlined'
+                />
               </Box>
             </Box>
           ))}
