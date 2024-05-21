@@ -1,5 +1,5 @@
-import ProjectCard from '@/components/ProjectCard';
 import { Box } from '@mui/joy';
+import ProjectCard from '@/components/ProjectCard';
 
 const stories = {
   component: ProjectCard,
