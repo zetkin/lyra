@@ -34,9 +34,7 @@ export const Gen2 = () => (
   <Box width="300px">
     <ProjectCard
       href="/projects/gen2"
-      languages={[
-        { href: '/projects/gen3/en', language: 'en', progress: 0 },
-      ]}
+      languages={[{ href: '/projects/gen3/en', language: 'en', progress: 0 }]}
       messageCount={99999999999}
       name="Gen2"
     />

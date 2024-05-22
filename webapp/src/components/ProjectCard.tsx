@@ -154,11 +154,11 @@ const ProjectCard: FC<ProjectCardProps> = ({
                 </Link>
                 <LinearProgress
                   determinate
-                  size='lg'
+                  size="lg"
                   sx={{ backgroundColor: '#ffffff' }}
                   thickness={8}
                   value={Math.min(progress, 100)}
-                  variant='outlined'
+                  variant="outlined"
                 />
               </Box>
             </Box>

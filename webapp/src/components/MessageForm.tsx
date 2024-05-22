@@ -32,7 +32,11 @@ type MessageFormProps = {
  * the source code on the left for reference, and the current translation on the
  * right.
  */
-const MessageForm: FC<MessageFormProps> = ({ message, onSave, translation }) => {
+const MessageForm: FC<MessageFormProps> = ({
+  message,
+  onSave,
+  translation,
+}) => {
   const [text, setText] = useState(translation);
 
   useEffect(() => {
