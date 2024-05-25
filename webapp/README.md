@@ -34,7 +34,8 @@ Steps 2 and 3 can be done with a `.vscode/settings.json`:
 
 ## Running in development
 
-In the root folder create file `./config/projects.yaml` with example content:
+In the root folder (outside webapp) create file `./config/projects.yaml`
+with example content:
 
 ```yaml
 projects:
@@ -67,3 +68,12 @@ projects:
       - sv
       - de
 ```
+
+Start the server with `yarn dev` in `webapp`.
+
+Open `http://localhost:3000/projects` to view the configured projects.
+
+For a project `example-unique-name` and a language `yy`,
+open `http://localhost:3000/projects/example-unique-name/yy`
+to open the translation user interface.
+
