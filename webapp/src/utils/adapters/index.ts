@@ -9,15 +9,19 @@ export type MessageData = {
   }[];
 };
 
+export type MessageTranslation = {
+  sourceFile: string;
+  text: string;
+};
+
+export type MessageMap = Record<
+  string, // msg id
+  MessageTranslation
+>;
+
 export type TranslationMap = Record<
-  string,
-  Record<
-    string,
-    {
-      sourceFile: string;
-      text: string;
-    }
-  >
+  string, // lang
+  MessageMap
 >;
 
 export interface IMessageAdapter {
