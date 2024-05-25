@@ -76,4 +76,3 @@ Open `http://localhost:3000/projects` to view the configured projects.
 For a project `example-unique-name` and a language `yy`,
 open `http://localhost:3000/projects/example-unique-name/yy`
 to open the translation user interface.
-
