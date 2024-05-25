@@ -2,13 +2,13 @@ import { FC } from 'react';
 import { Box, List, Typography } from '@mui/joy';
 import ProjectCard, { ProjectCardProps } from './ProjectCard';
 
-type ProjectsDashboardProps = {
+type HomeDashboardProps = {
   projects: ProjectCardProps[];
 };
 
 /**
  */
-const ProjectsDashboard: FC<ProjectsDashboardProps> = ({ projects }) => {
+const HomeDashboard: FC<HomeDashboardProps> = ({ projects }) => {
   return (
     <Box
       alignItems="center"
@@ -45,4 +45,4 @@ const ProjectsDashboard: FC<ProjectsDashboardProps> = ({ projects }) => {
   );
 };
 
-export default ProjectsDashboard;
+export default HomeDashboard;

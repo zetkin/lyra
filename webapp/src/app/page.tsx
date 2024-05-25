@@ -1,7 +1,7 @@
 import { Cache } from '@/Cache';
+import HomeDashboard from '@/components/HomeDashboard';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { ProjectCardProps } from '@/components/ProjectCard';
-import ProjectsDashboard from '@/components/ProjectsDashboard';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
 
@@ -53,5 +53,5 @@ export default async function Home() {
     }),
   );
 
-  return <ProjectsDashboard projects={projects} />;
+  return <HomeDashboard projects={projects} />;
 }
