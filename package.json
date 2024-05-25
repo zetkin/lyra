@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Root package of Lyra",
   "private": true,
+  "packageManager": "yarn@4.1.0",
   "engines": {
     "node": ">=16.0.0"
   },
@@ -12,10 +13,10 @@
     ]
   },
   "scripts": {
-    "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test",
-    "lint:formatting": "yarn workspaces run lint:formatting",
-    "lint:eslint": "yarn workspaces run lint:eslint"
+    "build": "yarn workspaces foreach -A run build",
+    "test": "yarn workspaces foreach -A run test",
+    "lint:formatting": "yarn workspaces foreach -A run lint:formatting",
+    "lint:eslint": "yarn workspaces foreach -A run lint:eslint"
   },
   "keywords": [
     "lyra"

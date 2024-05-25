@@ -1,6 +1,7 @@
 node_modules/
 .idea/
 config/
+.yarn/
 
 # macOS
 .DS_Store

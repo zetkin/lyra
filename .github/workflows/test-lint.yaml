@@ -14,12 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: "yarn"
       - run: yarn
-      - run: yarn workspaces run build
-      - run: yarn workspaces run test
-      - run: yarn workspaces run lint:formatting
-      - run: yarn workspaces run lint:eslint
+      - run: yarn build
+      - run: yarn test
+      - run: yarn lint:formatting
+      - run: yarn lint:eslint
