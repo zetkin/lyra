@@ -67,7 +67,9 @@ export function groupByFilename(
       if (!output[lang][sourceFile]) {
         output[lang][sourceFile] = {};
       }
-      const msgIdArray = msgId.split('.').splice(sourceFile.split('/').length);
+      const msgIdArray = msgId
+        .split('.')
+        .splice(sourceFile.split('/').length - 1);
       const shortId = msgIdArray.join('.');
       output[lang][sourceFile][shortId] = text;
     });
