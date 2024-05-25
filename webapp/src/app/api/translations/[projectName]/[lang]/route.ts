@@ -1,4 +1,5 @@
 import { Cache } from '@/Cache';
+import { dehydrateMessageMap } from '@/utils/adapters';
 import {
   LanguageNotFound,
   LanguageNotSupported,
@@ -12,7 +13,8 @@ export async function GET(
 ) {
   const { projectName, lang } = context.params;
   try {
-    const translations = await Cache.getLanguage(projectName, lang);
+    const messageMap = await Cache.getLanguage(projectName, lang);
+    const translations = dehydrateMessageMap(messageMap);
     return NextResponse.json({
       lang,
       translations,

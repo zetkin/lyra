@@ -2,6 +2,7 @@
 
 import { LanguageNotSupported } from '@/errors';
 import { LyraProjectConfig } from '@/utils/lyraConfig';
+import { MessageMap } from '@/utils/adapters';
 import { ProjectStore } from '@/store/ProjectStore';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
@@ -9,7 +10,10 @@ import { Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 
 export class Cache {
-  public static async getLanguage(projectName: string, lang: string) {
+  public static async getLanguage(
+    projectName: string,
+    lang: string,
+  ): Promise<MessageMap> {
     const serverProjectConfig =
       await ServerConfig.getProjectConfig(projectName);
     const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
