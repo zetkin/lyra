@@ -19,13 +19,13 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
-            sourceFile: '',
+            sourceFile: 'de-with_extra_text.yaml',
             text: 'Hallo',
           },
         },
         sv: {
           'greeting.headline': {
-            sourceFile: '',
+            sourceFile: 'sv.yaml',
             text: 'Hej',
           },
         },
@@ -34,7 +34,10 @@ describe('ProjectStore', () => {
 
     const actual = await projectStore.getTranslations('de');
     expect(actual).toEqual({
-      'greeting.headline': 'Hallo',
+      'greeting.headline': {
+        sourceFile: 'de-with_extra_text.yaml',
+        text: 'Hallo',
+      },
     });
   });
 
@@ -53,24 +56,22 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
-            sourceFile: '',
+            sourceFile: 'anything',
             text: 'Hallo',
           },
         },
       }),
     });
 
-    const before = await projectStore.getTranslations('de');
+    const beforeTranslate = await projectStore.getTranslations('de');
+    const before = beforeTranslate['greeting.headline'].text;
     await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
-    const after = await projectStore.getTranslations('de');
+    const afterTranslate = await projectStore.getTranslations('de');
+    const after = afterTranslate['greeting.headline'].text;
 
-    expect(before).toEqual({
-      'greeting.headline': 'Hallo',
-    });
+    expect(before).toEqual('Hallo');
 
-    expect(after).toEqual({
-      'greeting.headline': 'Hallo!',
-    });
+    expect(after).toEqual('Hallo!');
   });
 
   it('can update translations before getTranslations()', async () => {
@@ -78,7 +79,7 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
-            sourceFile: '',
+            sourceFile: 'anything',
             text: 'Hallo',
           },
         },
@@ -89,7 +90,7 @@ describe('ProjectStore', () => {
     const actual = await projectStore.getTranslations('de');
 
     expect(actual).toEqual({
-      'greeting.headline': 'Hallo!',
+      'greeting.headline': { sourceFile: 'anything', text: 'Hallo!' },
     });
   });
 
@@ -146,10 +147,16 @@ describe('ProjectStore', () => {
     const languages = await projectStore.getLanguageData();
     expect(languages).toEqual({
       de: {
-        'greeting.headline': 'Hallo',
+        'greeting.headline': {
+          sourceFile: '',
+          text: 'Hallo',
+        },
       },
       sv: {
-        'greeting.headline': 'Hej',
+        'greeting.headline': {
+          sourceFile: '',
+          text: 'Hej',
+        },
       },
     });
   });
