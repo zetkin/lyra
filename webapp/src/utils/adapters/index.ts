@@ -67,12 +67,15 @@ export function groupByFilename(
       if (!output[lang][sourceFile]) {
         output[lang][sourceFile] = {};
       }
-      const msgIdArray = msgId
-        .split('.')
-        .splice(sourceFile.split('/').length - 1);
-      const shortId = msgIdArray.join('.');
+      const shortId = getShortId(msgId, sourceFile);
       output[lang][sourceFile][shortId] = text;
     });
   });
   return output;
+}
+
+function getShortId(msgId: string, sourceFile: string): string {
+  const sourceFileDotCount = sourceFile.replace('/', '.').split('.').length - 1;
+  const msgIdArray = msgId.split('.').splice(sourceFileDotCount);
+  return msgIdArray.join('.');
 }
