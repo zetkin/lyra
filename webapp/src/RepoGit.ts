@@ -11,6 +11,7 @@ import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { stringify } from 'yaml';
 import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
+import { groupByFilename, TranslationMap } from '@/utils/adapters';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 
 export class RepoGit {
@@ -143,27 +144,26 @@ export class RepoGit {
   }
 
   private async writeLangFiles(
-    languages: Record<string, Record<string, string>>,
+    languages: TranslationMap,
     translationsPath: string,
   ): Promise<string[]> {
     const paths: string[] = [];
+    const translateFilenameMap = groupByFilename(languages);
     const result = await Promise.allSettled(
-      Object.keys(languages).map(async (lang) => {
-        const yamlPath = path.join(
-          translationsPath,
-          // TODO: what if language file were yaml not yml?
-          `${lang}.yml`,
-        );
-        const yamlOutput = stringify(unflattenObject(languages[lang]), {
-          doubleQuotedAsJSON: true,
-          singleQuote: true,
+      Object.values(translateFilenameMap).map((filenames) => {
+        Object.entries(filenames).forEach(async ([filename, messages]) => {
+          const yamlPath = path.join(translationsPath, filename);
+          const yamlOutput = stringify(unflattenObject(messages), {
+            doubleQuotedAsJSON: true,
+            singleQuote: true,
+          });
+          try {
+            await fsp.writeFile(yamlPath, yamlOutput);
+          } catch (e) {
+            throw new WriteLanguageFileError(yamlPath, e);
+          }
+          paths.push(yamlPath);
         });
-        try {
-          await fsp.writeFile(yamlPath, yamlOutput);
-        } catch (e) {
-          throw new WriteLanguageFileError(yamlPath, e);
-        }
-        paths.push(yamlPath);
       }),
     );
     if (result.some((r) => r.status === 'rejected')) {

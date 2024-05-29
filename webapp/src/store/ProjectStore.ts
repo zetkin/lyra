@@ -1,4 +1,8 @@
-import { ITranslationAdapter, TranslationMap } from '@/utils/adapters';
+import {
+  ITranslationAdapter,
+  MessageMap,
+  TranslationMap,
+} from '@/utils/adapters';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
 
 type StoreData = {
@@ -17,10 +21,10 @@ export class ProjectStore {
     this.translationAdapter = translationAdapter;
   }
 
-  async getLanguageData(): Promise<Record<string, Record<string, string>>> {
+  async getLanguageData(): Promise<TranslationMap> {
     await this.initIfNecessary();
 
-    const output: Record<string, Record<string, string>> = {};
+    const output: TranslationMap = {};
     for await (const lang of Object.keys(this.data.languages)) {
       output[lang] = await this.getTranslations(lang);
     }
@@ -28,7 +32,7 @@ export class ProjectStore {
     return output;
   }
 
-  async getTranslations(lang: string): Promise<Record<string, string>> {
+  async getTranslations(lang: string): Promise<MessageMap> {
     await this.initIfNecessary();
 
     const language = this.data.languages[lang];
@@ -36,9 +40,9 @@ export class ProjectStore {
       throw new LanguageNotFound(lang);
     }
 
-    const output: Record<string, string> = {};
+    const output: MessageMap = {};
     Object.entries(language).forEach(([key, value]) => {
-      output[key] = value.text;
+      output[key] = value;
     });
 
     return output;
