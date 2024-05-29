@@ -54,6 +54,6 @@ export async function PUT(
   return NextResponse.json({
     languageName,
     messageId,
-    projectName,
+    text,
   });
 }
