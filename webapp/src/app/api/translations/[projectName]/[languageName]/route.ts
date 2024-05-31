@@ -8,13 +8,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   req: NextRequest, // keep this here even if unused
-  context: { params: { lang: string; projectName: string } },
+  context: { params: { languageName: string; projectName: string } },
 ) {
-  const { projectName, lang } = context.params;
+  const { projectName, languageName } = context.params;
   try {
-    const translations = await Cache.getLanguage(projectName, lang);
+    const translations = await Cache.getLanguage(projectName, languageName);
     return NextResponse.json({
-      lang,
+      languageName,
       translations,
     });
   } catch (e) {

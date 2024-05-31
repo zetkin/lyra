@@ -7,7 +7,7 @@ import { Box, Button, Input, Link, Typography } from '@mui/joy';
 import { useEffect, useMemo, useState } from 'react';
 
 export default function Home(context: {
-  params: { lang: string; projectName: string };
+  params: { languageName: string; projectName: string };
 }) {
   const [filterText, setFilterText] = useState('');
   const [messages, setMessages] = useState<MessageData[]>([]);
@@ -51,7 +51,7 @@ export default function Home(context: {
   }, [sortedMessages, filterText]);
 
   const {
-    params: { lang, projectName },
+    params: { languageName, projectName },
   } = context;
 
   useEffect(() => {
@@ -83,7 +83,9 @@ export default function Home(context: {
 
   useEffect(() => {
     async function loadTranslations() {
-      const res = await fetch(`/api/translations/${projectName}/${lang}`);
+      const res = await fetch(
+        `/api/translations/${projectName}/${languageName}`,
+      );
 
       try {
         const payload = await res.json();
@@ -180,7 +182,7 @@ export default function Home(context: {
               message={msg}
               onSave={async (text) => {
                 await fetch(
-                  `/api/translations/${projectName}/${lang}/${msg.id}`,
+                  `/api/translations/${projectName}/${languageName}/${msg.id}`,
                   {
                     body: JSON.stringify({
                       text,

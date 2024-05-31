@@ -14,13 +14,13 @@ export async function PUT(
   req: NextRequest,
   context: {
     params: {
-      lang: string;
-      msgId: string;
+      languageName: string;
+      messageId: string;
       projectName: string;
     };
   },
 ) {
-  const { lang, msgId, projectName } = context.params;
+  const { languageName, messageId, projectName } = context.params;
   const payload = await req.json();
   const { text } = payload;
   // TODO: include getProjectConfig() and getLyraConfig() in a try/catch block and check for error to return a certain 500 error
@@ -33,11 +33,11 @@ export async function PUT(
     const projectConfig = lyraConfig.getProjectConfigByPath(
       serverProjectConfig.projectPath,
     );
-    if (!projectConfig.isLanguageSupported(lang)) {
-      throw new LanguageNotSupported(lang, projectName);
+    if (!projectConfig.isLanguageSupported(languageName)) {
+      throw new LanguageNotSupported(languageName, projectName);
     }
     const projectStore = await Cache.getProjectStore(projectConfig);
-    await projectStore.updateTranslation(lang, msgId, text);
+    await projectStore.updateTranslation(languageName, messageId, text);
   } catch (e) {
     if (
       e instanceof LanguageNotFound ||
@@ -52,8 +52,8 @@ export async function PUT(
   }
 
   return NextResponse.json({
-    lang,
-    msgId,
+    languageName,
+    messageId,
     text,
   });
 }
