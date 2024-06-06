@@ -23,9 +23,7 @@ export default function Home() {
       <h1>Projects</h1>
       <ul>
         {projectsResponse.projects.map((project) => (
-          <li key={project.name} className="project-item">
-            <h2>{project.name}</h2>
-          </li>
+          <li key={project.name} className="project-item" />
         ))}
       </ul>
     </main>
