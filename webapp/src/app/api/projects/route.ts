@@ -1,18 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ServerConfig } from '@/utils/serverConfig';
-import { ServerConfigReadingError } from '@/errors';
-import { type ProjectItem, type ProjectsResponse } from '@/types';
 
 export async function GET() {
-  try {
-    const serverConfig = await ServerConfig.read();
-    return NextResponse.json<ProjectsResponse>({
-      projects: serverConfig.projects.map<ProjectItem>(() => ({})),
-    });
-  } catch (e) {
-    if (e instanceof ServerConfigReadingError) {
-      return NextResponse.json({ message: e.message }, { status: 500 });
-    }
-    throw e;
-  }
+  return NextResponse.json({});
 }

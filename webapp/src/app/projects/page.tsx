@@ -1,18 +1,12 @@
 'use client';
 
-import { type ProjectsResponse } from '@/types';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const [, setProjectsResponse] = useState<ProjectsResponse>({
-    projects: [],
-  });
-
   useEffect(() => {
     async function loadProjects() {
       const res = await fetch('/api/projects');
-      const payload = await res.json();
-      setProjectsResponse(payload);
+      await res.json();
     }
 
     loadProjects();
