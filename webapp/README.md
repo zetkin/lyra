@@ -76,8 +76,6 @@ Open the URL provided in the terminal to view projects.
 Click on projects to view project pages
 or click on languages to view translation pages.
 
-Open `http://localhost:3000/projects` to view project configuration.
-
 ## Dependencies
 
 Lyra runs on Node and likely uses its HTTP-server to serve requests
