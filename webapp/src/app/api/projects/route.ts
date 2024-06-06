@@ -10,7 +10,6 @@ export async function GET() {
       projects: serverConfig.projects.map<ProjectItem>((project) => ({
         name: project.name,
         owner: project.owner,
-        projectPath: project.projectPath,
         repo: project.repo,
       })),
     });

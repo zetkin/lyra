@@ -10,7 +10,6 @@ declare global {
 export type ProjectItem = {
   name: string;
   owner: string;
-  projectPath: string;
   repo: string;
 };
 
