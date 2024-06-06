@@ -26,7 +26,6 @@ export default function Home() {
           <li key={project.name} className="project-item">
             <h2>{project.name}</h2>
             <p>owner: {project.owner}</p>
-            <p>repo: {project.repo}</p>
           </li>
         ))}
       </ul>
