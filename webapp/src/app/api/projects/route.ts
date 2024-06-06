@@ -9,7 +9,6 @@ export async function GET() {
     return NextResponse.json<ProjectsResponse>({
       projects: serverConfig.projects.map<ProjectItem>((project) => ({
         name: project.name,
-        owner: project.owner,
       })),
     });
   } catch (e) {

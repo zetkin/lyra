@@ -9,7 +9,6 @@ declare global {
 
 export type ProjectItem = {
   name: string;
-  owner: string;
 };
 
 export type ProjectsResponse = {

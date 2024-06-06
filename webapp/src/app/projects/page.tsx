@@ -25,7 +25,6 @@ export default function Home() {
         {projectsResponse.projects.map((project) => (
           <li key={project.name} className="project-item">
             <h2>{project.name}</h2>
-            <p>owner: {project.owner}</p>
           </li>
         ))}
       </ul>
