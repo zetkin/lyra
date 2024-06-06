@@ -5,8 +5,7 @@ import { useEffect } from 'react';
 export default function Home() {
   useEffect(() => {
     async function loadProjects() {
-      const res = await fetch('/api/projects');
-      await res.json();
+      await fetch('/api/projects');
     }
 
     loadProjects();
