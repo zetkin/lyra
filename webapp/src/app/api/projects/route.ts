@@ -7,9 +7,7 @@ export async function GET() {
   try {
     const serverConfig = await ServerConfig.read();
     return NextResponse.json<ProjectsResponse>({
-      projects: serverConfig.projects.map<ProjectItem>((project) => ({
-        name: project.name,
-      })),
+      projects: serverConfig.projects.map<ProjectItem>(() => ({})),
     });
   } catch (e) {
     if (e instanceof ServerConfigReadingError) {

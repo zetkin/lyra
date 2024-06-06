@@ -4,7 +4,7 @@ import { type ProjectsResponse } from '@/types';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [projectsResponse, setProjectsResponse] = useState<ProjectsResponse>({
+  const [, setProjectsResponse] = useState<ProjectsResponse>({
     projects: [],
   });
 
@@ -21,11 +21,6 @@ export default function Home() {
   return (
     <main>
       <h1>Projects</h1>
-      <ul>
-        {projectsResponse.projects.map((project) => (
-          <li key={project.name} className="project-item" />
-        ))}
-      </ul>
     </main>
   );
 }

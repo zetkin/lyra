@@ -7,9 +7,7 @@ declare global {
   var store: Store;
 }
 
-export type ProjectItem = {
-  name: string;
-};
+export type ProjectItem = Record<string, never>;
 
 export type ProjectsResponse = {
   projects: ProjectItem[];
