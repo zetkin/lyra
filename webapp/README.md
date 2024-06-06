@@ -71,11 +71,12 @@ projects:
 
 Start the server with `yarn dev` in `webapp`.
 
-Open `http://localhost:3000/projects` to view the configured projects.
+Open the URL provided in the terminal to view projects.
 
-For a project `example-unique-name` and a language `yy`,
-open `http://localhost:3000/projects/example-unique-name/yy`
-to open the translation user interface.
+Click on projects to view project pages
+or click on languages to view translation pages.
+
+Open `http://localhost:3000/projects` to view project configuration.
 
 ## Dependencies
 
