@@ -1,17 +1,17 @@
 'use client';
+
 import Box from '@mui/joy/Box';
-import { FC } from 'react';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import Sheet from '@mui/joy/Sheet';
+import SidebarOverlay from '@/components/SidebarOverlay';
 import Typography from '@mui/joy/Typography';
-
-import SidebarOverlay from './SidebarOverlay';
+import { FC, ReactNode } from 'react';
 
 type SidebarProps = {
-  //
+  children: ReactNode;
 };
 
-const Sidebar: FC<SidebarProps> = () => {
+const Sidebar: FC<SidebarProps> = ({ children }) => {
   return (
     <Sheet
       className="Sidebar"
@@ -23,6 +23,7 @@ const Sidebar: FC<SidebarProps> = () => {
         flexShrink: 0,
         gap: 2,
         height: '100dvh',
+        overflowY: 'auto',
         p: 2,
         position: { md: 'sticky', xs: 'fixed' },
         top: 0,
@@ -49,6 +50,7 @@ const Sidebar: FC<SidebarProps> = () => {
       <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
         <Typography level="title-lg">Acme Co.</Typography>
       </Box>
+      {children}
     </Sheet>
   );
 };
