@@ -15,5 +15,12 @@ export type ProjectItem = {
 };
 
 export type ProjectsResponse = {
-  projects: ProjectItem[];
-};
+  href: string;
+  languages: {
+    href: string;
+    language: string;
+    progress: number;
+  }[];
+  messageCount: number;
+  name: string;
+}[];
