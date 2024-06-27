@@ -10,6 +10,13 @@ module.exports = {
   extends: ['eslint:recommended', 'next', 'prettier'],
   settings: { react: { version: 'detect' } },
   overrides: [
+    {
+      files: ['.prettierrc.json'],
+
+      // default parser esprima does not support json
+      parser: '@typescript-eslint/parser',
+    },
+
     // This configuration will apply only to TypeScript files
     {
       files: ['**/*.ts', '**/*.tsx', 'src/**/*.js'],
