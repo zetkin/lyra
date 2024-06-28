@@ -1,5 +1,6 @@
-import { ProjectStore } from './ProjectStore';
 import { describe, expect, it } from '@jest/globals';
+
+import { ProjectStore } from './ProjectStore';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
 
 describe('ProjectStore', () => {

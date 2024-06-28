@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { ServerConfig } from '@/utils/serverConfig';
 import { ServerConfigReadingError } from '@/errors';
 import { type ProjectItem, type ProjectsResponse } from '@/types';

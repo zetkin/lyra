@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
@@ -6,7 +8,6 @@ import {
   ProjectNameNotFoundError,
   ProjectPathNotFoundError,
 } from '@/errors';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   req: NextRequest,

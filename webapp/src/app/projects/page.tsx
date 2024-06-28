@@ -1,7 +1,8 @@
 'use client';
 
-import { type ProjectsResponse } from '@/types';
 import { useEffect, useState } from 'react';
+
+import { type ProjectsResponse } from '@/types';
 
 export default function Home() {
   const [projectsResponse, setProjectsResponse] = useState<ProjectsResponse>({

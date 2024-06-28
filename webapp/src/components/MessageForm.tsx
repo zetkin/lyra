@@ -1,4 +1,3 @@
-import { type MessageData } from '@/utils/adapters';
 import {
   Box,
   Button,
@@ -9,6 +8,8 @@ import {
   Typography,
 } from '@mui/joy';
 import { FC, useEffect, useState } from 'react';
+
+import { type MessageData } from '@/utils/adapters';
 
 type Props = {
   message: MessageData;

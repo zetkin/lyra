@@ -1,6 +1,7 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 import { ProjectNameNotFoundError } from '@/errors';
 import { RepoGit } from '@/RepoGit';
-import { NextRequest, NextResponse } from 'next/server';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 
 /** used to prevent multiple requests from running at the same time */

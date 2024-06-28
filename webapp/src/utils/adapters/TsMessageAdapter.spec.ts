@@ -1,7 +1,9 @@
-import { type MessageData } from '.';
 import mock from 'mock-fs';
-import TsMessageAdapter from './TsMessageAdapter';
 import { afterEach, describe, expect, it } from '@jest/globals';
+
+import { type MessageData } from '.';
+import TsMessageAdapter from './TsMessageAdapter';
+
 
 describe('TsMessageAdapter', () => {
   afterEach(() => {
