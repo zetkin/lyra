@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it } from '@jest/globals';
 import { type MessageData } from '.';
 import YamlMessageAdapter from './YamlMessageAdapter';
 
-
 describe('YamlMessageAdapter', () => {
   describe('getMessages()', () => {
     afterEach(() => {

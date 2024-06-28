@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it } from '@jest/globals';
 import { type MessageData } from '.';
 import TsMessageAdapter from './TsMessageAdapter';
 
-
 describe('TsMessageAdapter', () => {
   afterEach(() => {
     mock.restore();
