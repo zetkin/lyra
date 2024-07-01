@@ -4,7 +4,7 @@
   "description": "Root package of Lyra",
   "private": true,
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.17"
   },
   "workspaces": {
     "packages": [
