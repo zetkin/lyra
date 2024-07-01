@@ -30,11 +30,9 @@ export class RepoGit {
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
     }
-    const promise = new Promise<RepoGit>((resolve, reject) => {
-      const repository = new RepoGit(spConfig);
-      const work = repository.checkoutBaseAndPull();
-      work.then(() => resolve(repository), reject);
-    });
+    const repository = new RepoGit(spConfig);
+    const work = repository.checkoutBaseAndPull();
+    const promise = work.then(() => repository);
     RepoGit.repositories[key] = promise;
 
     return promise;
