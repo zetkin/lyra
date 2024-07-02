@@ -1,5 +1,6 @@
-import { IGit } from './IGit';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+
+import { IGit } from './IGit';
 
 export class SimpleGitWrapper implements IGit {
   private readonly git: SimpleGit;

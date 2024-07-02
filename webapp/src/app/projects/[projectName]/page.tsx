@@ -1,7 +1,8 @@
-import { Cache } from '@/Cache';
-import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { NextPage } from 'next';
 import { notFound } from 'next/navigation';
+
+import { Cache } from '@/Cache';
+import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import ProjectDashboard from '@/components/ProjectDashboard';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';

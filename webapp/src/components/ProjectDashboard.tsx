@@ -1,9 +1,10 @@
 'use client';
 
-import { CardGrid } from '@/components/CardGrid';
 import { FC } from 'react';
 import Link from 'next/link';
 import { Box, Typography, useTheme } from '@mui/joy';
+
+import { CardGrid } from '@/components/CardGrid';
 import LanguageCard, { LanguageCardProps } from '@/components/LanguageCard';
 
 type ProjectDashboardProps = {

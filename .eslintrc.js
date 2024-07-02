@@ -10,6 +10,13 @@ module.exports = {
   extends: ['eslint:recommended', 'next', 'prettier'],
   settings: { react: { version: 'detect' } },
   overrides: [
+    {
+      files: ['.prettierrc.json'],
+
+      // default parser esprima does not support json
+      parser: '@typescript-eslint/parser',
+    },
+
     // This configuration will apply only to TypeScript files
     {
       files: ['**/*.ts', '**/*.tsx', 'src/**/*.js'],
@@ -21,7 +28,6 @@ module.exports = {
       },
       extends: [
         'plugin:@typescript-eslint/recommended', // TypeScript rules
-        'plugin:react-hooks/recommended', // React hooks rules
         'plugin:jsx-a11y/recommended', // Accessibility rules
       ],
       plugins: ['no-switch-statements'],
@@ -38,6 +44,13 @@ module.exports = {
           },
         ],
         curly: 'error',
+        'import/order': [
+          'error',
+          {
+            groups: [['external', 'builtin']],
+            'newlines-between': 'always',
+          },
+        ],
         'jsx-a11y/anchor-is-valid': 'off',
         'no-console': 'error',
         'no-switch-statements/no-switch': 'error',
@@ -77,14 +90,6 @@ module.exports = {
           {
             component: true,
             html: true,
-          },
-        ],
-        'sort-imports': [
-          'error',
-          {
-            ignoreCase: true,
-            allowSeparatedGroups: true,
-            memberSyntaxSortOrder: ['none', 'all', 'single', 'multiple'],
           },
         ],
         'sort-keys': 'error',
