@@ -1,6 +1,7 @@
 import mock from 'mock-fs';
-import { ServerConfig } from './serverConfig';
 import { afterEach, describe, expect, it } from '@jest/globals';
+
+import { ServerConfig } from './serverConfig';
 import { ProjectNameNotFoundError, ServerConfigReadingError } from '@/errors';
 
 describe('ServerConfig', () => {

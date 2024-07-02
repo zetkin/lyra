@@ -1,10 +1,11 @@
 'use client';
 
+import { Box, Button, Input, Link, Typography } from '@mui/joy';
+import { useEffect, useMemo, useState } from 'react';
+
 import { type MessageData } from '@/utils/adapters';
 import MessageForm from '@/components/MessageForm';
 import { SafeRecord } from '@/utils/types';
-import { Box, Button, Input, Link, Typography } from '@mui/joy';
-import { useEffect, useMemo, useState } from 'react';
 
 export default function Home(context: {
   params: { languageName: string; projectName: string };

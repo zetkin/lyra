@@ -1,10 +1,11 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 import { Cache } from '@/Cache';
 import {
   LanguageNotFound,
   LanguageNotSupported,
   ProjectNameNotFoundError,
 } from '@/errors';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   req: NextRequest, // keep this here even if unused

@@ -1,5 +1,6 @@
-import flattenObject from './flattenObject';
 import { describe, expect, it } from '@jest/globals';
+
+import flattenObject from './flattenObject';
 
 describe('flattenObject()', () => {
   it('returns empty object for empty obj', () => {

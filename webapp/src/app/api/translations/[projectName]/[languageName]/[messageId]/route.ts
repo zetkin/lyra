@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from 'next/server';
+
 import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
@@ -8,7 +10,6 @@ import {
   ProjectNameNotFoundError,
   ProjectPathNotFoundError,
 } from '@/errors';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   req: NextRequest,

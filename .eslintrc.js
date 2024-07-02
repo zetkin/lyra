@@ -37,6 +37,13 @@ module.exports = {
           },
         ],
         curly: 'error',
+        'import/order': [
+          'error',
+          {
+            groups: [['external', 'builtin']],
+            'newlines-between': 'always',
+          },
+        ],
         'jsx-a11y/anchor-is-valid': 'off',
         'no-console': 'error',
         'no-switch-statements/no-switch': 'error',
@@ -76,14 +83,6 @@ module.exports = {
           {
             component: true,
             html: true,
-          },
-        ],
-        'sort-imports': [
-          'error',
-          {
-            ignoreCase: true,
-            allowSeparatedGroups: true,
-            memberSyntaxSortOrder: ['none', 'all', 'single', 'multiple'],
           },
         ],
         'sort-keys': 'error',

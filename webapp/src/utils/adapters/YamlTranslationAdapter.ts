@@ -1,7 +1,8 @@
-import flattenObject from '../flattenObject';
 import fs from 'fs/promises';
 import { parse } from 'yaml';
 import path from 'path';
+
+import flattenObject from '../flattenObject';
 import { ITranslationAdapter, type TranslationMap } from '.';
 
 export default class YamlTranslationAdapter implements ITranslationAdapter {

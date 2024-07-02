@@ -1,6 +1,7 @@
-import { CardGrid } from '@/components/CardGrid';
 import { FC } from 'react';
 import { Box, Typography } from '@mui/joy';
+
+import { CardGrid } from '@/components/CardGrid';
 import ProjectCard, { ProjectCardProps } from '@/components/ProjectCard';
 
 type HomeDashboardProps = {
