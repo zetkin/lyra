@@ -10,8 +10,10 @@ export class SimpleGitWrapper implements IGit {
       baseDir: repoPath,
       binary: 'git',
 
-      /* We disable symlinks to reduce risk of access to files
-         outside of the local repository */
+      /**
+       * We disable symlinks to reduce risk of access to files
+       * outside of the local repository.
+       */
       config: ['core.symlinks=false'],
 
       maxConcurrentProcesses: 1,
