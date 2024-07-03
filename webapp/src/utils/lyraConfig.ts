@@ -57,17 +57,7 @@ export class LyraConfig {
 
       return new LyraConfig(
         parsed.projects.map((project) => {
-          const languagesEntries = (project.languages ?? []).entries();
-          for (const [index, language] of languagesEntries) {
-            if (/^[a-z]{2}$/.test(language)) {
-              continue;
-            }
-
-            throw new LyraConfigReadingError(
-              filename,
-              `invalid language at index ${index}`,
-            );
-          }
+          LyraConfig.valdidateLanguages(project.languages);
           return new LyraProjectConfig(
             repoPath,
             project.path,
@@ -79,10 +69,20 @@ export class LyraConfig {
         }),
       );
     } catch (e) {
-      if (e instanceof LyraConfigReadingError) {
-        throw e;
-      }
       throw new LyraConfigReadingError(filename, e);
+    }
+  }
+
+  private static valdidateLanguages(languages?: string[]) {
+    if (languages === undefined) {
+      return;
+    }
+    for (const [index, language] of languages.entries()) {
+      if (/^[a-z]{2}$/.test(language)) {
+        continue;
+      }
+
+      throw new SyntaxError(`invalid language at index ${index}`);
     }
   }
 }
