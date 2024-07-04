@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Box, LinearProgress, Link, Typography } from '@mui/joy';
+import { Box, LinearProgress, Link, Typography } from '@mui/material';
 
 export type ProjectCardProps = {
   /**

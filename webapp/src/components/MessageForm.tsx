@@ -1,31 +1,66 @@
+'use client';
+
 import {
   Box,
   Button,
+  CircularProgress,
   Grid,
   List,
   ListItem,
-  Textarea,
+  TextField,
   Typography,
-} from '@mui/joy';
-import { FC, useEffect, useState } from 'react';
+} from '@mui/material';
+import { FC, useCallback, useState } from 'react';
 
 import { type MessageData } from '@/utils/adapters';
 
-type Props = {
+type MessageFormStatus = 'pristine' | 'modified' | 'saving';
+
+type MessageFormState = {
+  original: string;
+  status: MessageFormStatus;
+  text: string;
+};
+
+type MessageFormProps = {
+  languageName: string;
   message: MessageData;
-  // eslint-disable-next-line no-unused-vars
-  onSave: (text: string) => void;
+  projectName: string;
+  saveTranslation: (
+    projectName: string,
+    languageName: string,
+    messageId: string,
+    translation: string,
+  ) => Promise<void>;
   translation: string;
 };
 
-const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
-  const [text, setText] = useState(translation);
+const MessageForm: FC<MessageFormProps> = ({
+  languageName,
+  message,
+  projectName,
+  saveTranslation,
+  translation,
+}) => {
+  const [{ original, status, text }, setState] = useState<MessageFormState>({
+    original: translation,
+    status: 'pristine',
+    text: translation,
+  });
 
-  useEffect(() => {
-    setText(translation);
-  }, [translation]);
+  const onChange = useCallback((ev: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setState((s) => ({ ...s, status: 'modified', text: ev.target.value }));
+  }, []);
 
-  const edited = text != translation;
+  const onSave = useCallback(async () => {
+    setState((s) => ({ ...s, status: 'saving' }));
+    await saveTranslation(projectName, languageName, message.id, text);
+    setState((s) => ({ ...s, original: text, status: 'pristine' }));
+  }, []);
+
+  const onReset = useCallback(() => {
+    setState((s) => ({ ...s, status: 'pristine', text: original }));
+  }, []);
 
   return (
     <Grid
@@ -43,15 +78,32 @@ const MessageForm: FC<Props> = ({ message, onSave, translation }) => {
       </Grid>
       <Grid md={6} xs={12}>
         <Box display="flex" flexDirection="row" gap={1}>
-          <Textarea
+          <TextField
             minRows={2}
-            onChange={(ev) => setText(ev.target.value)}
+            multiline
+            onChange={onChange}
             sx={{ flexGrow: 1 }}
             value={text}
           />
-          {edited && <Button onClick={() => onSave(text)}>Save</Button>}
-          {edited && (
-            <Button onClick={() => setText(translation)} variant="outlined">
+          {status !== 'pristine' && (
+            <Button
+              aria-label={status === 'modified' ? 'Save' : 'Saving'}
+              disabled={status === 'saving'}
+              onClick={onSave}
+            >
+              <>
+                <>{status === 'modified' && 'Save'}</>
+                <>{status === 'saving' && <CircularProgress />}</>
+              </>
+            </Button>
+          )}
+          {status !== 'pristine' && (
+            <Button
+              aria-label="Reset"
+              disabled={status === 'saving'}
+              onClick={onReset}
+              variant="outlined"
+            >
               ↺
             </Button>
           )}

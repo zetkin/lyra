@@ -13,9 +13,13 @@
     "test": "jest"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/joy": "^5.0.0-beta.11",
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.21",
+    "@mui/material": "^5.15.21",
+    "@mui/material-nextjs": "^5.15.11",
+    "@mui/x-tree-view": "^7.8.0",
     "@octokit/rest": "^20.0.2",
     "next": "14.2.4",
     "react": "~18.3.1",

@@ -1,4 +1,4 @@
-interface UnflattenObject {
+export interface UnflattenObject {
   [key: string]: string | UnflattenObject;
 }
 

@@ -2,7 +2,7 @@
 
 import { FC } from 'react';
 import Link from 'next/link';
-import { Box, Typography, useTheme } from '@mui/joy';
+import { Box, Typography, useTheme } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
 import LanguageCard, { LanguageCardProps } from '@/components/LanguageCard';
