@@ -2,7 +2,7 @@
 
 import { FC } from 'react';
 import Link from 'next/link';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
 import LanguageCard, { LanguageCardProps } from '@/components/LanguageCard';
@@ -18,7 +18,6 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({
   messageCount,
   project,
 }) => {
-  const theme = useTheme();
   return (
     <Box
       alignItems="center"
@@ -38,7 +37,6 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({
         <Link href="/">
           <svg
             aria-labelledby="homeTitle"
-            fill={theme.palette.primary[500]}
             viewBox="0 0 576 512"
             width={22}
             xmlns="http://www.w3.org/2000/svg"
