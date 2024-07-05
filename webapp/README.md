@@ -26,8 +26,8 @@ including arbitrary code execution.
 
 ## Setup
 
-1. Install yarn
-2. Install dependencies: `yarn install`
+1. Install npm
+2. Install dependencies: `npm install`
 
 ### Visual Studio Code
 
@@ -93,7 +93,7 @@ projects:
       - de
 ```
 
-Start the server with `yarn dev` in `webapp`.
+Start the server with `npm run dev` in `webapp`.
 
 Open the URL provided in the terminal to view projects.
 

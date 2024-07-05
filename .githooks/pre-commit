@@ -1,2 +1,2 @@
 #!/bin/sh
-yarn lint:formatting && yarn lint:eslint
+npm run lint:formatting && npm run lint:eslint
