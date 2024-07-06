@@ -9,20 +9,21 @@ source code repositories of internationalized applications.
 - Lyra can create pull requests to merge updated
   translations into the source code repository.
 
-**Warning:**
-A party who controls a source code repository branch
-which Lyra is set up to translate will also have
-a lot of control over the Lyra process. That control
-probably includes reading files from the operating system
-and possibly includes arbitrary code exection.
+> [!WARNING]
+> A party who controls a source code repository branch
+> which Lyra is set up to translate will also have
+> a lot of control over the Lyra process. That control
+> probably includes reading files from the operating system
+> and possibly includes arbitrary code exection.
 
 For each repository Lyra is set up to translate,
 Lyra needs control over a file system directory.
 
-**Warning:** A party who controls the contents of
-a local repository directory will also have
-a lot of control over the Lyra process, probably
-including arbitrary code execution.
+> [!WARNING]
+> A party who controls the contents of
+> a local repository directory will also have
+> a lot of control over the Lyra process, probably
+> including arbitrary code execution.
 
 ## Setup
 
