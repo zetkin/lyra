@@ -12,10 +12,10 @@
     ]
   },
   "scripts": {
-    "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test",
-    "lint:formatting": "yarn workspaces run lint:formatting",
-    "lint:eslint": "yarn workspaces run lint:eslint"
+    "build": "npm run --workspaces build",
+    "test": "npm run --workspaces test",
+    "lint:formatting": "npm run --workspaces lint:formatting",
+    "lint:eslint": "npm run --workspaces lint:eslint"
   },
   "keywords": [
     "lyra"

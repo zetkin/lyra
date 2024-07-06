@@ -17,9 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ^18.17
-          cache: "yarn"
-      - run: yarn
-      - run: yarn workspaces run build
-      - run: yarn workspaces run test
-      - run: yarn workspaces run lint:formatting
-      - run: yarn workspaces run lint:eslint
+          cache: 'npm'
+      - run: npm install
+      - run: npm run --workspaces build
+      - run: npm run --workspaces test
+      - run: npm run --workspaces lint:formatting
+      - run: npm run --workspaces lint:eslint
