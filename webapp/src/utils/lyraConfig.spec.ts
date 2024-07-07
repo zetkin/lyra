@@ -141,6 +141,26 @@ describe('LyraConfig', () => {
         await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
 
+      it('throws for suspicious character in language', async () => {
+        mock({
+          '/a/lyra.yml': [
+            'projects:',
+            '- path: .',
+            '  messages:',
+            '    format: ts',
+            '    path: src',
+            '  translations:',
+            '    path: locale',
+            '  languages:',
+            '  - da',
+            '  - ..',
+            '  - sv',
+          ].join('\n'),
+        });
+        const actual = LyraConfig.readFromDir('/a');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
+      });
+
       it('throws for file not found', async () => {
         expect.assertions(1);
         mock({

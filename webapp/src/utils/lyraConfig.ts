@@ -57,6 +57,7 @@ export class LyraConfig {
 
       return new LyraConfig(
         parsed.projects.map((project) => {
+          LyraConfig.valdidateLanguages(project.languages);
           return new LyraProjectConfig(
             repoPath,
             project.path,
@@ -71,6 +72,19 @@ export class LyraConfig {
       throw new LyraConfigReadingError(filename, e);
     }
   }
+
+  private static valdidateLanguages(languages?: string[]) {
+    if (languages === undefined) {
+      return;
+    }
+    for (const [index, language] of languages.entries()) {
+      if (/^[a-z]{2}$/.test(language)) {
+        continue;
+      }
+
+      throw new SyntaxError(`invalid language at index ${index}`);
+    }
+  }
 }
 
 export class LyraProjectConfig {
@@ -80,7 +94,42 @@ export class LyraProjectConfig {
     public readonly messageKind: string,
     private readonly messagesPath: string,
     private readonly translationsPath: string,
-    public readonly languages: string[], // languages in ISO 639-1 code format (en, fr, de, etc.)
+
+    /*
+     * Lyra was written primarily for Zetkin Generation 3
+     * which uses react-intl from FromatJS to format messages.
+     *
+     * FormatJS documents that it uses "locale code" defined in UTS LDML.
+     *
+     * https://formatjs.io/docs/core-concepts/basic-internationalization-principles
+     *
+     * Unicode Technical Standard Locale Data Marmkup Language
+     * does not define any locale code
+     * but they do define locale identifiers.
+     *
+     * Lower case language subtags are valid locale identifiers
+     * and will likely suffice for a long time.
+     *
+     * https://www.unicode.org/reports/tr35/tr35.html
+     *
+     * Unicode language subtags are based on BCP 47
+     * and BCP 47 includes at least many language codes from ISO 639-1
+     * but note that BCP 47 does not commit to including
+     * all languages codes of ISO 639-1.
+     *
+     * https://www.rfc-editor.org/rfc/rfc5646.html
+     *
+     * Some valid examples are:
+     * - da
+     * - de
+     * - en
+     * - nn
+     * - sv
+     *
+     * However, english is usually the language of default messages
+     * and Lyra has no support for translating default messages.
+     */
+    public readonly languages: string[],
   ) {}
 
   get absPath(): string {
