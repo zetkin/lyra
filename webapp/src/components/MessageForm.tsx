@@ -56,11 +56,11 @@ const MessageForm: FC<MessageFormProps> = ({
     setState((s) => ({ ...s, status: 'saving' }));
     await saveTranslation(projectName, languageName, message.id, text);
     setState((s) => ({ ...s, original: text, status: 'pristine' }));
-  }, []);
+  }, [languageName, message.id, projectName, saveTranslation, text]);
 
   const onReset = useCallback(() => {
     setState((s) => ({ ...s, status: 'pristine', text: original }));
-  }, []);
+  }, [original]);
 
   return (
     <Grid

@@ -51,7 +51,7 @@ const ExplorerTree: FC<ExplorerTreeProps> = ({
     }
 
     return recurse(unflattened, '');
-  }, []);
+  }, [messages]);
 
   const onItemSelectionToggle = useCallback(
     (e: React.SyntheticEvent, id: string, isSelected: boolean) => {
@@ -59,7 +59,7 @@ const ExplorerTree: FC<ExplorerTreeProps> = ({
         router.push(`/projects/${projectName}/${languageName}/${id}`);
       }
     },
-    [],
+    [languageName, projectName, router],
   );
 
   return (
