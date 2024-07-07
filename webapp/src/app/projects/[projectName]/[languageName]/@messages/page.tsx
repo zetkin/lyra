@@ -27,6 +27,9 @@ async function saveTranslation(
   const repoGit = await RepoGit.getRepoGit(project);
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
+  if (!projectConfig.isLanguageSupported(languageName)) {
+    return;
+  }
   const projectStore = await Cache.getProjectStore(projectConfig);
   await projectStore.updateTranslation(languageName, messageId, translation);
 }
