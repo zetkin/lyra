@@ -48,9 +48,15 @@ const MessageForm: FC<MessageFormProps> = ({
     text: translation,
   });
 
-  const onChange = useCallback((ev: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setState((s) => ({ ...s, status: 'modified', text: ev.target.value }));
-  }, []);
+  const onChange = useCallback(
+    (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (status === 'saving') {
+        return;
+      }
+      setState((s) => ({ ...s, status: 'modified', text: ev.target.value }));
+    },
+    [status],
+  );
 
   const onSave = useCallback(async () => {
     setState((s) => ({ ...s, status: 'saving' }));
@@ -79,6 +85,8 @@ const MessageForm: FC<MessageFormProps> = ({
       <Grid md={6} xs={12}>
         <Box display="flex" flexDirection="row" gap={1}>
           <TextField
+            aria-readonly={status === 'saving'}
+            InputProps={{ readOnly: status === 'saving' }}
             minRows={2}
             multiline
             onChange={onChange}
