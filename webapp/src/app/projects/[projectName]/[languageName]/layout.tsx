@@ -18,8 +18,8 @@ export default function Layout({
       <Header />
       <Sidebar>{explorer}</Sidebar>
       <Main>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Box sx={{ flex: 1 }}>{messages}</Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {messages}
         </Box>
       </Main>
     </Box>
