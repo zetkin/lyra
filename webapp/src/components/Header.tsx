@@ -13,9 +13,8 @@ const Header: FC = () => {
     <Paper
       sx={{
         alignItems: 'center',
-        borderBottom: '1px solid',
-        borderColor: 'background.level1',
-        boxShadow: 'sm',
+        borderBottom: 1,
+        boxShadow: 1,
         display: { md: 'none', xs: 'flex' },
         gap: 1,
         height: 'var(--Header-height)',
