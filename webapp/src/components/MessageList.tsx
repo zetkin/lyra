@@ -38,7 +38,7 @@ const MessageList: FC<MessageListProps> = ({
             message={message}
             projectName={projectName}
             saveTranslation={saveTranslation}
-            translation={translations[message.id]}
+            translation={translations[message.id] || ''}
           />
         </ListItem>
       );
