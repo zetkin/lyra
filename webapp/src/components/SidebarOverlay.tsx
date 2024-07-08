@@ -7,7 +7,6 @@ import { closeSidebar } from '../utils/sidebar';
 const SidebarOverlay: FC = () => {
   return (
     <Box
-      className="Sidebar-overlay"
       onClick={() => closeSidebar()}
       sx={{
         backgroundColor: 'var(--joy-palette-background-backdrop)',

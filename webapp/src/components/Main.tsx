@@ -8,7 +8,6 @@ type MainProps = {
 const Main: FC<MainProps> = ({ children }) => {
   return (
     <Box
-      className="MainContent"
       component="main"
       sx={{
         display: 'flex',

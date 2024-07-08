@@ -15,7 +15,6 @@ type SidebarProps = {
 const Sidebar: FC<SidebarProps> = ({ children }) => {
   return (
     <Paper
-      className="Sidebar"
       sx={{
         borderColor: 'divider',
         borderRight: '1px solid',
