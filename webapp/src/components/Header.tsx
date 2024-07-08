@@ -1,14 +1,28 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, useEffect, useCallback } from 'react';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Paper from '@mui/material/Paper';
 
-import { toggleSidebar } from '../utils/sidebar';
+import { isSidebarOpen, toggleSidebar } from '@/utils/sidebar';
 
 const Header: FC = () => {
+  const onResize = useCallback(() => {
+    if (window.innerWidth >= 960 && isSidebarOpen()) {
+      document.documentElement.style.removeProperty('--SideNavigation-slideIn');
+      document.body.style.removeProperty('overflow');
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+    };
+  }, [onResize]);
+
   return (
     <Paper
       sx={{

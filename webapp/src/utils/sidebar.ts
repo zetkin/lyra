@@ -12,12 +12,19 @@ export function closeSidebar() {
   }
 }
 
-export function toggleSidebar() {
+export function isSidebarOpen() {
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     const slideIn = window
       .getComputedStyle(document.documentElement)
       .getPropertyValue('--SideNavigation-slideIn');
-    if (slideIn) {
+    return slideIn === '1';
+  }
+  return false;
+}
+
+export function toggleSidebar() {
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    if (isSidebarOpen()) {
       closeSidebar();
     } else {
       openSidebar();
