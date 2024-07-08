@@ -64,6 +64,18 @@ const MessagesPage: NextPage<{
   const filteredMessages = messages.filter((message) =>
     message.id.startsWith(prefix),
   );
+  filteredMessages.sort((m0, m1) => {
+    const trans0 = translations[m0.id]?.trim() ?? '';
+    const trans1 = translations[m1.id]?.trim() ?? '';
+
+    if (!trans0) {
+      return -1;
+    } else if (trans1) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
