@@ -19,7 +19,7 @@ const Header: FC = () => {
         display: { md: 'none', xs: 'flex' },
         gap: 1,
         height: 'var(--Header-height)',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         p: 2,
         position: 'fixed',
         top: 0,
@@ -37,7 +37,12 @@ const Header: FC = () => {
           },
         })}
       />
-      <IconButton color="primary" onClick={() => toggleSidebar()} size="small">
+      <IconButton
+        aria-label="Menu"
+        color="primary"
+        onClick={() => toggleSidebar()}
+        size="small"
+      >
         <MenuIcon />
       </IconButton>
     </Paper>
