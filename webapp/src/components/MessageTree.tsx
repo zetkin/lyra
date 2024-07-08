@@ -9,14 +9,16 @@ import { TreeItem2 } from '@mui/x-tree-view/TreeItem2';
 import { MessageData } from '@/utils/adapters';
 import { type UnflattenObject, unflattenObject } from '@/utils/unflattenObject';
 
-type ExplorerTreeProps = {
+type MessageTreeProps = {
   languageName: string;
+  messageId?: string;
   messages: MessageData[];
   projectName: string;
 };
 
-const ExplorerTree: FC<ExplorerTreeProps> = ({
+const MessageTree: FC<MessageTreeProps> = ({
   languageName,
+  messageId,
   messages,
   projectName,
 }) => {
@@ -56,14 +58,26 @@ const ExplorerTree: FC<ExplorerTreeProps> = ({
   const onItemSelectionToggle = useCallback(
     (e: React.SyntheticEvent, id: string, isSelected: boolean) => {
       if (isSelected) {
-        router.push(`/projects/${projectName}/${languageName}/${id}`);
+        router.push(`/projects/${projectName}/${languageName}/${id}`, {});
       }
     },
     [languageName, projectName, router],
   );
 
+  const defaultExpandedItems = useMemo(() => {
+    if (!messageId) {
+      return [];
+    }
+    const parts = messageId.split('.');
+    for (let i = 1; i < parts.length; i++) {
+      parts[i] = `${parts[i - 1]}.${parts[i]}`;
+    }
+    return parts;
+  }, [messageId]);
+
   return (
     <RichTreeView
+      defaultExpandedItems={defaultExpandedItems}
       items={tree}
       onItemSelectionToggle={onItemSelectionToggle}
       slots={{ item: TreeItem2 }}
@@ -71,4 +85,4 @@ const ExplorerTree: FC<ExplorerTreeProps> = ({
   );
 };
 
-export default ExplorerTree;
+export default MessageTree;
