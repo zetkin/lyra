@@ -71,12 +71,10 @@ const MessageForm: FC<MessageFormProps> = ({
   return (
     <Grid
       key={message.id}
-      borderTop="1px solid silver"
-      container
-      my={1}
-      py={1}
+      alignContent="center"
+      px={2}
       spacing={2}
-      sx={{ width: '100%' }}
+      sx={{ height: '200px', width: '100%' }}
     >
       <Grid md={6} xs={12}>
         <code>{message.id}</code>
