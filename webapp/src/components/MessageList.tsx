@@ -11,12 +11,6 @@ type MessageListProps = {
   languageName: string;
   messages: MessageData[];
   projectName: string;
-  saveTranslation: (
-    projectName: string,
-    languageName: string,
-    messageId: string,
-    translation: string,
-  ) => Promise<void>;
   translations: Record<string, string>;
 };
 
@@ -24,7 +18,6 @@ const MessageList: FC<MessageListProps> = ({
   languageName,
   messages,
   projectName,
-  saveTranslation,
   translations,
 }) => {
   const renderRow = useCallback(
@@ -37,13 +30,12 @@ const MessageList: FC<MessageListProps> = ({
             languageName={languageName}
             message={message}
             projectName={projectName}
-            saveTranslation={saveTranslation}
             translation={translations[message.id] || ''}
           />
         </ListItem>
       );
     },
-    [languageName, messages, projectName, saveTranslation, translations],
+    [languageName, messages, projectName, translations],
   );
 
   if (typeof window === 'undefined') {

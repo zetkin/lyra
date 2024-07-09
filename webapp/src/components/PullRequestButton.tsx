@@ -10,49 +10,24 @@ import {
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
 
-type PullRequestCreated = {
-  branchName: string;
-  pullRequestStatus: 'success';
-  pullRequestUrl: string;
-};
-
-type PullRequestError = {
-  errorMessage: string;
-  pullRequestStatus: 'error';
-};
-
-type PullRequestIdle = {
-  pullRequestStatus: 'idle';
-};
-
-type PullRequestSending = {
-  pullRequestStatus: 'sending';
-};
-
-export type PullRequestState =
-  | PullRequestIdle
-  | PullRequestSending
-  | PullRequestCreated
-  | PullRequestError;
+import createPullRequest, {
+  type PullRequestState,
+} from '@/actions/createPullRequest';
 
 type PullRequestButtonProps = {
   projectName: string;
-  sendPullRequest: (projectName: string) => Promise<PullRequestState>;
 };
 
-const PullRequestButton: FC<PullRequestButtonProps> = ({
-  projectName,
-  sendPullRequest,
-}) => {
+const PullRequestButton: FC<PullRequestButtonProps> = ({ projectName }) => {
   const [state, setState] = useState<PullRequestState>({
     pullRequestStatus: 'idle',
   });
 
   const onClickSend = useCallback(async () => {
     setState((s) => ({ ...s, pullRequestStatus: 'sending' }));
-    const response = await sendPullRequest(projectName);
+    const response = await createPullRequest(projectName);
     setState(response);
-  }, [projectName, sendPullRequest]);
+  }, [projectName]);
 
   const onDismissSnackbar = useCallback(() => {
     setState((s) => ({ ...s, pullRequestStatus: 'idle' }));

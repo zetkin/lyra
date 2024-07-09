@@ -8,110 +8,10 @@ import Sidebar from '@/components/Sidebar';
 import { Cache } from '@/Cache';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { RepoGit } from '@/RepoGit';
-import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
+import { ServerConfig } from '@/utils/serverConfig';
 import MessageTree from '@/components/MessageTree';
 import MessageList from '@/components/MessageList';
-import PullRequestButton, {
-  PullRequestState,
-} from '@/components/PullRequestButton';
-
-async function saveTranslation(
-  projectName: string,
-  languageName: string,
-  messageId: string,
-  translation: string,
-) {
-  'use server';
-
-  const serverConfig = await ServerConfig.read();
-  const project = serverConfig.projects.find(
-    (project) => project.name === projectName,
-  );
-  if (!project) {
-    return;
-  }
-  await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
-  const lyraConfig = await repoGit.getLyraConfig();
-  const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
-  if (!projectConfig.isLanguageSupported(languageName)) {
-    return;
-  }
-  const projectStore = await Cache.getProjectStore(projectConfig);
-  await projectStore.updateTranslation(languageName, messageId, translation);
-}
-
-/** used to prevent multiple requests from running at the same time */
-const syncLock = new Map<string, boolean>();
-
-async function sendPullRequest(projectName: string): Promise<PullRequestState> {
-  'use server';
-
-  let serverProjectConfig: ServerProjectConfig;
-  try {
-    serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
-  } catch (e) {
-    return notFound();
-  }
-  const repoPath = serverProjectConfig.repoPath;
-
-  if (!syncLock.has(repoPath)) {
-    syncLock.set(repoPath, false);
-  }
-
-  if (syncLock.get(repoPath) === true) {
-    return {
-      errorMessage: `Another Request in progress for project: ${projectName} or a project that share same git repository`,
-      pullRequestStatus: 'error',
-    };
-  }
-
-  try {
-    syncLock.set(repoPath, true);
-    const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
-    const baseBranch = await repoGit.checkoutBaseAndPull();
-    const langFilePaths = await repoGit.saveLanguageFiles(
-      serverProjectConfig.projectPath,
-    );
-
-    if (!(await repoGit.statusChanged())) {
-      return {
-        errorMessage: `There are no changes in ${baseBranch} branch`,
-        pullRequestStatus: 'error',
-      };
-    }
-
-    const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
-    const branchName = 'lyra-translate-' + nowIso;
-    await repoGit.newBranchCommitAndPush(
-      branchName,
-      langFilePaths,
-      `Lyra translate: ${nowIso}`,
-    );
-
-    const pullRequestUrl = await repoGit.createPR(
-      branchName,
-      'LYRA Translate PR: ' + nowIso,
-      'Created by LYRA at: ' + nowIso,
-      serverProjectConfig.owner,
-      serverProjectConfig.repo,
-      serverProjectConfig.githubToken,
-    );
-    await repoGit.checkoutBaseAndPull();
-    return {
-      branchName,
-      pullRequestStatus: 'success',
-      pullRequestUrl,
-    };
-  } catch (e) {
-    return {
-      errorMessage: 'Error while creating pull request',
-      pullRequestStatus: 'error',
-    };
-  } finally {
-    syncLock.set(repoPath, false);
-  }
-}
+import PullRequestButton from '@/components/PullRequestButton';
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
@@ -156,10 +56,7 @@ const MessagesPage: NextPage<{
     <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
       <Header />
       <Sidebar>
-        <PullRequestButton
-          projectName={projectName}
-          sendPullRequest={sendPullRequest}
-        />
+        <PullRequestButton projectName={projectName} />
         <MessageTree
           languageName={languageName}
           messageId={messageId}
@@ -172,7 +69,6 @@ const MessagesPage: NextPage<{
           languageName={languageName}
           messages={filteredMessages}
           projectName={projectName}
-          saveTranslation={saveTranslation}
           translations={translations}
         />
       </Main>

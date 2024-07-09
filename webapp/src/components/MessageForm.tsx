@@ -13,6 +13,7 @@ import {
 import { FC, useCallback, useState } from 'react';
 import { useTheme } from '@mui/material';
 
+import updateTranslation from '@/actions/updateTranslation';
 import { type MessageData } from '@/utils/adapters';
 
 type MessageFormStatus = 'pristine' | 'modified' | 'saving';
@@ -27,12 +28,6 @@ type MessageFormProps = {
   languageName: string;
   message: MessageData;
   projectName: string;
-  saveTranslation: (
-    projectName: string,
-    languageName: string,
-    messageId: string,
-    translation: string,
-  ) => Promise<void>;
   translation: string;
 };
 
@@ -40,7 +35,6 @@ const MessageForm: FC<MessageFormProps> = ({
   languageName,
   message,
   projectName,
-  saveTranslation,
   translation,
 }) => {
   const theme = useTheme();
@@ -62,9 +56,9 @@ const MessageForm: FC<MessageFormProps> = ({
 
   const onSave = useCallback(async () => {
     setState((s) => ({ ...s, status: 'saving' }));
-    await saveTranslation(projectName, languageName, message.id, text);
+    await updateTranslation(projectName, languageName, message.id, text);
     setState((s) => ({ ...s, original: text, status: 'pristine' }));
-  }, [languageName, message.id, projectName, saveTranslation, text]);
+  }, [languageName, message.id, projectName, text]);
 
   const onReset = useCallback(() => {
     setState((s) => ({ ...s, status: 'pristine', text: original }));
