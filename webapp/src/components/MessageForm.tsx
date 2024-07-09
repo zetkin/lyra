@@ -1,28 +1,24 @@
 'use client';
 
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
   Grid,
   List,
   ListItem,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
 import { useTheme } from '@mui/material';
 
-import updateTranslation from '@/actions/updateTranslation';
+import updateTranslation, {
+  TranslationState,
+} from '@/actions/updateTranslation';
 import { type MessageData } from '@/utils/adapters';
-
-type MessageFormStatus = 'pristine' | 'modified' | 'saving';
-
-type MessageFormState = {
-  original: string;
-  status: MessageFormStatus;
-  text: string;
-};
 
 type MessageFormProps = {
   languageName: string;
@@ -38,100 +34,175 @@ const MessageForm: FC<MessageFormProps> = ({
   translation,
 }) => {
   const theme = useTheme();
-  const [{ original, status, text }, setState] = useState<MessageFormState>({
-    original: translation,
-    status: 'pristine',
-    text: translation,
+  const [state, setState] = useState<TranslationState>({
+    translationStatus: 'idle',
+    translationText: translation,
   });
 
   const onChange = useCallback(
     (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (status === 'saving') {
+      if (state.translationStatus === 'updating') {
         return;
       }
-      setState((s) => ({ ...s, status: 'modified', text: ev.target.value }));
+      setState((s) => ({
+        ...s,
+        original: s.translationStatus === 'modified' ? s.original : translation,
+        translationStatus: 'modified',
+        translationText: ev.target.value,
+      }));
     },
-    [status],
+    [state.translationStatus, translation],
   );
 
   const onSave = useCallback(async () => {
-    setState((s) => ({ ...s, status: 'saving' }));
-    await updateTranslation(projectName, languageName, message.id, text);
-    setState((s) => ({ ...s, original: text, status: 'pristine' }));
-  }, [languageName, message.id, projectName, text]);
+    if (state.translationStatus !== 'modified') {
+      return;
+    }
+    setState({
+      original: state.original,
+      translationStatus: 'updating',
+      translationText: state.translationText,
+    });
+    const response = await updateTranslation(
+      projectName,
+      languageName,
+      message.id,
+      state.translationText,
+      state.original,
+    );
+    setState(response);
+  }, [languageName, message.id, projectName, state]);
 
   const onReset = useCallback(() => {
-    setState((s) => ({ ...s, status: 'pristine', text: original }));
-  }, [original]);
+    setState((s) => {
+      if (
+        s.translationStatus === 'modified' ||
+        s.translationStatus === 'error'
+      ) {
+        return {
+          translationStatus: 'idle',
+          translationText: s.original,
+        };
+      }
+      return s;
+    });
+  }, []);
+
+  const onDismissSnackbar = useCallback(() => {
+    setState((s) => {
+      if (s.translationStatus === 'error') {
+        return {
+          original: s.original,
+          translationStatus: 'modified',
+          translationText: s.translationText,
+        };
+      }
+      if (s.translationStatus === 'success') {
+        return {
+          translationStatus: 'idle',
+          translationText: s.translationText,
+        };
+      }
+      return s;
+    });
+  }, []);
 
   return (
-    <Grid
-      key={message.id}
-      alignContent="center"
-      px={2}
-      spacing={2}
-      sx={{ height: '200px', width: '100%' }}
-    >
-      <Grid md={6} xs={12}>
-        <code>{message.id}</code>
-        <Typography>{message.defaultMessage}</Typography>
-      </Grid>
-      <Grid md={6} xs={12}>
-        <Box display="flex" flexDirection="row" gap={1}>
-          <TextField
-            aria-readonly={status === 'saving'}
-            InputProps={{ readOnly: status === 'saving' }}
-            minRows={2}
-            multiline
-            onChange={onChange}
-            sx={{ flexGrow: 1 }}
-            value={text}
-          />
-          {status !== 'pristine' && (
-            <Button
-              aria-label={status === 'modified' ? 'Save' : 'Saving'}
-              disabled={status === 'saving'}
-              onClick={onSave}
-            >
-              <>
-                <>{status === 'modified' && 'Save'}</>
-                <>{status === 'saving' && <CircularProgress />}</>
-              </>
-            </Button>
-          )}
-          {status !== 'pristine' && (
-            <Button
-              aria-label="Reset"
-              disabled={status === 'saving'}
-              onClick={onReset}
-              variant="outlined"
-            >
-              ↺
-            </Button>
-          )}
-        </Box>
-        {!!message.params.length && (
-          <Box>
-            <Typography>You can use the following parameters:</Typography>
-            <List
-              sx={{
-                columnGap: theme.spacing(1),
-                display: 'flex',
-                flexDirection: 'row',
-              }}
-            >
-              {message.params.map((param) => {
-                return (
-                  <ListItem key={param.name} sx={{ padding: 0, width: 'auto' }}>
-                    <code>{param.name}</code>
-                  </ListItem>
-                );
-              })}
-            </List>
+    <>
+      <Grid
+        key={message.id}
+        alignContent="center"
+        px={2}
+        spacing={2}
+        sx={{ height: '200px', width: '100%' }}
+      >
+        <Grid md={6} xs={12}>
+          <code>{message.id}</code>
+          <Typography>{message.defaultMessage}</Typography>
+        </Grid>
+        <Grid md={6} xs={12}>
+          <Box display="flex" flexDirection="row" gap={1}>
+            <TextField
+              aria-readonly={state.translationStatus === 'updating'}
+              InputProps={{ readOnly: state.translationStatus === 'updating' }}
+              minRows={2}
+              multiline
+              onChange={onChange}
+              sx={{ flexGrow: 1 }}
+              value={state.translationText}
+            />
+            {(state.translationStatus === 'modified' ||
+              state.translationStatus === 'error') && (
+              <Button onClick={onSave}>Save</Button>
+            )}
+            {state.translationStatus === 'updating' && (
+              <Button aria-label="Saving" disabled>
+                <CircularProgress />
+              </Button>
+            )}
+            {(state.translationStatus === 'modified' ||
+              state.translationStatus === 'error' ||
+              state.translationStatus === 'updating') && (
+              <Button
+                aria-label="Reset"
+                disabled={state.translationStatus === 'updating'}
+                onClick={onReset}
+                variant="outlined"
+              >
+                ↺
+              </Button>
+            )}
           </Box>
-        )}
+          {!!message.params.length && (
+            <Box>
+              <Typography>You can use the following parameters:</Typography>
+              <List
+                sx={{
+                  columnGap: theme.spacing(1),
+                  display: 'flex',
+                  flexDirection: 'row',
+                }}
+              >
+                {message.params.map((param) => {
+                  return (
+                    <ListItem
+                      key={param.name}
+                      sx={{ padding: 0, width: 'auto' }}
+                    >
+                      <code>{param.name}</code>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Box>
+          )}
+        </Grid>
       </Grid>
-    </Grid>
+      {state.translationStatus === 'success' && (
+        <Snackbar open>
+          <Alert
+            onClose={onDismissSnackbar}
+            severity="success"
+            sx={{ width: '100%' }}
+            variant="filled"
+          >
+            Translation updated
+          </Alert>
+        </Snackbar>
+      )}
+      {state.translationStatus === 'error' && (
+        <Snackbar open>
+          <Alert
+            onClose={onDismissSnackbar}
+            severity="error"
+            sx={{ width: '100%' }}
+            variant="filled"
+          >
+            {state.errorMessage}
+          </Alert>
+        </Snackbar>
+      )}
+    </>
   );
 };
 
