@@ -32,6 +32,8 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({
         columnGap={1}
         display="flex"
         flexDirection="row"
+        px={2}
+        py={2}
         width="100%"
       >
         <Link href="/">
@@ -59,7 +61,9 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({
         <CardGrid
           heading={
             <>
-              <Typography component="h1">{project}</Typography>
+              <Typography component="h1" fontWeight="bold">
+                {project}
+              </Typography>
               <Typography>{messageCount} messages</Typography>
             </>
           }

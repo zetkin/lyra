@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Box, LinearProgress, Link, Typography } from '@mui/material';
+import { Box, Card, LinearProgress, Link, Typography } from '@mui/material';
 
 export type LanguageCardProps = {
   /**
@@ -38,26 +38,8 @@ const LanguageCard: FC<LanguageCardProps> = ({
 }) => {
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
-      <Box
-        bgcolor="grey.100"
-        border={1}
-        borderColor="transparent"
-        borderRadius={2}
-        display="flex"
-        flexDirection="column"
-        position="relative"
-        px={1}
-        py={2}
-        rowGap={1}
-        sx={{
-          ':focus-within, :hover': {
-            outlineColor: 'focusVisible',
-            outlineStyle: 'solid',
-            outlineWidth: 1,
-          },
-        }}
-      >
-        <Typography component="h2">
+      <Card>
+        <Typography component="h2" fontWeight="bold">
           <Link
             href={href}
             sx={{
@@ -88,7 +70,7 @@ const LanguageCard: FC<LanguageCardProps> = ({
         </Typography>
 
         <Typography>{messagesLeft} messages to translate</Typography>
-      </Box>
+      </Card>
     </Box>
   );
 };

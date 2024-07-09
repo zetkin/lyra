@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Box, LinearProgress, Link, Typography } from '@mui/material';
+import { Box, Card, LinearProgress, Link, Typography } from '@mui/material';
 
 export type ProjectCardProps = {
   /**
@@ -58,26 +58,8 @@ const ProjectCard: FC<ProjectCardProps> = ({
 }) => {
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
-      <Box
-        bgcolor="gray.50"
-        border={1}
-        borderColor="transparent"
-        borderRadius={2}
-        display="flex"
-        flexDirection="column"
-        position="relative"
-        px={3}
-        py={2}
-        rowGap={1}
-        sx={{
-          ':focus-within, :hover': {
-            outlineColor: 'indigo.500',
-            outlineStyle: 'solid',
-            outlineWidth: 1,
-          },
-        }}
-      >
-        <Typography component="h2">
+      <Card>
+        <Typography component="h2" fontWeight="bold">
           <Link
             href={href}
             sx={{
@@ -161,7 +143,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             </Box>
           ))}
         </Box>
-      </Box>
+      </Card>
     </Box>
   );
 };

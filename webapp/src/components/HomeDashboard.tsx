@@ -20,7 +20,7 @@ const HomeDashboard: FC<HomeDashboardProps> = ({ projects }) => {
       <CardGrid
         heading={
           <>
-            <Typography alignSelf="flex-start" component="h1">
+            <Typography alignSelf="flex-start" component="h1" fontWeight="bold">
               Your Lyra Projects
             </Typography>
           </>
