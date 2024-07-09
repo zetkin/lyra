@@ -23,8 +23,6 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
         flexShrink: 0,
         gap: 2,
         height: '100dvh',
-        overflowY: 'auto',
-        p: 2,
         position: { md: 'sticky', xs: 'fixed' },
         top: 0,
         transform: {
@@ -47,10 +45,17 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
         })}
       />
       <SidebarOverlay />
-      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
-        <Typography>Lyra</Typography>
+      <Box
+        sx={{
+          overflowY: 'auto',
+          p: 2,
+        }}
+      >
+        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+          <Typography>Lyra</Typography>
+        </Box>
+        {children}
       </Box>
-      {children}
     </Paper>
   );
 };

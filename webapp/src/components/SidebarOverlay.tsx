@@ -2,14 +2,14 @@
 import Box from '@mui/material/Box';
 import { FC } from 'react';
 
-import { closeSidebar } from '../utils/sidebar';
+import { closeSidebar } from '@/utils/sidebar';
 
 const SidebarOverlay: FC = () => {
   return (
     <Box
       onClick={() => closeSidebar()}
       sx={{
-        backgroundColor: 'var(--joy-palette-background-backdrop)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: '100vh',
         left: 0,
         opacity: 'var(--SideNavigation-slideIn)',
