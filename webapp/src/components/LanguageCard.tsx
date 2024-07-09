@@ -39,10 +39,10 @@ const LanguageCard: FC<LanguageCardProps> = ({
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
       <Box
-        bgcolor="neutral.50"
+        bgcolor="grey.100"
         border={1}
         borderColor="transparent"
-        borderRadius={8}
+        borderRadius={2}
         display="flex"
         flexDirection="column"
         position="relative"

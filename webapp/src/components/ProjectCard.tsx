@@ -59,10 +59,10 @@ const ProjectCard: FC<ProjectCardProps> = ({
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
       <Box
-        bgcolor="neutral.50"
+        bgcolor="gray.50"
         border={1}
         borderColor="transparent"
-        borderRadius={8}
+        borderRadius={2}
         display="flex"
         flexDirection="column"
         position="relative"
@@ -71,7 +71,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
         rowGap={1}
         sx={{
           ':focus-within, :hover': {
-            outlineColor: 'focusVisible',
+            outlineColor: 'indigo.500',
             outlineStyle: 'solid',
             outlineWidth: 1,
           },
@@ -118,7 +118,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             <Box
               key={language}
               bgcolor="primary.50"
-              borderRadius={4}
+              borderRadius={2}
               component="li"
               position="relative"
               sx={{
