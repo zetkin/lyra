@@ -46,6 +46,10 @@ const MessageList: FC<MessageListProps> = ({
     [languageName, messages, projectName, saveTranslation, translations],
   );
 
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   return (
     <FixedSizeList
       height={window.innerHeight}
