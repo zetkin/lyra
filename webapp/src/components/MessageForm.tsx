@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
+import { useTheme } from '@mui/material';
 
 import { type MessageData } from '@/utils/adapters';
 
@@ -42,6 +43,7 @@ const MessageForm: FC<MessageFormProps> = ({
   saveTranslation,
   translation,
 }) => {
+  const theme = useTheme();
   const [{ original, status, text }, setState] = useState<MessageFormState>({
     original: translation,
     status: 'pristine',
@@ -117,10 +119,16 @@ const MessageForm: FC<MessageFormProps> = ({
         {!!message.params.length && (
           <Box>
             <Typography>You can use the following parameters:</Typography>
-            <List>
+            <List
+              sx={{
+                columnGap: theme.spacing(1),
+                display: 'flex',
+                flexDirection: 'row',
+              }}
+            >
               {message.params.map((param) => {
                 return (
-                  <ListItem key={param.name}>
+                  <ListItem key={param.name} sx={{ padding: 0, width: 'auto' }}>
                     <code>{param.name}</code>
                   </ListItem>
                 );
