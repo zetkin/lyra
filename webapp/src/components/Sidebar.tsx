@@ -1,9 +1,8 @@
 'use client';
 
-import Box from '@mui/material/Box';
+import { Box, useTheme } from '@mui/material';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import { FC, ReactNode } from 'react';
 
 import SidebarOverlay from '@/components/SidebarOverlay';
@@ -13,6 +12,7 @@ type SidebarProps = {
 };
 
 const Sidebar: FC<SidebarProps> = ({ children }) => {
+  const theme = useTheme();
   return (
     <Paper
       sx={{
@@ -47,13 +47,13 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
       <SidebarOverlay />
       <Box
         sx={{
+          display: 'flex',
+          flexDirection: 'column',
           overflowY: 'auto',
           p: 2,
+          rowGap: theme.spacing(2),
         }}
       >
-        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
-          <Typography>Lyra</Typography>
-        </Box>
         {children}
       </Box>
     </Paper>

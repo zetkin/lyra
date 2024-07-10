@@ -12,6 +12,7 @@ import { ServerConfig } from '@/utils/serverConfig';
 import MessageTree from '@/components/MessageTree';
 import MessageList from '@/components/MessageList';
 import PullRequestButton from '@/components/PullRequestButton';
+import TitleBar from '@/components/TitleBar';
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
@@ -56,6 +57,7 @@ const MessagesPage: NextPage<{
     <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
       <Header />
       <Sidebar>
+        <TitleBar languageName={languageName} projectName={projectName} />
         <PullRequestButton projectName={projectName} />
         <MessageTree
           languageName={languageName}
