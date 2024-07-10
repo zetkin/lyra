@@ -128,7 +128,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
               position="relative"
               sx={{
                 ':focus-within, :hover': {
-                  outlineColor: 'focusVisible',
+                  outlineColor: theme.palette.primary.main,
                   outlineStyle: 'solid',
                   outlineWidth: 1,
                 },
