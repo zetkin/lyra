@@ -1,5 +1,7 @@
+'use client';
+
 import { FC } from 'react';
-import { Box, Card, LinearProgress, Link, Typography } from '@mui/material';
+import { Box, LinearProgress, Link, Typography, useTheme } from '@mui/material';
 
 export type LanguageCardProps = {
   /**
@@ -36,9 +38,30 @@ const LanguageCard: FC<LanguageCardProps> = ({
   messagesLeft,
   progress,
 }) => {
+  const theme = useTheme();
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
-      <Card>
+      <Box
+        sx={{
+          ':focus-within, :hover': {
+            outlineColor: theme.palette.primary.main,
+            outlineStyle: 'solid',
+            outlineWidth: 1,
+          },
+          backgroundColor: '#fafcfe',
+          borderRadius: 2,
+          boxShadow: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          outlineColor: theme.palette.primary.main,
+          paddingBottom: theme.spacing(2),
+          paddingLeft: theme.spacing(3),
+          paddingRight: theme.spacing(3),
+          paddingTop: theme.spacing(2),
+          position: 'relative',
+          rowGap: theme.spacing(1),
+        }}
+      >
         <Typography component="h2" fontWeight="bold">
           <Link
             href={href}
@@ -70,7 +93,7 @@ const LanguageCard: FC<LanguageCardProps> = ({
         </Typography>
 
         <Typography>{messagesLeft} messages to translate</Typography>
-      </Card>
+      </Box>
     </Box>
   );
 };

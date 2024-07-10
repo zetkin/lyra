@@ -1,5 +1,7 @@
+'use client';
+
 import { FC } from 'react';
-import { Box, Card, LinearProgress, Link, Typography } from '@mui/material';
+import { Box, LinearProgress, Link, Typography, useTheme } from '@mui/material';
 
 export type ProjectCardProps = {
   /**
@@ -56,9 +58,30 @@ const ProjectCard: FC<ProjectCardProps> = ({
   name,
   messageCount,
 }) => {
+  const theme = useTheme();
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
-      <Card>
+      <Box
+        sx={{
+          ':focus-within, :hover': {
+            outlineColor: theme.palette.primary.main,
+            outlineStyle: 'solid',
+            outlineWidth: 1,
+          },
+          backgroundColor: '#fafcfe',
+          borderRadius: 2,
+          boxShadow: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          outlineColor: theme.palette.primary.main,
+          paddingBottom: theme.spacing(2),
+          paddingLeft: theme.spacing(3),
+          paddingRight: theme.spacing(3),
+          paddingTop: theme.spacing(2),
+          position: 'relative',
+          rowGap: theme.spacing(1),
+        }}
+      >
         <Typography component="h2" fontWeight="bold">
           <Link
             href={href}
@@ -74,10 +97,10 @@ const ProjectCard: FC<ProjectCardProps> = ({
               },
               ':hover, :focus': {
                 outline: 'none',
-                textDecoration: 'none',
               },
               color: 'inherit',
               position: 'inherit',
+              textDecoration: 'none',
             }}
           >
             {name}
@@ -99,7 +122,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
           {languages.map(({ href, language, progress }) => (
             <Box
               key={language}
-              bgcolor="primary.50"
+              bgcolor="#e9f3fd"
               borderRadius={2}
               component="li"
               position="relative"
@@ -127,9 +150,9 @@ const ProjectCard: FC<ProjectCardProps> = ({
                     },
                     ':hover, :focus': {
                       outline: 'none',
-                      textDecoration: 'none',
                     },
                     position: 'inherit',
+                    textDecoration: 'none',
                   }}
                 >
                   {language}
@@ -143,7 +166,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             </Box>
           ))}
         </Box>
-      </Card>
+      </Box>
     </Box>
   );
 };
