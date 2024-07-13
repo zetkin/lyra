@@ -24,13 +24,13 @@ const PullRequestButton: FC<PullRequestButtonProps> = ({ projectName }) => {
   });
 
   const onClickSend = useCallback(async () => {
-    setState((s) => ({ ...s, pullRequestStatus: 'sending' }));
+    setState({ pullRequestStatus: 'sending' });
     const response = await createPullRequest(projectName);
     setState(response);
   }, [projectName]);
 
   const onDismissSnackbar = useCallback(() => {
-    setState((s) => ({ ...s, pullRequestStatus: 'idle' }));
+    setState({ pullRequestStatus: 'idle' });
   }, []);
 
   return (
