@@ -125,6 +125,7 @@ const MessageForm: FC<MessageFormProps> = ({
             <TextField
               aria-readonly={state.translationStatus === 'updating'}
               InputProps={{ readOnly: state.translationStatus === 'updating' }}
+              maxRows={2}
               minRows={2}
               multiline
               onChange={onChange}
