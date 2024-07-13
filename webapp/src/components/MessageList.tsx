@@ -25,7 +25,7 @@ const MessageList: FC<MessageListProps> = ({
       const { index, style } = props;
       const message = messages[index];
       return (
-        <ListItem key={index} component="div" disablePadding style={style}>
+        <ListItem component="div" disablePadding style={style}>
           <MessageForm
             languageName={languageName}
             message={message}
