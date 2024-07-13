@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
 import { useTheme } from '@mui/material';
 
 import updateTranslation, {
@@ -34,6 +34,7 @@ const MessageForm: FC<MessageFormProps> = ({
   translation,
 }) => {
   const theme = useTheme();
+  const resetValue = useRef(translation);
   const [state, setState] = useState<TranslationState>({
     translationStatus: 'idle',
     translationText: translation,
@@ -44,14 +45,13 @@ const MessageForm: FC<MessageFormProps> = ({
       if (state.translationStatus === 'updating') {
         return;
       }
-      setState((s) => ({
-        ...s,
-        original: s.translationStatus === 'modified' ? s.original : translation,
+      setState({
+        original: resetValue.current,
         translationStatus: 'modified',
         translationText: ev.target.value,
-      }));
+      });
     },
-    [state.translationStatus, translation],
+    [state.translationStatus],
   );
 
   const onSave = useCallback(async () => {
@@ -70,6 +70,9 @@ const MessageForm: FC<MessageFormProps> = ({
       state.translationText,
       state.original,
     );
+    if (response.translationStatus === 'success') {
+      resetValue.current = response.translationText;
+    }
     setState(response);
   }, [languageName, message.id, projectName, state]);
 
