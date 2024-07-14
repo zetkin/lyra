@@ -67,6 +67,7 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
           width: 'var(--Sidebar-width)',
           zIndex: 10000,
         }}
+        tabIndex={-1}
       >
         <GlobalStyles
           styles={(theme) => ({
