@@ -4,7 +4,14 @@ import { Box, useTheme } from '@mui/material';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { FocusTrap } from '@mui/base/FocusTrap';
 import Paper from '@mui/material/Paper';
-import { FC, ReactNode, useContext } from 'react';
+import {
+  FC,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 
 import SidebarOverlay from '@/components/SidebarOverlay';
 import { SidebarContext } from './SidebarContext';
@@ -15,16 +22,32 @@ type SidebarProps = {
 
 const Sidebar: FC<SidebarProps> = ({ children }) => {
   const theme = useTheme();
-  const { isSidebarOpen } = useContext(SidebarContext);
+  const { isSidebarOpen, setIsSidebarOpen } = useContext(SidebarContext);
+
+  const openOnMobile = useMemo(
+    () =>
+      isSidebarOpen &&
+      typeof window !== 'undefined' &&
+      window.innerWidth < theme.breakpoints.values.md,
+    [isSidebarOpen, theme.breakpoints.values.md],
+  );
+
+  const onKeypress = useCallback(
+    (event: KeyboardEvent) => {
+      if (openOnMobile && event.key === 'Escape') {
+        setIsSidebarOpen(false);
+      }
+    },
+    [openOnMobile, setIsSidebarOpen],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeypress);
+    return () => document.removeEventListener('keydown', onKeypress);
+  }, [onKeypress]);
 
   return (
-    <FocusTrap
-      open={
-        isSidebarOpen &&
-        typeof window !== 'undefined' &&
-        window.innerWidth < theme.breakpoints.values.md
-      }
-    >
+    <FocusTrap open={openOnMobile}>
       <Paper
         sx={{
           borderColor: 'divider',
