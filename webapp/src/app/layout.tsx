@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className} style={{ overflow: 'hidden' }}>
+      <body className={inter.className}>
         <AppRouterCacheProvider>
           <CssBaseline />
           <ThemeProvider theme={theme}>{children}</ThemeProvider>

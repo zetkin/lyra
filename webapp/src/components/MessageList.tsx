@@ -24,6 +24,7 @@ const MessageList: FC<MessageListProps> = ({
 
   useEffect(() => {
     if (typeof window === 'object') {
+      document.body.style.overflow = 'hidden';
       setHeight(window.innerHeight);
     }
     const handleResize = () => {
