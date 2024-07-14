@@ -63,6 +63,16 @@ const MessageForm: FC<MessageFormProps> = ({
       translationStatus: 'updating',
       translationText: state.translationText,
     });
+    /**
+     * Note that setState only affects the following renders,
+     * not the current one. Our variable state will still have
+     * its old values in the following lines, not updated by
+     * setState in the lines above.
+     * 
+     * Please be careful if you change setState above to affect
+     * its use below, or if you change our use below to be
+     * affected by setState above. 
+     */
     const response = await updateTranslation(
       projectName,
       languageName,
