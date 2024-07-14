@@ -1,4 +1,4 @@
-import { Box, List } from '@mui/joy';
+import { Box, List } from '@mui/material';
 import { FC, ReactNode } from 'react';
 
 export type CardGridProps = {

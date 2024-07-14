@@ -1,5 +1,7 @@
+'use client';
+
 import { FC } from 'react';
-import { Box, LinearProgress, Link, Typography } from '@mui/joy';
+import { Box, LinearProgress, Link, Typography, useTheme } from '@mui/material';
 
 export type ProjectCardProps = {
   /**
@@ -56,28 +58,31 @@ const ProjectCard: FC<ProjectCardProps> = ({
   name,
   messageCount,
 }) => {
+  const theme = useTheme();
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
       <Box
-        bgcolor="neutral.50"
-        border={1}
-        borderColor="transparent"
-        borderRadius={8}
-        display="flex"
-        flexDirection="column"
-        position="relative"
-        px={3}
-        py={2}
-        rowGap={1}
         sx={{
           ':focus-within, :hover': {
-            outlineColor: 'focusVisible',
+            outlineColor: theme.palette.primary.main,
             outlineStyle: 'solid',
             outlineWidth: 1,
           },
+          backgroundColor: '#fafcfe',
+          borderRadius: 2,
+          boxShadow: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          outlineColor: theme.palette.primary.main,
+          paddingBottom: theme.spacing(2),
+          paddingLeft: theme.spacing(3),
+          paddingRight: theme.spacing(3),
+          paddingTop: theme.spacing(2),
+          position: 'relative',
+          rowGap: theme.spacing(1),
         }}
       >
-        <Typography component="h2">
+        <Typography component="h2" fontWeight="bold">
           <Link
             href={href}
             sx={{
@@ -92,10 +97,10 @@ const ProjectCard: FC<ProjectCardProps> = ({
               },
               ':hover, :focus': {
                 outline: 'none',
-                textDecoration: 'none',
               },
               color: 'inherit',
               position: 'inherit',
+              textDecoration: 'none',
             }}
           >
             {name}
@@ -117,13 +122,13 @@ const ProjectCard: FC<ProjectCardProps> = ({
           {languages.map(({ href, language, progress }) => (
             <Box
               key={language}
-              bgcolor="primary.50"
-              borderRadius={4}
+              bgcolor="#e9f3fd"
+              borderRadius={2}
               component="li"
               position="relative"
               sx={{
                 ':focus-within, :hover': {
-                  outlineColor: 'focusVisible',
+                  outlineColor: theme.palette.primary.main,
                   outlineStyle: 'solid',
                   outlineWidth: 1,
                 },
@@ -145,20 +150,17 @@ const ProjectCard: FC<ProjectCardProps> = ({
                     },
                     ':hover, :focus': {
                       outline: 'none',
-                      textDecoration: 'none',
                     },
                     position: 'inherit',
+                    textDecoration: 'none',
                   }}
                 >
                   {language}
                 </Link>
                 <LinearProgress
-                  determinate
-                  size="lg"
                   sx={{ backgroundColor: '#ffffff' }}
-                  thickness={8}
                   value={Math.min(progress, 100)}
-                  variant="outlined"
+                  variant="determinate"
                 />
               </Box>
             </Box>

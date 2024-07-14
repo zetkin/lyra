@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Box, Typography } from '@mui/joy';
+import { Box, Typography } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
 import ProjectCard, { ProjectCardProps } from '@/components/ProjectCard';
@@ -20,7 +20,7 @@ const HomeDashboard: FC<HomeDashboardProps> = ({ projects }) => {
       <CardGrid
         heading={
           <>
-            <Typography alignSelf="flex-start" component="h1">
+            <Typography alignSelf="flex-start" component="h1" fontWeight="bold">
               Your Lyra Projects
             </Typography>
           </>

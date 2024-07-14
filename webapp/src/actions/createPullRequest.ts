@@ -1,25 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
 
-import { ProjectNameNotFoundError } from '@/errors';
+import { notFound } from 'next/navigation';
+
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 
 /** used to prevent multiple requests from running at the same time */
 const syncLock = new Map<string, boolean>();
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { projectName: string } },
-) {
-  const projectName = context.params.projectName;
+type PullRequestCreated = {
+  branchName: string;
+  pullRequestStatus: 'success';
+  pullRequestUrl: string;
+};
+
+type PullRequestError = {
+  errorMessage: string;
+  pullRequestStatus: 'error';
+};
+
+type PullRequestIdle = {
+  pullRequestStatus: 'idle';
+};
+
+type PullRequestSending = {
+  pullRequestStatus: 'sending';
+};
+
+export type PullRequestState =
+  | PullRequestIdle
+  | PullRequestSending
+  | PullRequestCreated
+  | PullRequestError;
+
+export default async function sendPullRequest(
+  projectName: string,
+): Promise<PullRequestState> {
   let serverProjectConfig: ServerProjectConfig;
   try {
     serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   } catch (e) {
-    if (e instanceof ProjectNameNotFoundError) {
-      return NextResponse.json({ message: e.message }, { status: 404 });
-    }
-    throw e;
+    return notFound();
   }
   const repoPath = serverProjectConfig.repoPath;
 
@@ -28,12 +49,10 @@ export async function POST(
   }
 
   if (syncLock.get(repoPath) === true) {
-    return NextResponse.json(
-      {
-        message: `Another Request in progress for project: ${projectName} or a project that share same git repository`,
-      },
-      { status: 400 },
-    );
+    return {
+      errorMessage: `Another Request in progress for project: ${projectName} or a project that share same git repository`,
+      pullRequestStatus: 'error',
+    };
   }
 
   try {
@@ -45,10 +64,10 @@ export async function POST(
     );
 
     if (!(await repoGit.statusChanged())) {
-      return NextResponse.json(
-        { message: `There are no changes in ${baseBranch} branch` },
-        { status: 400 },
-      );
+      return {
+        errorMessage: `There are no changes in ${baseBranch} branch`,
+        pullRequestStatus: 'error',
+      };
     }
 
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
@@ -68,10 +87,16 @@ export async function POST(
       serverProjectConfig.githubToken,
     );
     await repoGit.checkoutBaseAndPull();
-    return NextResponse.json({
+    return {
       branchName,
+      pullRequestStatus: 'success',
       pullRequestUrl,
-    });
+    };
+  } catch (e) {
+    return {
+      errorMessage: 'Error while creating pull request',
+      pullRequestStatus: 'error',
+    };
   } finally {
     syncLock.set(repoPath, false);
   }
