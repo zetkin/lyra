@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { FC, useCallback, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '@mui/material';
 
 import updateTranslation, {
@@ -39,6 +39,10 @@ const MessageForm: FC<MessageFormProps> = ({
     translationStatus: 'idle',
     translationText: translation,
   });
+
+  useEffect(() => {
+    resetValue.current = translation;
+  }, [translation]);
 
   const onChange = useCallback(
     (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
