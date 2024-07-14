@@ -1,19 +1,20 @@
 'use client';
 
-import { FC, useEffect, useCallback } from 'react';
+import { FC, useEffect, useCallback, useContext } from 'react';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Paper from '@mui/material/Paper';
 
-import { isSidebarOpen, toggleSidebar } from '@/utils/sidebar';
+import { SidebarContext } from './SidebarContext';
 
 const Header: FC = () => {
+  const { isSidebarOpen, setIsSidebarOpen } = useContext(SidebarContext);
   const onResize = useCallback(() => {
-    if (window.innerWidth >= 960 && isSidebarOpen()) {
-      document.documentElement.style.removeProperty('--SideNavigation-slideIn');
+    if (window.innerWidth >= 960 && isSidebarOpen) {
+      setIsSidebarOpen(false);
     }
-  }, []);
+  }, [isSidebarOpen, setIsSidebarOpen]);
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
@@ -52,7 +53,7 @@ const Header: FC = () => {
       <IconButton
         aria-label="Menu"
         color="primary"
-        onClick={() => toggleSidebar()}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         size="small"
       >
         <MenuIcon />

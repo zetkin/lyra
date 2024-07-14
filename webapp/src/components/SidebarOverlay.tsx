@@ -1,13 +1,14 @@
 'use client';
 import Box from '@mui/material/Box';
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 
-import { closeSidebar } from '@/utils/sidebar';
+import { SidebarContext } from './SidebarContext';
 
 const SidebarOverlay: FC = () => {
+  const { setIsSidebarOpen } = useContext(SidebarContext);
   return (
     <Box
-      onClick={() => closeSidebar()}
+      onClick={() => setIsSidebarOpen(false)}
       sx={{
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         height: '100vh',
