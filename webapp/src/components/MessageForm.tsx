@@ -134,7 +134,7 @@ const MessageForm: FC<MessageFormProps> = ({
         spacing={2}
         sx={{ height: '200px', width: '100%' }}
       >
-        <Grid md={6} xs={12}>
+        <Grid md={6} overflow="hidden" textOverflow="ellipsis" xs={12}>
           <code>{message.id}</code>
           <Typography>{message.defaultMessage}</Typography>
         </Grid>
