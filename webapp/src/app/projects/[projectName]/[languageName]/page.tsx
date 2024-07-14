@@ -60,13 +60,13 @@ const MessagesPage: NextPage<{
         <Header />
         <Sidebar>
           <TitleBar languageName={languageName} projectName={projectName} />
-          <PullRequestButton projectName={projectName} />
           <MessageTree
             languageName={languageName}
             messageId={messageId}
             messages={messages}
             projectName={projectName}
           />
+          <PullRequestButton projectName={projectName} />
         </Sidebar>
       </SidebarContextProvider>
       <Main>

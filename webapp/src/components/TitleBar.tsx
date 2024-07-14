@@ -15,13 +15,13 @@ const TitleBar: FC<TitleBarProps> = ({ languageName, projectName }) => {
   const theme = useTheme();
   return (
     <Box
+      px={2}
+      py={2}
       sx={{
         alignItems: 'center',
         borderBottom: '1px solid #c3c7cc',
         columnGap: theme.spacing(1),
         display: 'flex',
-        paddingBottom: theme.spacing(2),
-        paddingTop: theme.spacing(1),
       }}
     >
       <Link

@@ -84,9 +84,7 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            overflowY: 'auto',
-            p: 2,
-            rowGap: theme.spacing(2),
+            overflow: 'hidden',
           }}
         >
           {children}
