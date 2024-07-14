@@ -57,7 +57,11 @@ const MessagesPage: NextPage<{
   return (
     <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
       <SidebarContextProvider>
-        <Header />
+        <Header
+          languageName={languageName}
+          messageId={messageId}
+          projectName={projectName}
+        />
         <Sidebar>
           <TitleBar languageName={languageName} projectName={projectName} />
           <PullRequestButton projectName={projectName} />

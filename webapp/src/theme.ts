@@ -11,6 +11,14 @@ const roboto = Roboto({
 
 const theme = createTheme({
   components: {
+    MuiBreadcrumbs: {
+      styleOverrides: {
+        ol: () => ({
+          flexWrap: 'nowrap',
+          justifyContent: 'flex-end',
+        }),
+      },
+    },
     MuiLinearProgress: {
       styleOverrides: {
         root: () => ({
