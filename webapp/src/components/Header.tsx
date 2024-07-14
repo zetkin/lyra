@@ -12,7 +12,6 @@ const Header: FC = () => {
   const onResize = useCallback(() => {
     if (window.innerWidth >= 960 && isSidebarOpen()) {
       document.documentElement.style.removeProperty('--SideNavigation-slideIn');
-      document.body.style.removeProperty('overflow');
     }
   }, []);
 
