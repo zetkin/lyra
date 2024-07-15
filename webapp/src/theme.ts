@@ -11,6 +11,15 @@ const roboto = Roboto({
 
 const theme = createTheme({
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: () => ({
+          ':disabled': {
+            color: '#666',
+          },
+        }),
+      },
+    },
     MuiLinearProgress: {
       styleOverrides: {
         root: () => ({
