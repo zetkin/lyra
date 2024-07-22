@@ -18,21 +18,19 @@ const Breadcrumbs: FC<BreadcrumbsProps> = ({
   messageId,
   projectName,
 }) => {
-  const breadcrumbs: Breadcrumb[] = useMemo(
-    () =>
-      (messageId?.split('.') || []).map((part, i) => {
-        const href = `/projects/${projectName}/${languageName}/${messageId!
-          .split('.')
-          .slice(0, i + 1)
-          .join('.')}`;
-        return {
-          href,
-          last: i === messageId!.split('.').length - 1,
-          text: part,
-        };
-      }, []),
-    [languageName, messageId, projectName],
-  );
+  const breadcrumbs: Breadcrumb[] = useMemo(() => {
+    const parts = messageId?.split('.') || [];
+    return parts.map((part, i) => {
+      const href = `/projects/${projectName}/${languageName}/${parts
+        .slice(0, i + 1)
+        .join('.')}`;
+      return {
+        href,
+        last: i === parts.length - 1,
+        text: part,
+      };
+    });
+  }, [languageName, messageId, projectName]);
 
   return (
     <MuiBreadcrumbs
