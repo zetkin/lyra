@@ -41,6 +41,11 @@ const MessagesPage: NextPage<{
   const filteredMessages = messages.filter((message) =>
     message.id.startsWith(prefix),
   );
+
+  if (filteredMessages.length === 0) {
+    return notFound();
+  }
+
   filteredMessages.sort((m0, m1) => {
     const trans0 = translations[m0.id]?.trim() ?? '';
     const trans1 = translations[m1.id]?.trim() ?? '';
