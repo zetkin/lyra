@@ -1,12 +1,21 @@
 'use client';
 
 import { Roboto } from 'next/font/google';
+import NextLink from 'next/link';
 import { createTheme } from '@mui/material/styles';
+import { ForwardedRef, forwardRef } from 'react';
 
 const roboto = Roboto({
   display: 'swap',
   subsets: ['latin'],
   weight: ['300', '400', '500', '700'],
+});
+
+const LinkBehaviour = forwardRef(function LinkBehaviour(
+  props: { href: string },
+  ref: ForwardedRef<HTMLAnchorElement>,
+) {
+  return <NextLink ref={ref} {...props} />;
 });
 
 const theme = createTheme({
@@ -19,6 +28,11 @@ const theme = createTheme({
         }),
       },
     },
+    MuiButton: {
+      defaultProps: {
+        LinkComponent: LinkBehaviour,
+      },
+    },
     MuiLinearProgress: {
       styleOverrides: {
         root: () => ({
@@ -27,6 +41,11 @@ const theme = createTheme({
           borderRadius: 4,
           height: 8,
         }),
+      },
+    },
+    MuiLink: {
+      defaultProps: {
+        component: LinkBehaviour,
       },
     },
   },
