@@ -3,12 +3,9 @@
 import ListItem from '@mui/material/ListItem';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { useTheme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 
-import MessageForm, {
-  messageFormHeight,
-  MessageFormLayout,
-} from '@/components/MessageForm';
+import MessageForm, { messageFormHeight } from '@/components/MessageForm';
 import { MessageData } from '@/utils/adapters';
 
 type MessageListProps = {
@@ -26,14 +23,13 @@ const MessageList: FC<MessageListProps> = ({
 }) => {
   const theme = useTheme();
   const [height, setHeight] = useState<number | undefined>(undefined);
-  const [layout, setLayout] = useState<MessageFormLayout>('linear');
+
+  const lg = useMediaQuery(theme.breakpoints.up('lg'));
+  const layout = lg ? 'grid' : 'linear';
 
   const onResize = useCallback(() => {
     setHeight(window.innerHeight);
-    setLayout(
-      window.innerWidth > theme.breakpoints.values.lg ? 'grid' : 'linear',
-    );
-  }, [theme.breakpoints.values.lg]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'object') {
