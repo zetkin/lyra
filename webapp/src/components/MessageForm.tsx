@@ -104,13 +104,12 @@ const MessageForm: FC<MessageFormProps> = ({
   }, [languageName, message.id, projectName, state]);
 
   const onReset = useCallback(() => {
-    setState((s) => {
+    setState((s): TranslationState => {
       if (
         s.translationStatus === 'modified' ||
         s.translationStatus === 'error'
       ) {
         return {
-          original: s.original,
           translationStatus: 'idle',
           translationText: s.original,
         };
