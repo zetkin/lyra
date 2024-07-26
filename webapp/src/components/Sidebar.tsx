@@ -3,7 +3,6 @@
 import { Box, useTheme } from '@mui/material';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { FocusTrap } from '@mui/base/FocusTrap';
-import Paper from '@mui/material/Paper';
 import {
   FC,
   ReactNode,
@@ -48,8 +47,9 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
 
   return (
     <FocusTrap open={openOnMobile}>
-      <Paper
+      <Box
         sx={{
+          backgroundColor: 'background.paper',
           borderColor: 'divider',
           borderRight: '1px solid',
           display: 'flex',
@@ -91,7 +91,7 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
         >
           {children}
         </Box>
-      </Paper>
+      </Box>
     </FocusTrap>
   );
 };

@@ -1,14 +1,20 @@
 'use client';
 
 import { FC, useEffect, useCallback, useContext } from 'react';
-import GlobalStyles from '@mui/material/GlobalStyles';
-import IconButton from '@mui/material/IconButton';
+import { Box, GlobalStyles, IconButton, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import Paper from '@mui/material/Paper';
 
 import { SidebarContext } from './SidebarContext';
+import Breadcrumbs from './Breadcrumbs';
 
-const Header: FC = () => {
+type HeaderProps = {
+  languageName: string;
+  messageId?: string;
+  projectName: string;
+};
+
+const Header: FC<HeaderProps> = ({ languageName, messageId, projectName }) => {
+  const theme = useTheme();
   const { isSidebarOpen, setIsSidebarOpen } = useContext(SidebarContext);
   const onResize = useCallback(() => {
     if (window.innerWidth >= 960 && isSidebarOpen) {
@@ -24,41 +30,51 @@ const Header: FC = () => {
   }, [onResize]);
 
   return (
-    <Paper
+    <Box
       sx={{
         alignItems: 'center',
         borderBottom: 1,
         boxShadow: 1,
-        display: { md: 'none', xs: 'flex' },
+        display: 'flex',
+        flexDirection: 'row',
         gap: 1,
         height: 'var(--Header-height)',
-        justifyContent: 'flex-end',
-        p: 2,
+        justifyContent: 'space-between',
         position: 'fixed',
+        px: 2,
         top: 0,
         width: '100vw',
         zIndex: 9995,
+        [theme.breakpoints.up('md')]: {
+          marginLeft: 'var(--Sidebar-width)',
+          width: 'calc(100vw - var(--Sidebar-width))',
+        },
       }}
     >
       <GlobalStyles
-        styles={(theme) => ({
+        styles={{
           ':root': {
             '--Header-height': '52px',
-            [theme.breakpoints.up('md')]: {
-              '--Header-height': '0px',
-            },
           },
-        })}
+        }}
+      />
+      <Breadcrumbs
+        languageName={languageName}
+        messageId={messageId}
+        projectName={projectName}
       />
       <IconButton
         aria-label="Menu"
         color="primary"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         size="small"
+        sx={{
+          display: { md: 'none', xs: 'flex' },
+        }}
       >
         <MenuIcon />
       </IconButton>
-    </Paper>
+    </Box>
   );
 };
 
