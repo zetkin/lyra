@@ -3,8 +3,9 @@
 import ListItem from '@mui/material/ListItem';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { useMediaQuery, useTheme } from '@mui/material';
 
-import MessageForm from '@/components/MessageForm';
+import MessageForm, { messageFormHeight } from '@/components/MessageForm';
 import { MessageData } from '@/utils/adapters';
 
 type MessageListProps = {
@@ -20,19 +21,24 @@ const MessageList: FC<MessageListProps> = ({
   projectName,
   translations,
 }) => {
+  const theme = useTheme();
   const [height, setHeight] = useState<number | undefined>(undefined);
+
+  const lg = useMediaQuery(theme.breakpoints.up('lg'));
+  const layout = lg ? 'grid' : 'linear';
+
+  const onResize = useCallback(() => {
+    setHeight(window.innerHeight);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'object') {
       document.body.style.overflow = 'hidden';
-      setHeight(window.innerHeight);
+      onResize();
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
     }
-    const handleResize = () => {
-      setHeight(window.innerHeight);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [onResize]);
 
   const renderRow = useCallback(
     (props: ListChildComponentProps): JSX.Element => {
@@ -42,6 +48,7 @@ const MessageList: FC<MessageListProps> = ({
         <ListItem component="div" disablePadding style={style}>
           <MessageForm
             languageName={languageName}
+            layout={layout}
             message={message}
             projectName={projectName}
             translation={translations[message.id] || ''}
@@ -49,12 +56,8 @@ const MessageList: FC<MessageListProps> = ({
         </ListItem>
       );
     },
-    [languageName, messages, projectName, translations],
+    [languageName, layout, messages, projectName, translations],
   );
-
-  if (typeof window === 'undefined') {
-    return;
-  }
 
   return (
     <>
@@ -62,7 +65,7 @@ const MessageList: FC<MessageListProps> = ({
         <FixedSizeList
           height={window.innerHeight}
           itemCount={messages.length}
-          itemSize={200}
+          itemSize={messageFormHeight(layout)}
           overscanCount={5}
           width="100%"
         >

@@ -32,6 +32,13 @@ const theme = createTheme({
       defaultProps: {
         LinkComponent: LinkBehaviour,
       },
+      styleOverrides: {
+        root: () => ({
+          ':disabled': {
+            color: '#666',
+          },
+        }),
+      },
     },
     MuiLinearProgress: {
       styleOverrides: {
