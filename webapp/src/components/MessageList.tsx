@@ -1,6 +1,6 @@
 'use client';
 
-import ListItem from '@mui/material/ListItem';
+import { ListItem } from '@mui/material';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { useMediaQuery, useTheme } from '@mui/material';
@@ -28,12 +28,16 @@ const MessageList: FC<MessageListProps> = ({
   const layout = lg ? 'grid' : 'linear';
 
   const onResize = useCallback(() => {
-    setHeight(window.innerHeight);
+    const headerHeight = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        '--Header-height',
+      ),
+    );
+    setHeight(window.innerHeight - headerHeight);
   }, []);
 
   useEffect(() => {
     if (typeof window === 'object') {
-      document.body.style.overflow = 'hidden';
       onResize();
       window.addEventListener('resize', onResize);
       return () => window.removeEventListener('resize', onResize);
@@ -63,7 +67,7 @@ const MessageList: FC<MessageListProps> = ({
     <>
       {height && (
         <FixedSizeList
-          height={window.innerHeight}
+          height={height}
           itemCount={messages.length}
           itemSize={messageFormHeight(layout)}
           overscanCount={5}
