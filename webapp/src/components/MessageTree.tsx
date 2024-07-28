@@ -81,6 +81,7 @@ const MessageTree: FC<MessageTreeProps> = ({
       items={tree}
       onItemSelectionToggle={onItemSelectionToggle}
       slots={{ item: TreeItem2 }}
+      sx={{ overflowY: 'auto' }}
     />
   );
 };

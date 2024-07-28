@@ -36,10 +36,12 @@ const PullRequestButton: FC<PullRequestButtonProps> = ({ projectName }) => {
   return (
     <>
       <Box
+        p={2}
         style={{
           alignContent: 'center',
+          borderTop: '1px solid #c3c7cc',
           display: 'flex',
-          height: 40,
+          height: 64,
           justifyContent: 'center',
         }}
       >
@@ -52,7 +54,7 @@ const PullRequestButton: FC<PullRequestButtonProps> = ({ projectName }) => {
             type="submit"
             variant="contained"
           >
-            Pull Request
+            Publish changes
           </Button>
         )}
         {state.pullRequestStatus === 'sending' && (
