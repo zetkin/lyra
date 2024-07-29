@@ -1,6 +1,5 @@
 import { accessProjects } from '@/dataAccess';
 import HomeDashboard from '@/components/HomeDashboard';
-import { ProjectCardProps } from '@/components/ProjectCard';
 
 // Force dynamic rendering for this page. By default Next.js attempts to render
 // this page statically. That means that it tries to render the page at build
@@ -18,8 +17,7 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   const projectData = await accessProjects();
   const projects = await new Promises(projectData)
-    .map<ProjectCardProps>(async (value) => {
-      const { name, messages, languagesWithTranslations } = value;
+    .map(async ({ name, messages, languagesWithTranslations }) => {
       const languages = await new Promises(languagesWithTranslations)
         .map(({ lang, translations }) => {
           return {
