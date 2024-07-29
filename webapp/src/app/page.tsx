@@ -31,7 +31,7 @@ export default async function Home() {
       const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
       const messages = await msgAdapter.getMessages();
       const store = await Cache.getProjectStore(projectConfig);
-      const languages = await Promise.all(
+      const languages = await new Promises(
         projectConfig.languages.map(async (lang) => {
           const translations = await store.getTranslations(lang);
           return {
@@ -42,7 +42,7 @@ export default async function Home() {
               : 0,
           };
         }),
-      );
+      ).all();
 
       return {
         href: `/projects/${project.name}`,
@@ -54,4 +54,12 @@ export default async function Home() {
   );
 
   return <HomeDashboard projects={projects} />;
+}
+
+class Promises<T> {
+  constructor(private promises: Array<Promise<T>>) {}
+
+  all() {
+    return Promise.all(this.promises);
+  }
 }
