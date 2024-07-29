@@ -1,4 +1,5 @@
 import { accessProjects } from '@/dataAccess';
+import { Promises } from '@/utils/Promises';
 import HomeDashboard from '@/components/HomeDashboard';
 
 // Force dynamic rendering for this page. By default Next.js attempts to render
@@ -38,16 +39,4 @@ export default async function Home() {
     .all();
 
   return <HomeDashboard projects={projects} />;
-}
-
-class Promises<T> {
-  constructor(private promises: Array<Promise<T>>) {}
-
-  map<U>(callbackfn: (value: T) => U | Promise<U>): Promises<U> {
-    return new Promises(this.promises.map((p) => p.then(callbackfn)));
-  }
-
-  all() {
-    return Promise.all(this.promises);
-  }
 }

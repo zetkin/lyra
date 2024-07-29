@@ -2,6 +2,7 @@ import { NextPage } from 'next';
 import { notFound } from 'next/navigation';
 
 import { Cache } from '@/Cache';
+import { Promises } from '@/utils/Promises';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import ProjectDashboard from '@/components/ProjectDashboard';
 import { RepoGit } from '@/RepoGit';
@@ -26,9 +27,14 @@ const ProjectPage: NextPage<{
   const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
   const messages = await msgAdapter.getMessages();
   const store = await Cache.getProjectStore(projectConfig);
-  const languages = await Promise.all(
-    projectConfig.languages.map(async (lang) => {
+  const languagesWithTranslations = projectConfig.languages.map(
+    async (lang) => {
       const translations = await store.getTranslations(lang);
+      return { lang, translations };
+    },
+  );
+  const languages = await new Promises(languagesWithTranslations)
+    .map(({ lang, translations }) => {
       return {
         href: `/projects/${project.name}/${lang}`,
         language: lang,
@@ -37,8 +43,8 @@ const ProjectPage: NextPage<{
           ? (Object.keys(translations).length / messages.length) * 100
           : 0,
       };
-    }),
-  );
+    })
+    .all();
 
   return (
     <ProjectDashboard
