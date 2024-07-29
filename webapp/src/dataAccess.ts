@@ -25,10 +25,10 @@ export async function accessProjects() {
   });
 }
 
-export async function accessProject(projectNameParam: string) {
+export async function accessProject(name: string) {
   const serverConfig = await ServerConfig.read();
   const project = serverConfig.projects.find(
-    (project) => project.name === projectNameParam,
+    (project) => project.name === name,
   );
 
   if (!project) {
@@ -48,6 +48,5 @@ export async function accessProject(projectNameParam: string) {
       return { lang, translations };
     },
   );
-  const projectName = project.name;
-  return { languagesWithTranslations, messages, projectName };
+  return { languagesWithTranslations, messages, name: project.name };
 }

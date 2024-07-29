@@ -8,31 +8,27 @@ import ProjectDashboard from '@/components/ProjectDashboard';
 const ProjectPage: NextPage<{
   params: { projectName: string };
 }> = async ({ params }) => {
-  const projectNameParam = params.projectName;
-
-  const project = await accessProject(projectNameParam);
+  const project = await accessProject(params.projectName);
   if (!project) {
     return notFound();
   }
-  const { projectName, messages, languagesWithTranslations } = project;
+  const { name, messages, languagesWithTranslations } = project;
   const languages = await new Promises(languagesWithTranslations)
-    .map(({ lang, translations }) => {
-      return {
-        href: `/projects/${projectName}/${lang}`,
-        language: lang,
-        messagesLeft: messages.length - Object.keys(translations).length,
-        progress: translations
-          ? (Object.keys(translations).length / messages.length) * 100
-          : 0,
-      };
-    })
+    .map(({ lang, translations }) => ({
+      href: `/projects/${name}/${lang}`,
+      language: lang,
+      messagesLeft: messages.length - Object.keys(translations).length,
+      progress: translations
+        ? (Object.keys(translations).length / messages.length) * 100
+        : 0,
+    }))
     .all();
 
   return (
     <ProjectDashboard
       languages={languages}
       messageCount={messages.length}
-      project={projectName}
+      project={name}
     />
   );
 };
