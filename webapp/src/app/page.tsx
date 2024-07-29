@@ -20,8 +20,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const serverConfig = await ServerConfig.read();
-  const projects = await Promise.all(
-    serverConfig.projects.map<Promise<ProjectCardProps>>(async (project) => {
+  const projects = await new Promises(
+    serverConfig.projects.map(async (project) => {
       await RepoGit.cloneIfNotExist(project);
       const repoGit = await RepoGit.getRepoGit(project);
       const lyraConfig = await repoGit.getLyraConfig();
@@ -31,15 +31,21 @@ export default async function Home() {
       const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
       const messages = await msgAdapter.getMessages();
       const store = await Cache.getProjectStore(projectConfig);
-      const languages = await new Promises(
-        projectConfig.languages.map(async (lang) => {
+      const languagesWithTranslations = projectConfig.languages.map(
+        async (lang) => {
           const translations = await store.getTranslations(lang);
           return { lang, translations };
-        }),
-      )
+        },
+      );
+      return { languagesWithTranslations, messages, name: project.name };
+    }),
+  )
+    .map<ProjectCardProps>(async (value) => {
+      const { name, messages, languagesWithTranslations } = value;
+      const languages = await new Promises(languagesWithTranslations)
         .map(({ lang, translations }) => {
           return {
-            href: `/projects/${project.name}/${lang}`,
+            href: `/projects/${name}/${lang}`,
             language: lang,
             progress: translations
               ? (Object.keys(translations).length / messages.length) * 100
@@ -49,13 +55,13 @@ export default async function Home() {
         .all();
 
       return {
-        href: `/projects/${project.name}`,
+        href: `/projects/${name}`,
         languages,
         messageCount: messages.length,
-        name: project.name,
+        name,
       };
-    }),
-  );
+    })
+    .all();
 
   return <HomeDashboard projects={projects} />;
 }
@@ -63,7 +69,7 @@ export default async function Home() {
 class Promises<T> {
   constructor(private promises: Array<Promise<T>>) {}
 
-  map<U>(callbackfn: (value: T) => U): Promises<U> {
+  map<U>(callbackfn: (value: T) => U | Promise<U>): Promises<U> {
     return new Promises(this.promises.map((p) => p.then(callbackfn)));
   }
 
