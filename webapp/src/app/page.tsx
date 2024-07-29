@@ -19,15 +19,13 @@ export default async function Home() {
   const projects = await new Promises(projectData)
     .map(async ({ name, messages, languagesWithTranslations }) => {
       const languages = await new Promises(languagesWithTranslations)
-        .map(({ lang, translations }) => {
-          return {
-            href: `/projects/${name}/${lang}`,
-            language: lang,
-            progress: translations
-              ? (Object.keys(translations).length / messages.length) * 100
-              : 0,
-          };
-        })
+        .map(({ lang, translations }) => ({
+          href: `/projects/${name}/${lang}`,
+          language: lang,
+          progress: translations
+            ? (Object.keys(translations).length / messages.length) * 100
+            : 0,
+        }))
         .all();
 
       return {
