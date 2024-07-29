@@ -11,9 +11,11 @@ import { ServerConfig } from '@/utils/serverConfig';
 const ProjectPage: NextPage<{
   params: { projectName: string };
 }> = async ({ params }) => {
+  const projectNameParam = params.projectName;
+
   const serverConfig = await ServerConfig.read();
   const project = serverConfig.projects.find(
-    (project) => project.name === params.projectName,
+    (project) => project.name === projectNameParam,
   );
 
   if (!project) {
@@ -33,10 +35,11 @@ const ProjectPage: NextPage<{
       return { lang, translations };
     },
   );
+  const projectName = project.name;
   const languages = await new Promises(languagesWithTranslations)
     .map(({ lang, translations }) => {
       return {
-        href: `/projects/${project.name}/${lang}`,
+        href: `/projects/${projectName}/${lang}`,
         language: lang,
         messagesLeft: messages.length - Object.keys(translations).length,
         progress: translations
@@ -50,7 +53,7 @@ const ProjectPage: NextPage<{
     <ProjectDashboard
       languages={languages}
       messageCount={messages.length}
-      project={project.name}
+      project={projectName}
     />
   );
 };
