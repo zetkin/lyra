@@ -34,6 +34,10 @@ export default async function Home() {
       const languages = await new Promises(
         projectConfig.languages.map(async (lang) => {
           const translations = await store.getTranslations(lang);
+          return { lang, translations };
+        }),
+      )
+        .map(({ lang, translations }) => {
           return {
             href: `/projects/${project.name}/${lang}`,
             language: lang,
@@ -41,8 +45,8 @@ export default async function Home() {
               ? (Object.keys(translations).length / messages.length) * 100
               : 0,
           };
-        }),
-      ).all();
+        })
+        .all();
 
       return {
         href: `/projects/${project.name}`,
@@ -58,6 +62,10 @@ export default async function Home() {
 
 class Promises<T> {
   constructor(private promises: Array<Promise<T>>) {}
+
+  map<U>(callbackfn: (value: T) => U): Promises<U> {
+    return new Promises(this.promises.map((p) => p.then(callbackfn)));
+  }
 
   all() {
     return Promise.all(this.promises);
