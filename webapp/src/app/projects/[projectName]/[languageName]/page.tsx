@@ -36,6 +36,10 @@ const MessagesPage: NextPage<{
   const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
   const messages = await msgAdapter.getMessages();
   const translations = await Cache.getLanguage(projectName, languageName);
+  const translationsIdText: Record<string, string> = {};
+  Object.entries(translations).forEach(([id, mt]) => {
+    translationsIdText[id] = mt.text;
+  });
 
   const prefix = messageId ? messageId : '';
   const filteredMessages = messages.filter((message) =>
@@ -47,8 +51,8 @@ const MessagesPage: NextPage<{
   }
 
   filteredMessages.sort((m0, m1) => {
-    const trans0 = translations[m0.id]?.trim() ?? '';
-    const trans1 = translations[m1.id]?.trim() ?? '';
+    const trans0 = translations[m0.id]?.text.trim() ?? '';
+    const trans1 = translations[m1.id]?.text.trim() ?? '';
 
     if (!trans0) {
       return -1;
@@ -83,7 +87,7 @@ const MessagesPage: NextPage<{
           languageName={languageName}
           messages={filteredMessages}
           projectName={projectName}
-          translations={translations}
+          translations={translationsIdText}
         />
       </Main>
     </Box>

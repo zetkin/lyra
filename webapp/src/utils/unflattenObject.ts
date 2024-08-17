@@ -2,6 +2,10 @@ export interface UnflattenObject {
   [key: string]: string | UnflattenObject;
 }
 
+/**
+ * Unflatten a flat object with string values.
+ * ex: { 'a.b.c': 'value' } => { a: { b: { c: 'value' } } }
+ */
 export function unflattenObject(obj: Record<string, string>): UnflattenObject {
   const result: UnflattenObject = {};
   for (const key in obj) {
