@@ -16,10 +16,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "yarn"
-      - run: yarn
-      - run: yarn workspaces run build
-      - run: yarn workspaces run test
-      - run: yarn workspaces run lint:formatting
-      - run: yarn workspaces run lint:eslint
+          node-version: ^18.17
+          cache: 'npm'
+      - run: npm install
+      - run: npm run --workspaces build
+      - run: npm run --workspaces test
+      - run: npm run --workspaces lint:formatting
+      - run: npm run --workspaces lint:eslint

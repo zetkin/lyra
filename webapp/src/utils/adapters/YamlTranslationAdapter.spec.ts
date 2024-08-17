@@ -1,6 +1,7 @@
 import mock from 'mock-fs';
-import YamlTranslationAdapter from './YamlTranslationAdapter';
 import { afterEach, describe, expect, it } from '@jest/globals';
+
+import YamlTranslationAdapter from './YamlTranslationAdapter';
 
 describe('YamlTranslationAdapter', () => {
   describe('getTranslations()', () => {

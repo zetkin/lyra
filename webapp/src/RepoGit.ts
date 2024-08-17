@@ -1,14 +1,15 @@
-import { Cache } from '@/Cache';
 import fs from 'fs';
 import fsp from 'fs/promises';
+import { Octokit } from '@octokit/rest';
+import path from 'path';
+import { stringify } from 'yaml';
+
+import { Cache } from '@/Cache';
 import { IGit } from '@/utils/git/IGit';
 import { LyraConfig } from '@/utils/lyraConfig';
-import { Octokit } from '@octokit/rest';
 import packageJson from '../package.json';
-import path from 'path';
 import { ServerProjectConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
-import { stringify } from 'yaml';
 import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
 import { groupByFilename, TranslationMap } from '@/utils/adapters';
@@ -31,11 +32,10 @@ export class RepoGit {
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
     }
-    const { promise, resolve, reject } = Promise.withResolvers<RepoGit>();
-    RepoGit.repositories[key] = promise;
-
     const repository = new RepoGit(spConfig);
-    repository.checkoutBaseAndPull().then(() => resolve(repository), reject);
+    const work = repository.checkoutBaseAndPull();
+    const promise = work.then(() => repository);
+    RepoGit.repositories[key] = promise;
 
     return promise;
   }

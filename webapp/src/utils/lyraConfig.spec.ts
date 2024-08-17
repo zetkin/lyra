@@ -1,5 +1,6 @@
 import mock from 'mock-fs';
 import { afterEach, describe, expect, it } from '@jest/globals';
+
 import { LyraConfig, MessageKind } from './lyraConfig';
 import { LyraConfigReadingError, ProjectPathNotFoundError } from '@/errors';
 
@@ -137,6 +138,26 @@ describe('LyraConfig', () => {
           ].join('\n'),
         });
         const actual = LyraConfig.readFromDir('/path/to/repo');
+        await expect(actual).rejects.toThrow(LyraConfigReadingError);
+      });
+
+      it('throws for suspicious character in language', async () => {
+        mock({
+          '/a/lyra.yml': [
+            'projects:',
+            '- path: .',
+            '  messages:',
+            '    format: ts',
+            '    path: src',
+            '  translations:',
+            '    path: locale',
+            '  languages:',
+            '  - da',
+            '  - ..',
+            '  - sv',
+          ].join('\n'),
+        });
+        const actual = LyraConfig.readFromDir('/a');
         await expect(actual).rejects.toThrow(LyraConfigReadingError);
       });
 

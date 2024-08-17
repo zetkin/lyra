@@ -1,5 +1,6 @@
-import { IGit } from './IGit';
 import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+
+import { IGit } from './IGit';
 
 export class SimpleGitWrapper implements IGit {
   private readonly git: SimpleGit;
@@ -8,6 +9,13 @@ export class SimpleGitWrapper implements IGit {
     const options: Partial<SimpleGitOptions> = {
       baseDir: repoPath,
       binary: 'git',
+
+      /**
+       * We disable symlinks to reduce risk of access to files
+       * outside of the local repository.
+       */
+      config: ['core.symlinks=false'],
+
       maxConcurrentProcesses: 1,
       trimmed: false,
     };

@@ -1,0 +1,2 @@
+#!/bin/sh
+npm run lint:formatting && npm run lint:eslint

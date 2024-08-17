@@ -1,5 +1,6 @@
-import { type MessageData } from './adapters';
 import ts from 'typescript';
+
+import { type MessageData } from './adapters';
 
 export default function readTypedMessages(fileName: string): MessageData[] {
   const host = ts.createIncrementalCompilerHost(
