@@ -13,7 +13,7 @@ const ProjectPage: NextPage<{
     return notFound();
   }
   const { name, messages, languagesWithTranslations } = project;
-  const languages = await new Promises(languagesWithTranslations)
+  const languages = await Promises.of(languagesWithTranslations)
     .map(({ lang, translations }) => ({
       href: `/projects/${name}/${lang}`,
       language: lang,

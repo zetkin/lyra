@@ -17,9 +17,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const projectData = await accessProjects();
-  const projects = await new Promises(projectData)
+  const projects = await Promises.of(projectData)
     .map(async ({ name, messages, languagesWithTranslations }) => {
-      const languages = await new Promises(languagesWithTranslations)
+      const languages = await Promises.of(languagesWithTranslations)
         .map(({ lang, translations }) => ({
           href: `/projects/${name}/${lang}`,
           language: lang,
