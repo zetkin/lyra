@@ -14,6 +14,7 @@ import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { type TranslationMap } from '@/utils/adapters';
+import { getTranslationsIdText } from '@/utils/translationObjectUtil';
 
 export class RepoGit {
   private static repositories: {
@@ -155,12 +156,10 @@ export class RepoGit {
           // TODO: what if language file were yaml not yml?
           `${lang}.yml`,
         );
-        // TODO: temp keep same keep same behaviour just dehydrate object MassageMap
-        const dehydrate: Record<string, string> = {};
-        Object.entries(languages[lang]).forEach(([key, value]) => {
-          dehydrate[key] = value.text;
-        });
-        const yamlOutput = stringify(unflattenObject(dehydrate), {
+        // Temp: keep same behaviour just dehydrate object MassageMap
+        // TODO: save each in different files according to sourceFile
+        const translationsIdText = getTranslationsIdText(languages[lang]);
+        const yamlOutput = stringify(unflattenObject(translationsIdText), {
           doubleQuotedAsJSON: true,
           singleQuote: true,
         });
