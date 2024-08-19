@@ -42,7 +42,7 @@ export class ProjectStore {
 
     const output: MessageMap = {};
     Object.entries(language).forEach(([key, messageTranslation]) => {
-      output[key] = messageTranslation;
+      output[key] = { ...messageTranslation };
     });
 
     return output;
