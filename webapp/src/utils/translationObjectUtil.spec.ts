@@ -2,7 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 
 import { getTranslationsIdText } from './translationObjectUtil';
 
-describe('translationObjectUtil()', () => {
+describe('translationObjectUtil', () => {
   describe('getTranslationsIdText()', () => {
     it('returns empty object for empty obj', () => {
       const actual = getTranslationsIdText({});
