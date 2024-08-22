@@ -13,6 +13,8 @@ import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
+import { type TranslationMap } from '@/utils/adapters';
+import { getTranslationsIdText } from '@/utils/translationObjectUtil';
 
 export class RepoGit {
   private static repositories: {
@@ -143,7 +145,7 @@ export class RepoGit {
   }
 
   private async writeLangFiles(
-    languages: Record<string, Record<string, string>>,
+    languages: TranslationMap,
     translationsPath: string,
   ): Promise<string[]> {
     const paths: string[] = [];
@@ -154,7 +156,10 @@ export class RepoGit {
           // TODO: what if language file were yaml not yml?
           `${lang}.yml`,
         );
-        const yamlOutput = stringify(unflattenObject(languages[lang]), {
+        // Temp: keep same behaviour just dehydrate object MassageMap
+        // TODO: save each in different files according to sourceFile
+        const translationsIdText = getTranslationsIdText(languages[lang]);
+        const yamlOutput = stringify(unflattenObject(translationsIdText), {
           doubleQuotedAsJSON: true,
           singleQuote: true,
         });

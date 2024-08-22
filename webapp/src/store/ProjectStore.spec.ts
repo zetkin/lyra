@@ -35,7 +35,7 @@ describe('ProjectStore', () => {
 
     const actual = await projectStore.getTranslations('de');
     expect(actual).toEqual({
-      'greeting.headline': 'Hallo',
+      'greeting.headline': { sourceFile: '', text: 'Hallo' },
     });
   });
 
@@ -66,11 +66,16 @@ describe('ProjectStore', () => {
     const after = await projectStore.getTranslations('de');
 
     expect(before).toEqual({
-      'greeting.headline': 'Hallo',
+      'greeting.headline': {
+        sourceFile: '',
+        text: 'Hallo',
+      },
     });
-
     expect(after).toEqual({
-      'greeting.headline': 'Hallo!',
+      'greeting.headline': {
+        sourceFile: '',
+        text: 'Hallo!',
+      },
     });
   });
 
@@ -90,7 +95,10 @@ describe('ProjectStore', () => {
     const actual = await projectStore.getTranslations('de');
 
     expect(actual).toEqual({
-      'greeting.headline': 'Hallo!',
+      'greeting.headline': {
+        sourceFile: '',
+        text: 'Hallo!',
+      },
     });
   });
 
@@ -147,10 +155,16 @@ describe('ProjectStore', () => {
     const languages = await projectStore.getLanguageData();
     expect(languages).toEqual({
       de: {
-        'greeting.headline': 'Hallo',
+        'greeting.headline': {
+          sourceFile: '',
+          text: 'Hallo',
+        },
       },
       sv: {
-        'greeting.headline': 'Hej',
+        'greeting.headline': {
+          sourceFile: '',
+          text: 'Hej',
+        },
       },
     });
   });
