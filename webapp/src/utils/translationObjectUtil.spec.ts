@@ -1,6 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { getTranslationsIdText } from './translationObjectUtil';
+import {
+  getTranslationsIdText,
+  getTranslationsBySourceFile,
+} from './translationObjectUtil';
 
 describe('translationObjectUtil', () => {
   describe('getTranslationsIdText()', () => {
@@ -28,6 +31,47 @@ describe('translationObjectUtil', () => {
       const expected = {
         'a.b.c': 'ABC',
         'a.b.e': 'ABE',
+      };
+      expect(actual).toEqual(expected);
+    });
+  });
+  describe('getTranslationsBySourceFile()', () => {
+    it('returns empty object for empty obj', () => {
+      const actual = getTranslationsBySourceFile({});
+      expect(actual).toEqual({});
+    });
+    it('group by sourceFile obj one property', () => {
+      const actual = getTranslationsBySourceFile({
+        a: { sourceFile: 'en.yaml', text: 'A' },
+      });
+      expect(actual).toEqual({ 'en.yaml': { a: 'A' } });
+    });
+    it('group by sourceFile simple obj one object property', () => {
+      const actual = getTranslationsBySourceFile({
+        'a.b.c': { sourceFile: 'en.yaml', text: 'ABC' },
+      });
+      expect(actual).toEqual({ 'en.yaml': { 'a.b.c': 'ABC' } });
+    });
+    it('group by sourceFile two properties obj', () => {
+      const actual = getTranslationsBySourceFile({
+        'a.b.c': { sourceFile: 'en1.yaml', text: 'ABC' },
+        'a.b.e': { sourceFile: 'en2.yml', text: 'ABE' },
+      });
+      const expected = {
+        'en1.yaml': { 'a.b.c': 'ABC' },
+        'en2.yml': { 'a.b.e': 'ABE' },
+      };
+      expect(actual).toEqual(expected);
+    });
+    it('group by sourceFile two sourceFiles obj', () => {
+      const actual = getTranslationsBySourceFile({
+        'a.b.c': { sourceFile: 'en1.yaml', text: 'ABC' },
+        'a.b.e': { sourceFile: 'en1.yaml', text: 'ABE' },
+        'a.b.f': { sourceFile: 'en2.yml', text: 'ABF' },
+      });
+      const expected = {
+        'en1.yaml': { 'a.b.c': 'ABC', 'a.b.e': 'ABE' },
+        'en2.yml': { 'a.b.f': 'ABF' },
       };
       expect(actual).toEqual(expected);
     });
