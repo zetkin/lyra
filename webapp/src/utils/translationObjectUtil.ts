@@ -1,13 +1,15 @@
-import { MessageMap } from '@/utils/adapters';
+import {
+  MessageMap,
+  TranslateBySourceFile,
+  TranslateIdText,
+} from '@/utils/adapters';
 
 /**
  * get a basic object of message id and text from MessageMap, by remove sourceFile and keep text
  * ex: { 'a.b.c': {sourceFile, text} } => { 'a.b.c': 'text' }
  */
-export function getTranslationsIdText(
-  messageMap: MessageMap,
-): Record<string, string> {
-  const result: Record<string, string> = {};
+export function getTranslationsIdText(messageMap: MessageMap): TranslateIdText {
+  const result: TranslateIdText = {};
   Object.entries(messageMap).forEach(([id, mt]) => {
     result[id] = mt.text;
   });
@@ -21,15 +23,12 @@ export function getTranslationsIdText(
  */
 export function getTranslationsBySourceFile(
   messageMap: MessageMap,
-): Record<string, Record<string, string>> {
-  return Object.entries(messageMap).reduce(
-    (acc, [id, mt]) => {
-      if (!acc[mt.sourceFile]) {
-        acc[mt.sourceFile] = {};
-      }
-      acc[mt.sourceFile][id] = mt.text;
-      return acc;
-    },
-    {} as Record<string, Record<string, string>>,
-  );
+): TranslateBySourceFile {
+  return Object.entries(messageMap).reduce((acc, [id, mt]) => {
+    if (!acc[mt.sourceFile]) {
+      acc[mt.sourceFile] = {};
+    }
+    acc[mt.sourceFile][id] = mt.text;
+    return acc;
+  }, {} as TranslateBySourceFile);
 }
