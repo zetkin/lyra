@@ -3,6 +3,8 @@ import { describe, expect, it } from '@jest/globals';
 import {
   getTranslationsIdText,
   getTranslationsBySourceFile,
+  getPrefixKeyFromSourceFile,
+  removePrefix,
 } from './translationObjectUtil';
 
 describe('translationObjectUtil', () => {
@@ -74,6 +76,34 @@ describe('translationObjectUtil', () => {
         'f2/en.yml': { 'a.b.f': 'ABF' },
       };
       expect(actual).toEqual(expected);
+    });
+  });
+  describe('getPrefixKeyFromSourceFile()', () => {
+    it('returns empty string for empty string', () => {
+      const actual = getPrefixKeyFromSourceFile('');
+      expect(actual).toEqual('');
+    });
+    it('returns empty string for no path', () => {
+      const actual = getPrefixKeyFromSourceFile('en.yaml');
+      expect(actual).toEqual('');
+    });
+    it('returns empty string for no path', () => {
+      const actual = getPrefixKeyFromSourceFile('sub1/sub2/en.yaml');
+      expect(actual).toEqual('sub1.sub2.');
+    });
+  });
+  describe('removePrefix()', () => {
+    it('returns empty string for both empty string', () => {
+      const actual = removePrefix('', '');
+      expect(actual).toEqual('');
+    });
+    it('returns same string for empty prefix', () => {
+      const actual = removePrefix('', 'a.b.c');
+      expect(actual).toEqual('a.b.c');
+    });
+    it('returns string with prefix or passing sourceFile', () => {
+      const actual = removePrefix('sub1/sub2/en.yaml', 'sub1.sub2.k1.k2.k3');
+      expect(actual).toEqual('k1.k2.k3');
     });
   });
 });

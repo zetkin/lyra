@@ -32,3 +32,27 @@ export function getTranslationsBySourceFile(
     return acc;
   }, {} as TranslateBySourceFile);
 }
+
+/**
+ * get prefix key from sourceFile by removing filename and extension and replace '/' with '.'
+ * ex: 'sub1/sub2/en.yaml' => 'sub1.sub2.'
+ * @param messageMap
+ */
+export function getPrefixKeyFromSourceFile(sourceFile: string): string {
+  const fileName = sourceFile.split('/').pop();
+  if (!fileName) {
+    return '';
+  }
+  return sourceFile.replace(fileName, '').replace(/\//g, '.');
+}
+
+/**
+ * get key without a prefix based on sourceFile path
+ * ex: 'sub1/sub2/en.yaml', 'sub1.sub2.k1.k2.k3 => 'k1.k2.k3'
+ * @param sourceFile
+ * @param fullKey
+ */
+export function removePrefix(sourceFile: string, fullKey: string): string {
+  const prefix = getPrefixKeyFromSourceFile(sourceFile);
+  return fullKey.replace(prefix, '').replace(/^\./, '');
+}
