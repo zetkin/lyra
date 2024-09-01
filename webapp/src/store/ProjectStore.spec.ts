@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { ProjectStore } from './ProjectStore';
-import { LanguageNotFound, MessageNotFound } from '@/errors';
+import { LanguageNotFound } from '@/errors';
 
 describe('ProjectStore', () => {
   it('returns empty object when empty', async () => {
