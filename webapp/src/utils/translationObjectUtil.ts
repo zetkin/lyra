@@ -28,7 +28,8 @@ export function getTranslationsBySourceFile(
     if (!acc[mt.sourceFile]) {
       acc[mt.sourceFile] = {};
     }
-    acc[mt.sourceFile][id] = mt.text;
+    const idWithoutPrefix = removePrefix(mt.sourceFile, id);
+    acc[mt.sourceFile][idWithoutPrefix] = mt.text;
     return acc;
   }, {} as TranslateBySourceFile);
 }

@@ -56,8 +56,8 @@ describe('translationObjectUtil', () => {
     });
     it('group by sourceFile two properties obj', () => {
       const actual = getTranslationsBySourceFile({
-        'a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
-        'a.b.e': { sourceFile: 'f2/en.yml', text: 'ABE' },
+        'f1.a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
+        'f2.a.b.e': { sourceFile: 'f2/en.yml', text: 'ABE' },
       });
       const expected = {
         'f1/en.yaml': { 'a.b.c': 'ABC' },
@@ -67,9 +67,9 @@ describe('translationObjectUtil', () => {
     });
     it('group by sourceFile two sourceFiles obj', () => {
       const actual = getTranslationsBySourceFile({
-        'a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
-        'a.b.e': { sourceFile: 'f1/en.yaml', text: 'ABE' },
-        'a.b.f': { sourceFile: 'f2/en.yml', text: 'ABF' },
+        'f1.a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
+        'f1.a.b.e': { sourceFile: 'f1/en.yaml', text: 'ABE' },
+        'f2.a.b.f': { sourceFile: 'f2/en.yml', text: 'ABF' },
       });
       const expected = {
         'f1/en.yaml': { 'a.b.c': 'ABC', 'a.b.e': 'ABE' },
