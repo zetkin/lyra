@@ -10,7 +10,7 @@ export type MessageData = {
 };
 
 export type MessageTranslation = {
-  sourceFile: string;
+  sourceFile?: string;
   text: string;
 };
 

@@ -3,7 +3,7 @@ import {
   MessageMap,
   TranslationMap,
 } from '@/utils/adapters';
-import { LanguageNotFound, MessageNotFound } from '@/errors';
+import { LanguageNotFound } from '@/errors';
 
 type StoreData = {
   languages: TranslationMap;
@@ -56,9 +56,9 @@ export class ProjectStore {
     }
 
     if (!this.data.languages[lang][id]) {
-      throw new MessageNotFound(lang, id);
+      this.data.languages[lang][id] = {text,}; 
     }
-
+    
     this.data.languages[lang][id].text = text;
   }
 
