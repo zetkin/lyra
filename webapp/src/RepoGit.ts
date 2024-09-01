@@ -14,7 +14,7 @@ import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { type TranslationMap } from '@/utils/adapters';
-import { getTranslationsIdText } from '@/utils/translationObjectUtil';
+import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
 
 export class RepoGit {
   private static repositories: {
@@ -149,31 +149,42 @@ export class RepoGit {
     translationsPath: string,
   ): Promise<string[]> {
     const paths: string[] = [];
-    const result = await Promise.allSettled(
+    const resultLang = await Promise.allSettled(
       Object.keys(languages).map(async (lang) => {
-        const yamlPath = path.join(
-          translationsPath,
-          // TODO: what if language file were yaml not yml?
-          `${lang}.yml`,
+        const translationsBySourceFile = getTranslationsBySourceFile(
+          languages[lang],
         );
-        // Temp: keep same behaviour just dehydrate object MassageMap
-        // TODO: save each in different files according to sourceFile
-        const translationsIdText = getTranslationsIdText(languages[lang]);
-        const yamlOutput = stringify(unflattenObject(translationsIdText), {
-          doubleQuotedAsJSON: true,
-          singleQuote: true,
-        });
-        try {
-          await fsp.writeFile(yamlPath, yamlOutput);
-        } catch (e) {
-          throw new WriteLanguageFileError(yamlPath, e);
+        // for each sourceFile
+        const resultSourceFile = await Promise.allSettled(
+          Object.entries(translationsBySourceFile).map(
+            async ([sourceFile, translation]) => {
+              const yamlPath = path.join(translationsPath, sourceFile);
+              const yamlOutput = stringify(unflattenObject(translation), {
+                doubleQuotedAsJSON: true,
+                singleQuote: true,
+              });
+              try {
+                await fsp.writeFile(yamlPath, yamlOutput);
+              } catch (e) {
+                throw new WriteLanguageFileError(yamlPath, e);
+              }
+              paths.push(yamlPath);
+            },
+          ),
+        );
+        if (resultSourceFile.some((r) => r.status === 'rejected')) {
+          throw new WriteLanguageFileErrors(
+            resultSourceFile
+              .filter((r) => r.status === 'rejected')
+              .map((r) => (r as PromiseRejectedResult).reason),
+          );
         }
-        paths.push(yamlPath);
       }),
     );
-    if (result.some((r) => r.status === 'rejected')) {
+
+    if (resultLang.some((r) => r.status === 'rejected')) {
       throw new WriteLanguageFileErrors(
-        result
+        resultLang
           .filter((r) => r.status === 'rejected')
           .map((r) => (r as PromiseRejectedResult).reason),
       );
