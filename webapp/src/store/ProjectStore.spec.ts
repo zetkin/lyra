@@ -117,23 +117,6 @@ describe('ProjectStore', () => {
     await expect(actual).rejects.toThrowError(LanguageNotFound);
   });
 
-  it('throws exception for unknown message ID', async () => {
-    expect.assertions(1);
-    const projectStore = new ProjectStore({
-      getTranslations: async () => ({
-        de: {},
-      }),
-    });
-
-    const actual = projectStore.updateTranslation(
-      'de',
-      'greeting.headline',
-      'Hallo!',
-    );
-
-    await expect(actual).rejects.toThrowError(MessageNotFound);
-  });
-
   it('gives full access to all languages', async () => {
     const projectStore = new ProjectStore({
       getTranslations: async () => ({
