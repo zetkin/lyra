@@ -54,24 +54,24 @@ describe('translationObjectUtil', () => {
     });
     it('group by sourceFile two properties obj', () => {
       const actual = getTranslationsBySourceFile({
-        'a.b.c': { sourceFile: 'en1.yaml', text: 'ABC' },
-        'a.b.e': { sourceFile: 'en2.yml', text: 'ABE' },
+        'a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
+        'a.b.e': { sourceFile: 'f2/en.yml', text: 'ABE' },
       });
       const expected = {
-        'en1.yaml': { 'a.b.c': 'ABC' },
-        'en2.yml': { 'a.b.e': 'ABE' },
+        'f1/en.yaml': { 'a.b.c': 'ABC' },
+        'f2/en.yml': { 'a.b.e': 'ABE' },
       };
       expect(actual).toEqual(expected);
     });
     it('group by sourceFile two sourceFiles obj', () => {
       const actual = getTranslationsBySourceFile({
-        'a.b.c': { sourceFile: 'en1.yaml', text: 'ABC' },
-        'a.b.e': { sourceFile: 'en1.yaml', text: 'ABE' },
-        'a.b.f': { sourceFile: 'en2.yml', text: 'ABF' },
+        'a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
+        'a.b.e': { sourceFile: 'f1/en.yaml', text: 'ABE' },
+        'a.b.f': { sourceFile: 'f2/en.yml', text: 'ABF' },
       });
       const expected = {
-        'en1.yaml': { 'a.b.c': 'ABC', 'a.b.e': 'ABE' },
-        'en2.yml': { 'a.b.f': 'ABF' },
+        'f1/en.yaml': { 'a.b.c': 'ABC', 'a.b.e': 'ABE' },
+        'f2/en.yml': { 'a.b.f': 'ABF' },
       };
       expect(actual).toEqual(expected);
     });
