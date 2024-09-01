@@ -56,9 +56,9 @@ export class ProjectStore {
     }
 
     if (!this.data.languages[lang][id]) {
-      this.data.languages[lang][id] = {text,}; 
+      this.data.languages[lang][id] = { text };
     }
-    
+
     this.data.languages[lang][id].text = text;
   }
 

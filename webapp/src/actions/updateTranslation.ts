@@ -73,11 +73,11 @@ export default async function updateTranslation(
   const messages = await msgAdapter.getMessages();
 
   const messageIds = messages.map((message) => message.id);
-  const foundId = messageIds.find((id) => id == messageId); 
+  const foundId = messageIds.find((id) => id == messageId);
 
   if (foundId === undefined) {
-    throw new MessageNotFound(languageName, messageId)
-  } 
+    throw new MessageNotFound(languageName, messageId);
+  }
 
   if (!projectConfig.isLanguageSupported(languageName)) {
     return {
