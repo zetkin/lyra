@@ -39,15 +39,12 @@ you can take to setup your develop environment.
 
 1. Install the extension `Prettier - Code formatter`.
    It has an identifier `esbenp.prettier-vscode`.
-2. Configure the extension with the path to our
-   configuration file `webapp/.prettierrc.json`.
-3. Configure Prettier as the default formatter.
+2. Configure Prettier as the default formatter.
 
-Steps 2 and 3 can be done with a `.vscode/settings.json`:
+Steps 2 can be done with a `.vscode/settings.json`:
 
 ```
 {
-    "prettier.configPath": "webapp/.prettierrc.json",
     "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
 ```
