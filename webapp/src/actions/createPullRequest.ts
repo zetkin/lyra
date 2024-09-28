@@ -1,6 +1,7 @@
 'use server';
 
 import { notFound } from 'next/navigation';
+import { randomUUID } from 'crypto';
 
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
@@ -71,16 +72,18 @@ export default async function sendPullRequest(
     }
 
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
-    const branchName = 'lyra-translate-' + nowIso;
+    const uuidSnippet = randomUUID().substring(5);
+    const branchName = 'lyra-translate-' + uuidSnippet;
+    
     await repoGit.newBranchCommitAndPush(
       branchName,
       langFilePaths,
-      `Lyra translate: ${nowIso}`,
+      `Lyra translate: ${nowIso}-${uuidSnippet} `,
     );
 
     const pullRequestUrl = await repoGit.createPR(
       branchName,
-      'LYRA Translate PR: ' + nowIso,
+      'LYRA Translate PR: ' + uuidSnippet,
       'Created by LYRA at: ' + nowIso,
       serverProjectConfig.owner,
       serverProjectConfig.repo,
