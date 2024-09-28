@@ -74,11 +74,11 @@ export default async function sendPullRequest(
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
     const uuidSnippet = randomUUID().substring(5);
     const branchName = 'lyra-translate-' + uuidSnippet;
-    
+
     await repoGit.newBranchCommitAndPush(
       branchName,
       langFilePaths,
-      `Lyra translate: ${nowIso}-${uuidSnippet} `,
+      `Lyra translate: ${nowIso}-${uuidSnippet}`,
     );
 
     const pullRequestUrl = await repoGit.createPR(
