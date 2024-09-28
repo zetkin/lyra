@@ -87,7 +87,7 @@ describe('translationObjectUtil', () => {
       const actual = getPrefixKeyFromSourceFile('en.yaml');
       expect(actual).toEqual('');
     });
-    it('returns empty string for no path', () => {
+    it('returns "sub1.sub2." string for path "sub1/sub2/en.yaml"', () => {
       const actual = getPrefixKeyFromSourceFile('sub1/sub2/en.yaml');
       expect(actual).toEqual('sub1.sub2.');
     });
@@ -101,7 +101,7 @@ describe('translationObjectUtil', () => {
       const actual = removePrefix('', 'a.b.c');
       expect(actual).toEqual('a.b.c');
     });
-    it('returns string with prefix or passing sourceFile', () => {
+    it('returns string without prefix that match the path of the sourceFile', () => {
       const actual = removePrefix('sub1/sub2/en.yaml', 'sub1.sub2.k1.k2.k3');
       expect(actual).toEqual('k1.k2.k3');
     });
