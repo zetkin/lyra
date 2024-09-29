@@ -53,11 +53,11 @@ export function getPrefixKeyFromSourceFile(sourceFile: string): string {
 
 /**
  * get key without a prefix based on sourceFile path
- * ex: 'sub1/sub2/en.yaml', 'sub1.sub2.k1.k2.k3 => 'k1.k2.k3'
+ * ex: ('sub1/sub2/en.yaml', 'sub1.sub2.k1.k2.k3) => 'k1.k2.k3'
  * @param sourceFile
  * @param fullKey
  */
 export function removePrefix(sourceFile: string, fullKey: string): string {
   const prefix = getPrefixKeyFromSourceFile(sourceFile);
-  return fullKey.replace(prefix, '').replace(/^\./, '');
+  return fullKey.replace(prefix, '');
 }
