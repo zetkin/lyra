@@ -56,7 +56,8 @@ export class ProjectStore {
     }
 
     if (!this.data.languages[lang][id]) {
-      this.data.languages[lang][id] = { text };
+      const sourceFile = this.generateSourceFile(lang, id);
+      this.data.languages[lang][id] = { sourceFile, text };
     }
 
     this.data.languages[lang][id].text = text;
@@ -66,5 +67,21 @@ export class ProjectStore {
     if (Object.keys(this.data.languages).length == 0) {
       this.data.languages = await this.translationAdapter.getTranslations();
     }
+  }
+
+  /** get the source file from the default en language otherwise generate one from locale root*/
+  private generateSourceFile(lang: string, messageId: string): string {
+    const enSourceFile = this.data.languages?.['en']?.[messageId]?.sourceFile;
+    if (!enSourceFile) {
+      return `${lang}.yaml`;
+    }
+    /** for example if lang = sv then replace "en" to "sv" ex. "folder1/en.yaml" -> "folder1/sv.yaml" */
+    const enSourceFileArr = enSourceFile.split('/');
+    const enShortFileName = enSourceFileArr.pop();
+    if (!enShortFileName) {
+      return `${lang}.yaml`;
+    }
+    const langFileName = enShortFileName.replace(/^en(\.ya?ml)$/g, `${lang}$1`);
+    return enSourceFileArr.join('/').concat(`/${langFileName}`);
   }
 }
