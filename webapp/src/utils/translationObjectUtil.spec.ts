@@ -91,6 +91,10 @@ describe('translationObjectUtil', () => {
       const actual = getPrefixKeyFromSourceFile('sub1/sub2/en.yaml');
       expect(actual).toEqual('sub1.sub2.');
     });
+    it('returns "sub1.en.yaml." string for path "sub1/en.yaml/en.yaml"', () => {
+      const actual = getPrefixKeyFromSourceFile('sub1/en.yaml/en.yaml');
+      expect(actual).toEqual('sub1.en.yaml.');
+    });
   });
   describe('removePrefix()', () => {
     it('returns empty string for both empty string', () => {
