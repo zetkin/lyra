@@ -83,7 +83,7 @@ export default async function sendPullRequest(
 
     const pullRequestUrl = await repoGit.createPR(
       branchName,
-      'LYRA Translate PR: ' + uuidSnippet,
+      'LYRA Translate PR: ' + nowIso,
       'Created by LYRA at: ' + nowIso,
       serverProjectConfig.owner,
       serverProjectConfig.repo,
