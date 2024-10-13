@@ -5,16 +5,11 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Main from '@/components/Main';
 import Sidebar from '@/components/Sidebar';
-import { Cache } from '@/Cache';
-import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
-import { RepoGit } from '@/RepoGit';
-import { ServerConfig } from '@/utils/serverConfig';
 import MessageTree from '@/components/MessageTree';
 import MessageList from '@/components/MessageList';
 import PullRequestButton from '@/components/PullRequestButton';
 import TitleBar from '@/components/TitleBar';
 import SidebarContextProvider from '@/components/SidebarContext';
-import { getTranslationsIdText } from '@/utils/translationObjectUtil';
 import { accessLanguage } from '@/dataAccess';
 
 const MessagesPage: NextPage<{
