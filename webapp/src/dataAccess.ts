@@ -1,5 +1,4 @@
 import { Cache } from '@/Cache';
-import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 import { getTranslationsIdText } from './utils/translationObjectUtil';
@@ -41,8 +40,8 @@ export async function accessLanguage(
   const repoGit = await RepoGit.getRepoGit(project);
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
-  const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
-  const messages = await msgAdapter.getMessages();
+  const projectStore = await Cache.getProjectStore(projectConfig);
+  const messages = await projectStore.getMessageIds();
   const translationsWithFilePath = await Cache.getLanguage(
     projectName,
     languageName,
@@ -60,9 +59,8 @@ async function readProject(project: ServerProjectConfig) {
   const repoGit = await RepoGit.getRepoGit(project);
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
-  const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
-  const messages = await msgAdapter.getMessages();
   const store = await Cache.getProjectStore(projectConfig);
+  const messages = await store.getMessageIds();
   const languagesWithTranslations = projectConfig.languages.map(
     async (lang) => {
       const translations = await store.getTranslations(lang);

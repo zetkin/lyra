@@ -1,5 +1,7 @@
 import {
+  IMessageAdapter,
   ITranslationAdapter,
+  MessageData,
   MessageMap,
   TranslationMap,
 } from '@/utils/adapters';
@@ -9,13 +11,19 @@ import { StoreData } from './types';
 export class ProjectStore {
   private data: StoreData;
   private translationAdapter: ITranslationAdapter;
+  private messageAdapter: IMessageAdapter;
 
-  constructor(translationAdapter: ITranslationAdapter) {
+  constructor(
+    messageAdapter: IMessageAdapter,
+    translationAdapter: ITranslationAdapter,
+  ) {
     this.data = {
       languages: {},
+      messages: [],
     };
 
     this.translationAdapter = translationAdapter;
+    this.messageAdapter = messageAdapter;
   }
 
   async getLanguageData(): Promise<TranslationMap> {
@@ -43,6 +51,11 @@ export class ProjectStore {
     });
 
     return output;
+  }
+
+  async getMessageIds(): Promise<MessageData[]> {
+    this.data.messages = await this.messageAdapter.getMessages();
+    return this.data.messages;
   }
 
   async updateTranslation(lang: string, id: string, text: string) {

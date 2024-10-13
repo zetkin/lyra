@@ -1,11 +1,18 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from './ProjectStore';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
+import { IMessageAdapter } from '@/utils/adapters';
 
 describe('ProjectStore', () => {
+  const mockMsgAdapter: jest.Mocked<IMessageAdapter> = {
+    getMessages: jest
+      .fn<IMessageAdapter['getMessages']>()
+      .mockResolvedValue([]),
+  };
+
   it('returns empty object when empty', async () => {
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({
         sv: {},
       }),
@@ -16,7 +23,7 @@ describe('ProjectStore', () => {
   });
 
   it('returns correct language', async () => {
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
@@ -41,7 +48,7 @@ describe('ProjectStore', () => {
 
   it('throws exception for missing language', async () => {
     expect.assertions(1);
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({}),
     });
 
@@ -50,7 +57,7 @@ describe('ProjectStore', () => {
   });
 
   it('returns updated translations', async () => {
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
@@ -80,7 +87,7 @@ describe('ProjectStore', () => {
   });
 
   it('can update translations before getTranslations()', async () => {
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
@@ -104,7 +111,7 @@ describe('ProjectStore', () => {
 
   it('throws exception for missing language', async () => {
     expect.assertions(1);
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({}),
     });
 
@@ -119,7 +126,7 @@ describe('ProjectStore', () => {
 
   it('throws exception for unknown message ID', async () => {
     expect.assertions(1);
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({
         de: {},
       }),
@@ -135,7 +142,7 @@ describe('ProjectStore', () => {
   });
 
   it('gives full access to all languages', async () => {
-    const projectStore = new ProjectStore({
+    const projectStore = new ProjectStore(mockMsgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
