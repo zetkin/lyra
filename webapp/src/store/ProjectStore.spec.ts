@@ -4,15 +4,18 @@ import { ProjectStore } from './ProjectStore';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
 import { IMessageAdapter } from '@/utils/adapters';
 
-describe('ProjectStore', () => {
-  const mockMsgAdapter: jest.Mocked<IMessageAdapter> = {
-    getMessages: jest
-      .fn<IMessageAdapter['getMessages']>()
-      .mockResolvedValue([]),
+function mockMsgAdapter(): jest.Mocked<IMessageAdapter> {
+  return {
+    getMessages: jest.fn<IMessageAdapter['getMessages']>(),
   };
+}
 
+describe('ProjectStore', () => {
   it('returns empty object when empty', async () => {
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([]);
+
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({
         sv: {},
       }),
@@ -23,7 +26,16 @@ describe('ProjectStore', () => {
   });
 
   it('returns correct language', async () => {
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([
+      {
+        defaultMessage: '',
+        id: 'greeting.headline',
+        params: [],
+      },
+    ]);
+
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
@@ -48,7 +60,9 @@ describe('ProjectStore', () => {
 
   it('throws exception for missing language', async () => {
     expect.assertions(1);
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([]);
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({}),
     });
 
@@ -57,7 +71,16 @@ describe('ProjectStore', () => {
   });
 
   it('returns updated translations', async () => {
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([
+      {
+        defaultMessage: '',
+        id: 'greeting.headline',
+        params: [],
+      },
+    ]);
+
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
@@ -87,7 +110,16 @@ describe('ProjectStore', () => {
   });
 
   it('can update translations before getTranslations()', async () => {
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([
+      {
+        defaultMessage: '',
+        id: 'greeting.headline',
+        params: [],
+      },
+    ]);
+
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
@@ -111,7 +143,15 @@ describe('ProjectStore', () => {
 
   it('throws exception for missing language', async () => {
     expect.assertions(1);
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([
+      {
+        defaultMessage: '',
+        id: 'greeting.headline',
+        params: [],
+      },
+    ]);
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({}),
     });
 
@@ -126,7 +166,15 @@ describe('ProjectStore', () => {
 
   it('throws exception for unknown message ID', async () => {
     expect.assertions(1);
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([
+      {
+        defaultMessage: '',
+        id: 'greeting.headline',
+        params: [],
+      },
+    ]);
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({
         de: {},
       }),
@@ -142,7 +190,15 @@ describe('ProjectStore', () => {
   });
 
   it('gives full access to all languages', async () => {
-    const projectStore = new ProjectStore(mockMsgAdapter, {
+    const msgAdapter = mockMsgAdapter();
+    msgAdapter.getMessages.mockResolvedValue([
+      {
+        defaultMessage: '',
+        id: 'greeting.headline',
+        params: [],
+      },
+    ]);
+    const projectStore = new ProjectStore(msgAdapter, {
       getTranslations: async () => ({
         de: {
           'greeting.headline': {
