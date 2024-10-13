@@ -16,6 +16,10 @@ export default function mergeStoreData(
     ]),
   );
 
+  Object.keys(fromRepo.languages).forEach((lang) => {
+    output.languages[lang] = {};
+  });
+
   Object.values(output.messages).forEach((message) => {
     allLanguages.forEach((lang) => {
       if (!output.languages[lang]) {

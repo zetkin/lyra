@@ -108,6 +108,23 @@ describe('mergeStoreData()', () => {
     const result = mergeStoreData(inMemory, fromRepo);
     expect(result).toEqual(inMemory);
   });
+
+  it('always returns languages, even if empty', () => {
+    const inMemory: StoreData = {
+      languages: {},
+      messages: [],
+    };
+
+    const fromRepo: StoreData = {
+      languages: {
+        sv: {},
+      },
+      messages: [],
+    };
+
+    const result = mergeStoreData(inMemory, fromRepo);
+    expect(result).toEqual(fromRepo);
+  });
 });
 
 const mockTranslation = (
