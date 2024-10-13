@@ -10,8 +10,8 @@ type StoreData = {
 };
 
 export class ProjectStore {
-  private data: StoreData;
-  private translationAdapter: ITranslationAdapter;
+  private readonly data: StoreData;
+  private readonly translationAdapter: ITranslationAdapter;
 
   constructor(translationAdapter: ITranslationAdapter) {
     this.data = {
@@ -73,13 +73,13 @@ export class ProjectStore {
   private generateSourceFile(lang: string, messageId: string): string {
     const enSourceFile = this.data.languages?.['en']?.[messageId]?.sourceFile;
     if (!enSourceFile) {
-      return `${lang}.yaml`;
+      return `${lang}.yml`;
     }
     /** for example if lang = sv then replace "en" to "sv" ex. "folder1/en.yaml" -> "folder1/sv.yaml" */
     const enSourceFileArr = enSourceFile.split('/');
     const enShortFileName = enSourceFileArr.pop();
     if (!enShortFileName) {
-      return `${lang}.yaml`;
+      return `${lang}.yml`;
     }
     const langFileName = enShortFileName.replace(/^en(\.ya?ml)$/g, `${lang}$1`);
     return enSourceFileArr.join('/').concat(`/${langFileName}`);
