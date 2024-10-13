@@ -7,6 +7,7 @@ import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
 import { Store } from '@/store/Store';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
+import MessageAdapterFactory from './utils/adapters/MessageAdapterFactory';
 
 export class Cache {
   public static async getLanguage(projectName: string, lang: string) {
@@ -33,6 +34,7 @@ export class Cache {
 
     if (!globalThis.store.hasProjectStore(lyraProjectConfig.absPath)) {
       const projectStore = new ProjectStore(
+        MessageAdapterFactory.createAdapter(lyraProjectConfig),
         new YamlTranslationAdapter(lyraProjectConfig.absTranslationsPath),
       );
       globalThis.store.addProjectStore(lyraProjectConfig.absPath, projectStore);

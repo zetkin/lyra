@@ -1,28 +1,34 @@
 import {
+  IMessageAdapter,
   ITranslationAdapter,
+  MessageData,
   MessageMap,
   TranslationMap,
 } from '@/utils/adapters';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
-
-type StoreData = {
-  languages: TranslationMap;
-};
+import { StoreData } from './types';
+import mergeStoreData from './mergeStoreData';
 
 export class ProjectStore {
   private data: StoreData;
   private translationAdapter: ITranslationAdapter;
+  private messageAdapter: IMessageAdapter;
 
-  constructor(translationAdapter: ITranslationAdapter) {
+  constructor(
+    messageAdapter: IMessageAdapter,
+    translationAdapter: ITranslationAdapter,
+  ) {
     this.data = {
       languages: {},
+      messages: [],
     };
 
     this.translationAdapter = translationAdapter;
+    this.messageAdapter = messageAdapter;
   }
 
   async getLanguageData(): Promise<TranslationMap> {
-    await this.initIfNecessary();
+    await this.refresh();
 
     const output: TranslationMap = {};
     for await (const lang of Object.keys(this.data.languages)) {
@@ -33,7 +39,7 @@ export class ProjectStore {
   }
 
   async getTranslations(lang: string): Promise<MessageMap> {
-    await this.initIfNecessary();
+    await this.refresh();
 
     const language = this.data.languages[lang];
     if (!language) {
@@ -48,8 +54,13 @@ export class ProjectStore {
     return output;
   }
 
+  async getMessageIds(): Promise<MessageData[]> {
+    await this.refresh();
+    return this.data.messages;
+  }
+
   async updateTranslation(lang: string, id: string, text: string) {
-    await this.initIfNecessary();
+    await this.refresh();
 
     if (!this.data.languages[lang]) {
       throw new LanguageNotFound(lang);
@@ -62,9 +73,12 @@ export class ProjectStore {
     this.data.languages[lang][id].text = text;
   }
 
-  private async initIfNecessary() {
-    if (Object.keys(this.data.languages).length == 0) {
-      this.data.languages = await this.translationAdapter.getTranslations();
-    }
+  private async refresh() {
+    const fromRepo: StoreData = {
+      languages: await this.translationAdapter.getTranslations(),
+      messages: await this.messageAdapter.getMessages(),
+    };
+
+    this.data = mergeStoreData(this.data, fromRepo);
   }
 }

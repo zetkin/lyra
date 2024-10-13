@@ -1,13 +1,20 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from '@/store/ProjectStore';
 import { Store } from './Store';
+import { IMessageAdapter } from '@/utils/adapters';
 
 describe('Store', () => {
+  const mockMsgAdapter: jest.Mocked<IMessageAdapter> = {
+    getMessages: jest
+      .fn<IMessageAdapter['getMessages']>()
+      .mockResolvedValue([]),
+  };
+
   describe('getProjectStore()', () => {
     it('get ProjectStore for a path', async () => {
       const store = new Store();
-      const projectStore = new ProjectStore({
+      const projectStore = new ProjectStore(mockMsgAdapter, {
         getTranslations: async () => ({
           de: {
             'greeting.headline': {
@@ -31,7 +38,7 @@ describe('Store', () => {
   describe('hasProjectStore()', () => {
     it('get ProjectStore for a path', async () => {
       const store = new Store();
-      const projectStore = new ProjectStore({
+      const projectStore = new ProjectStore(mockMsgAdapter, {
         getTranslations: async () => ({
           de: {
             'greeting.headline': {
