@@ -4,10 +4,7 @@ import {
   TranslationMap,
 } from '@/utils/adapters';
 import { LanguageNotFound, MessageNotFound } from '@/errors';
-
-type StoreData = {
-  languages: TranslationMap;
-};
+import { StoreData } from './types';
 
 export class ProjectStore {
   private data: StoreData;
