@@ -81,7 +81,10 @@ export class ProjectStore {
     if (!enShortFileName) {
       return `${lang}.yml`;
     }
-    const langFileName = enShortFileName.replace(/^en(\.ya?ml)$/g, `${lang}$1`);
+    const langFileName = enShortFileName.replace(
+      /^en\.(.+\.)*(ya?ml)$/g,
+      `${lang}.$1$2`,
+    );
     return enSourceFileArr.join('/').concat(`/${langFileName}`);
   }
 }
