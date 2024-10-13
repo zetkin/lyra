@@ -1,6 +1,7 @@
 node_modules/
 .idea/
 config/
+webapp/store.json
 
 # macOS
 .DS_Store
