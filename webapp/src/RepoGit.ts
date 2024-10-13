@@ -23,9 +23,11 @@ export class RepoGit {
 
   private readonly git: IGit;
   private lyraConfig?: LyraConfig;
+  private lastPullTime: Date;
 
   private constructor(private readonly spConfig: ServerProjectConfig) {
     this.git = new SimpleGitWrapper(spConfig.repoPath);
+    this.lastPullTime = new Date(0);
   }
 
   static async getRepoGit(spConfig: ServerProjectConfig): Promise<RepoGit> {
@@ -67,7 +69,14 @@ export class RepoGit {
    */
   public async checkoutBaseAndPull(): Promise<string> {
     await this.git.checkout(this.spConfig.baseBranch);
-    await this.git.pull();
+
+    const now = new Date();
+    const age = now.getTime() - this.lastPullTime.getTime();
+    if (age > 30000) {
+      // We only pull if old
+      await this.git.pull();
+      this.lastPullTime = now;
+    }
     return this.spConfig.baseBranch;
   }
 
