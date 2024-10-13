@@ -1,7 +1,7 @@
 'use server';
 
-import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
+import { Store } from '@/store/Store';
 import { ServerConfig } from '@/utils/serverConfig';
 
 export type TranslationSuccess = {
@@ -77,7 +77,7 @@ export default async function updateTranslation(
     };
   }
 
-  const projectStore = await Cache.getProjectStore(projectConfig);
+  const projectStore = await Store.getProjectStore(projectConfig);
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
   } catch (e) {
