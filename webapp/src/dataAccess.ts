@@ -2,6 +2,7 @@ import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 import { getTranslationsIdText } from './utils/translationObjectUtil';
+import { LanguageNotSupported } from './errors';
 
 export async function accessProjects() {
   const serverConfig = await ServerConfig.read();
@@ -43,10 +44,14 @@ export async function accessLanguage(
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const projectStore = await Cache.getProjectStore(projectConfig);
   const messages = await projectStore.getMessageIds();
-  const translationsWithFilePath = await Cache.getLanguage(
-    projectName,
-    languageName,
-  );
+
+  if (!projectConfig.isLanguageSupported(languageName)) {
+    throw new LanguageNotSupported(languageName, projectName);
+  }
+
+  const translationsWithFilePath =
+    await projectStore.getTranslations(languageName);
+
   const translations = getTranslationsIdText(translationsWithFilePath);
 
   return {
