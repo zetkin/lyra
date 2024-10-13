@@ -17,8 +17,9 @@ export class ProjectStore {
   constructor(
     messageAdapter: IMessageAdapter,
     translationAdapter: ITranslationAdapter,
+    initialState?: StoreData,
   ) {
-    this.data = {
+    this.data = initialState || {
       languages: {},
       messages: [],
     };
@@ -57,6 +58,10 @@ export class ProjectStore {
   async getMessageIds(): Promise<MessageData[]> {
     await this.refresh();
     return this.data.messages;
+  }
+
+  toJSON(): StoreData {
+    return this.data;
   }
 
   async updateTranslation(lang: string, id: string, text: string) {

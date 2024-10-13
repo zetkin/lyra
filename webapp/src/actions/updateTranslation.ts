@@ -80,6 +80,7 @@ export default async function updateTranslation(
   const projectStore = await Store.getProjectStore(projectConfig);
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
+    await Store.persistToDisk();
   } catch (e) {
     return {
       errorMessage: 'Failed to update translation',
