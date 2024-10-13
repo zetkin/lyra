@@ -119,7 +119,7 @@ const mockTranslation = (
 });
 
 const mockMessage = (
-  defaultMessage: MessageData['defaultMessage'],
   id: MessageData['id'],
+  defaultMessage: MessageData['defaultMessage'],
   params: MessageData['params'] = [],
 ) => ({ defaultMessage, id, params });
