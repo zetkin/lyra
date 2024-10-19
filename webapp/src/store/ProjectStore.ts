@@ -10,7 +10,7 @@ import { StoreData } from './types';
 import mergeStoreData from './mergeStoreData';
 
 export class ProjectStore {
-  private readonly data: StoreData;
+  private data: StoreData;
   private readonly translationAdapter: ITranslationAdapter;
   private readonly messageAdapter: IMessageAdapter;
 
