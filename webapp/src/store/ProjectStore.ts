@@ -54,7 +54,7 @@ export class ProjectStore {
     return output;
   }
 
-  async getMessageIds(): Promise<MessageData[]> {
+  async getMessages(): Promise<MessageData[]> {
     await this.refresh();
     return this.data.messages;
   }
