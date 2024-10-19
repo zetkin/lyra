@@ -5,14 +5,14 @@ import {
   MessageMap,
   TranslationMap,
 } from '@/utils/adapters';
-import { LanguageNotFound, MessageNotFound } from '@/errors';
+import { LanguageNotFound } from '@/errors';
 import { StoreData } from './types';
 import mergeStoreData from './mergeStoreData';
 
 export class ProjectStore {
-  private data: StoreData;
-  private translationAdapter: ITranslationAdapter;
-  private messageAdapter: IMessageAdapter;
+  private readonly data: StoreData;
+  private readonly translationAdapter: ITranslationAdapter;
+  private readonly messageAdapter: IMessageAdapter;
 
   constructor(
     messageAdapter: IMessageAdapter,
@@ -67,7 +67,8 @@ export class ProjectStore {
     }
 
     if (!this.data.languages[lang][id]) {
-      throw new MessageNotFound(lang, id);
+      const sourceFile = this.generateSourceFile(lang, id);
+      this.data.languages[lang][id] = { sourceFile, text };
     }
 
     this.data.languages[lang][id].text = text;
@@ -80,5 +81,24 @@ export class ProjectStore {
     };
 
     this.data = mergeStoreData(this.data, fromRepo);
+  }
+
+  /** get the source file from the default en language otherwise generate one from locale root*/
+  private generateSourceFile(lang: string, messageId: string): string {
+    const enSourceFile = this.data.languages?.['en']?.[messageId]?.sourceFile;
+    if (!enSourceFile) {
+      return `${lang}.yml`;
+    }
+    /** for example if lang = sv then replace "en" to "sv" ex. "folder1/en.yaml" -> "folder1/sv.yaml" */
+    const enSourceFileArr = enSourceFile.split('/');
+    const enShortFileName = enSourceFileArr.pop();
+    if (!enShortFileName) {
+      return `${lang}.yml`;
+    }
+    const langFileName = enShortFileName.replace(
+      /^en\.(.+\.)*(ya?ml)$/g,
+      `${lang}.$1$2`,
+    );
+    return enSourceFileArr.join('/').concat(`/${langFileName}`);
   }
 }
