@@ -8,14 +8,6 @@ import { StoreData } from './types';
 
 const FILE_PATH = './store.json';
 
-/**
- * Either we promised to complete initialization,
- * or we are ready to initialize.
- *
- * Every concurrent task can await the same initialization.
- */
-let promise: Promise<Store> | null = null;
-
 export class Store {
   private data = new Map<string, ProjectStore>();
   private initialState: Record<string, StoreData | undefined> = {};
@@ -26,21 +18,21 @@ export class Store {
   ): Promise<ProjectStore> {
     /**
      * As this function is not async,
-     * no concurrent task executes between checking and assigning promise.
+     * no concurrent task executes between checking and updating globalThis.
      */
     function initialize(): Promise<Store> {
-      if (!promise) {
+      if (!globalThis.store) {
         const newStore = new Store();
-        promise = newStore
+        globalThis.store = newStore
           .loadFromDisk()
           .catch((reason) => {
             // Forget the promise, so that the next call will retry.
-            promise = null;
+            globalThis.store = null;
             throw reason;
           })
           .then(() => newStore);
       }
-      return promise;
+      return globalThis.store;
     }
     const store = await initialize();
 
@@ -59,7 +51,7 @@ export class Store {
   }
 
   public static async persistToDisk(): Promise<void> {
-    const store = await promise;
+    const store = await globalThis.store;
     if (!store) {
       return;
     }
