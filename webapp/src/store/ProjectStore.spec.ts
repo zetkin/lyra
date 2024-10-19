@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from './ProjectStore';
-import { LanguageNotFound, MessageNotFound } from '@/errors';
+import { LanguageNotFound } from '@/errors';
 import { IMessageAdapter } from '@/utils/adapters';
 
 function mockMsgAdapter(): jest.Mocked<IMessageAdapter> {
@@ -162,31 +162,6 @@ describe('ProjectStore', () => {
     );
 
     await expect(actual).rejects.toThrowError(LanguageNotFound);
-  });
-
-  it('throws exception for unknown message ID', async () => {
-    expect.assertions(1);
-    const msgAdapter = mockMsgAdapter();
-    msgAdapter.getMessages.mockResolvedValue([
-      {
-        defaultMessage: '',
-        id: 'greeting.headline',
-        params: [],
-      },
-    ]);
-    const projectStore = new ProjectStore(msgAdapter, {
-      getTranslations: async () => ({
-        de: {},
-      }),
-    });
-
-    const actual = projectStore.updateTranslation(
-      'de',
-      'greeting.headline',
-      'Hallo!',
-    );
-
-    await expect(actual).rejects.toThrowError(MessageNotFound);
   });
 
   it('gives full access to all languages', async () => {

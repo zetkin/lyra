@@ -3,6 +3,7 @@
 import { RepoGit } from '@/RepoGit';
 import { Store } from '@/store/Store';
 import { ServerConfig } from '@/utils/serverConfig';
+import { MessageNotFound } from '@/errors';
 
 export type TranslationSuccess = {
   translationStatus: 'success';
@@ -78,6 +79,15 @@ export default async function updateTranslation(
   }
 
   const projectStore = await Store.getProjectStore(projectConfig);
+
+  const messages = await projectStore.getMessages();
+  const messageIds = messages.map((message) => message.id);
+  const foundId = messageIds.find((id) => id == messageId);
+
+  if (foundId === undefined) {
+    throw new MessageNotFound(languageName, messageId);
+  }
+
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
     await Store.persistToDisk();
