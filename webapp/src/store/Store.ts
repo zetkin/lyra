@@ -8,7 +8,13 @@ import { StoreData } from './types';
 
 const FILE_PATH = './store.json';
 
-let store: Store | null = null;
+/**
+ * Either we promised to complete initialization,
+ * or we are ready to initialize.
+ *
+ * Every concurrent task can await the same initialization.
+ */
+let promise: Promise<Store> | null = null;
 
 export class Store {
   private data = new Map<string, ProjectStore>();
@@ -17,10 +23,25 @@ export class Store {
   public static async getProjectStore(
     lyraProjectConfig: LyraProjectConfig,
   ): Promise<ProjectStore> {
-    if (!store) {
-      store = new Store();
-      await store.loadFromDisk();
+    /**
+     * As this function is not async,
+     * no concurrent task executes between checking and assigning promise.
+     */
+    function initialize(): Promise<Store> {
+      if (!promise) {
+        const newStore = new Store();
+        promise = newStore
+          .loadFromDisk()
+          .catch((reason) => {
+            // Forget the promise, so that the next call will retry.
+            promise = null;
+            throw reason;
+          })
+          .then(() => newStore);
+      }
+      return promise;
     }
+    const store = await initialize();
 
     if (!store.hasProjectStore(lyraProjectConfig.absPath)) {
       const initialProjectState = store.initialState[lyraProjectConfig.absPath];
@@ -37,6 +58,7 @@ export class Store {
   }
 
   public static async persistToDisk(): Promise<void> {
+    const store = await promise;
     if (!store) {
       return;
     }
