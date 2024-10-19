@@ -3,7 +3,6 @@
 import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
-import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { MessageNotFound } from '@/errors';
 
 export type TranslationSuccess = {
@@ -69,15 +68,6 @@ export default async function updateTranslation(
   const repoGit = await RepoGit.getRepoGit(project);
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
-  const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
-  const messages = await msgAdapter.getMessages();
-
-  const messageIds = messages.map((message) => message.id);
-  const foundId = messageIds.find((id) => id == messageId);
-
-  if (foundId === undefined) {
-    throw new MessageNotFound(languageName, messageId);
-  }
 
   if (!projectConfig.isLanguageSupported(languageName)) {
     return {
@@ -89,6 +79,15 @@ export default async function updateTranslation(
   }
 
   const projectStore = await Cache.getProjectStore(projectConfig);
+
+  const messages = await projectStore.getMessages();
+  const messageIds = messages.map((message) => message.id);
+  const foundId = messageIds.find((id) => id == messageId);
+
+  if (foundId === undefined) {
+    throw new MessageNotFound(languageName, messageId);
+  }
+
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
   } catch (e) {
