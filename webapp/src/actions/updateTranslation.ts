@@ -1,7 +1,7 @@
 'use server';
 
-import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
+import { Store } from '@/store/Store';
 import { ServerConfig } from '@/utils/serverConfig';
 import { MessageNotFound } from '@/errors';
 
@@ -78,7 +78,7 @@ export default async function updateTranslation(
     };
   }
 
-  const projectStore = await Cache.getProjectStore(projectConfig);
+  const projectStore = await Store.getProjectStore(projectConfig);
 
   const messages = await projectStore.getMessages();
   const messageIds = messages.map((message) => message.id);
@@ -90,6 +90,7 @@ export default async function updateTranslation(
 
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
+    await Store.persistToDisk();
   } catch (e) {
     return {
       errorMessage: 'Failed to update translation',

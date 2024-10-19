@@ -1,7 +1,8 @@
-import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
 import { getTranslationsIdText } from './utils/translationObjectUtil';
+import { LanguageNotSupported } from './errors';
+import { Store } from '@/store/Store';
 
 export async function accessProjects() {
   const serverConfig = await ServerConfig.read();
@@ -41,12 +42,16 @@ export async function accessLanguage(
   await repoGit.checkoutBaseAndPull();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
-  const projectStore = await Cache.getProjectStore(projectConfig);
+  const projectStore = await Store.getProjectStore(projectConfig);
   const messages = await projectStore.getMessages();
-  const translationsWithFilePath = await Cache.getLanguage(
-    projectName,
-    languageName,
-  );
+
+  if (!projectConfig.isLanguageSupported(languageName)) {
+    throw new LanguageNotSupported(languageName, projectName);
+  }
+
+  const translationsWithFilePath =
+    await projectStore.getTranslations(languageName);
+
   const translations = getTranslationsIdText(translationsWithFilePath);
 
   return {
@@ -61,7 +66,7 @@ async function readProject(project: ServerProjectConfig) {
   await repoGit.checkoutBaseAndPull();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
-  const store = await Cache.getProjectStore(projectConfig);
+  const store = await Store.getProjectStore(projectConfig);
   const messages = await store.getMessages();
   const languagesWithTranslations = projectConfig.languages.map(
     async (lang) => {
