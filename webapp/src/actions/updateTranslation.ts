@@ -3,7 +3,6 @@
 import { Cache } from '@/Cache';
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
-import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import { MessageNotFound } from '@/errors';
 
 export type TranslationSuccess = {
@@ -81,9 +80,7 @@ export default async function updateTranslation(
 
   const projectStore = await Cache.getProjectStore(projectConfig);
 
-  const msgAdapter = MessageAdapterFactory.createAdapter(projectConfig);
-  const messages = await msgAdapter.getMessages();
-
+  const messages = await projectStore.getMessages();
   const messageIds = messages.map((message) => message.id);
   const foundId = messageIds.find((id) => id == messageId);
 
