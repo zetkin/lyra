@@ -19,6 +19,7 @@ let promise: Promise<Store> | null = null;
 export class Store {
   private data = new Map<string, ProjectStore>();
   private initialState: Record<string, StoreData | undefined> = {};
+  private writes: Promise<void> = Promise.resolve();
 
   public static async getProjectStore(
     lyraProjectConfig: LyraProjectConfig,
@@ -66,7 +67,11 @@ export class Store {
     const payload = store.toJSON();
     const json = JSON.stringify(payload);
 
-    await fs.writeFile(FILE_PATH, json);
+    // Enqueue the new write, as concurrent writeFile is unsafe.
+    store.writes = store.writes.finally(() => fs.writeFile(FILE_PATH, json));
+
+    // Await the end of the queue, which is our write, to resolve.
+    await store.writes;
   }
 
   public toJSON(): Record<string, unknown> {
