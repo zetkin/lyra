@@ -56,7 +56,10 @@ export class Store {
       return;
     }
 
-    const payload = store.toJSON();
+    // Retain initial data if we have not opened a ProjectStore
+    const payload = {};
+    Object.assign(payload, store.initialState, store.toJSON());
+
     const json = JSON.stringify(payload);
 
     // Enqueue the new write, as concurrent writeFile is unsafe.
