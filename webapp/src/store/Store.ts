@@ -8,6 +8,8 @@ import { StoreData } from './types';
 
 const FILE_PATH = './store.json';
 
+let store: Store | null = null;
+
 export class Store {
   private data = new Map<string, ProjectStore>();
   private initialState: Record<string, StoreData | undefined> = {};
@@ -15,32 +17,31 @@ export class Store {
   public static async getProjectStore(
     lyraProjectConfig: LyraProjectConfig,
   ): Promise<ProjectStore> {
-    if (!globalThis.store) {
-      globalThis.store = new Store();
-      await globalThis.store.loadFromDisk();
+    if (!store) {
+      store = new Store();
+      await store.loadFromDisk();
     }
 
-    if (!globalThis.store.hasProjectStore(lyraProjectConfig.absPath)) {
-      const initialProjectState =
-        globalThis.store.initialState[lyraProjectConfig.absPath];
+    if (!store.hasProjectStore(lyraProjectConfig.absPath)) {
+      const initialProjectState = store.initialState[lyraProjectConfig.absPath];
 
       const projectStore = new ProjectStore(
         MessageAdapterFactory.createAdapter(lyraProjectConfig),
         new YamlTranslationAdapter(lyraProjectConfig.absTranslationsPath),
         initialProjectState,
       );
-      globalThis.store.addProjectStore(lyraProjectConfig.absPath, projectStore);
+      store.addProjectStore(lyraProjectConfig.absPath, projectStore);
     }
 
-    return globalThis.store.getProjectStore(lyraProjectConfig.absPath);
+    return store.getProjectStore(lyraProjectConfig.absPath);
   }
 
   public static async persistToDisk(): Promise<void> {
-    if (!globalThis.store) {
+    if (!store) {
       return;
     }
 
-    const payload = globalThis.store.toJSON();
+    const payload = store.toJSON();
     const json = JSON.stringify(payload);
 
     await fs.writeFile(FILE_PATH, json);
