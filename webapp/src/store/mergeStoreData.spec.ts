@@ -142,7 +142,12 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toEqual(fromRepo);
+    expect(result).toStrictEqual({
+      languages: {
+        sv: {},
+      },
+      messages: [mockMessage('any.message.id', 'Default message')],
+    });
   });
 });
 
