@@ -58,7 +58,7 @@ describe('ProjectStore', () => {
     });
   });
 
-  it('throws exception for missing language', async () => {
+  it('returns empty object for missing language', async () => {
     expect.assertions(1);
     const msgAdapter = mockMsgAdapter();
     msgAdapter.getMessages.mockResolvedValue([]);
@@ -66,8 +66,8 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({}),
     });
 
-    const actual = projectStore.getTranslations('fi');
-    await expect(actual).rejects.toThrowError(LanguageNotFound);
+    const actual = await projectStore.getTranslations('fi');
+    expect(actual).toEqual({});
   });
 
   it('returns updated translations', async () => {
