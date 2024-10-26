@@ -1,8 +1,8 @@
 # Testing
 
-This contains information on how to run different tests and add new tests for Lyra. 
+This contains information on how to run different tests and add new tests for Lyra.
 
-We are using Playwright to test integration of features. 
+We are using Playwright to test integration of features.
 Read the documentation at [playwright.dev/docs](https://playwright.dev/docs)
 
 Jest is used to write both integration and unit tests.
