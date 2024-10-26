@@ -5,7 +5,6 @@ import {
   MessageMap,
   TranslationMap,
 } from '@/utils/adapters';
-import { LanguageNotFound } from '@/errors';
 import { StoreData } from './types';
 import mergeStoreData from './mergeStoreData';
 
@@ -43,12 +42,9 @@ export class ProjectStore {
     await this.refresh();
 
     const language = this.data.languages[lang];
-    if (!language) {
-      throw new LanguageNotFound(lang);
-    }
 
     const output: MessageMap = {};
-    Object.entries(language).forEach(([key, messageTranslation]) => {
+    Object.entries(language ?? {}).forEach(([key, messageTranslation]) => {
       output[key] = { ...messageTranslation };
     });
 
@@ -68,7 +64,7 @@ export class ProjectStore {
     await this.refresh();
 
     if (!this.data.languages[lang]) {
-      throw new LanguageNotFound(lang);
+      this.data.languages[lang] = {};
     }
 
     if (!this.data.languages[lang][id]) {
