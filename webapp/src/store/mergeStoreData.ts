@@ -31,7 +31,7 @@ export default function mergeStoreData(
         inMemory.languages[lang]?.[message.id] ||
         fromRepo.languages[lang]?.[message.id];
 
-      if (messageTranslation) {
+      if (messageTranslation !== undefined) {
         output.languages[lang][message.id] = messageTranslation;
       }
     });
