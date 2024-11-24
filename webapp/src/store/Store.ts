@@ -25,6 +25,7 @@ export class Store {
         const newStore = new Store();
         globalThis.store = newStore
           .loadFromDisk()
+          // TODO: this catch will never happened, since loadFromDisk catch all
           .catch((reason) => {
             // Forget the promise, so that the next call will retry.
             globalThis.store = null;
@@ -34,6 +35,7 @@ export class Store {
       }
       return globalThis.store;
     }
+
     const store = await initialize();
 
     if (!store.hasProjectStore(lyraProjectConfig.absPath)) {
