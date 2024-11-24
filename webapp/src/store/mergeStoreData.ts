@@ -1,4 +1,5 @@
 import { StoreData } from './types';
+import { MessageTranslation } from '@/utils/adapters';
 
 export default function mergeStoreData(
   inMemory: StoreData,
@@ -26,9 +27,13 @@ export default function mergeStoreData(
         output.languages[lang] = {};
       }
 
-      output.languages[lang][message.id] =
+      const messageTranslation: MessageTranslation =
         inMemory.languages[lang]?.[message.id] ||
         fromRepo.languages[lang]?.[message.id];
+
+      if (messageTranslation) {
+        output.languages[lang][message.id] = messageTranslation;
+      }
     });
   });
 
