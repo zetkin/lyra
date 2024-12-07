@@ -100,6 +100,7 @@ export class ProjectStore {
       /^en\.(.+\.)*(ya?ml)$/g,
       `${lang}.$1$2`,
     );
-    return enSourceFileArr.join('/').concat(`/${langFileName}`);
+    enSourceFileArr.push(langFileName);
+    return enSourceFileArr.join('/');
   }
 }

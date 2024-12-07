@@ -140,6 +140,37 @@ describe('ProjectStore', () => {
     });
   });
 
+  describe('updateTranslation', () => {
+    it('does not prefix source file with /', async () => {
+      const store = new ProjectStore(
+        {
+          getMessages: async () => [
+            {
+              defaultMessage: 'Click',
+              id: 'core.click',
+              params: [],
+            },
+          ],
+        },
+        {
+          getTranslations: async () => ({
+            en: {
+              'core.click': {
+                sourceFile: 'en.yml',
+                text: 'Click',
+              },
+            },
+          }),
+        },
+      );
+
+      await store.updateTranslation('sv', 'core.click', 'Klicka');
+
+      const actual = await store.getTranslations('sv');
+      expect(actual['core.click'].sourceFile).toEqual('sv.yml');
+    });
+  });
+
   it('gives full access to all languages', async () => {
     const msgAdapter = mockMsgAdapter();
     msgAdapter.getMessages.mockResolvedValue([
