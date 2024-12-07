@@ -10,7 +10,8 @@
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "playwright": "npx playwright test"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -28,5 +29,9 @@
     "simple-git": "^3.20.0",
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^22.8.1"
   }
 }
