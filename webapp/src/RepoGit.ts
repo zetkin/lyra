@@ -17,6 +17,7 @@ import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
 import { Store } from '@/store/Store';
 
 export class RepoGit {
+  private MIN_TIME_TO_FETCH = 30_000; // 30 sec before fetch again
   private static repositories: {
     [name: string]: Promise<RepoGit>;
   } = {};
@@ -36,7 +37,7 @@ export class RepoGit {
       return RepoGit.repositories[key];
     }
     const repository = new RepoGit(spConfig);
-    const work = repository.checkoutBaseAndPull();
+    const work = repository.fetchAndCheckoutOriginBase();
     const promise = work.then(() => repository);
     RepoGit.repositories[key] = promise;
 
@@ -58,26 +59,25 @@ export class RepoGit {
     debug(`Cloning repo: ${spConfig.repoPath} ...`);
     await git.clone(spConfig.cloneUrl, spConfig.repoPath);
     debug(`Cloned repo: ${spConfig.repoPath}`);
-    debug(`Checkout base branch: ${spConfig.baseBranch} ...`);
-    await git.checkout(spConfig.baseBranch);
-    debug(`Checked out base branch: ${spConfig.baseBranch}`);
+    debug(`Checkout base branch: ${spConfig.originBaseBranch} ...`);
+    await git.checkout(spConfig.originBaseBranch);
+    debug(`Checked out base branch: ${spConfig.originBaseBranch}`);
   }
 
   /**
    * Checkout base branch and pull
    * @returns base branch name
    */
-  public async checkoutBaseAndPull(): Promise<string> {
-    await this.git.checkout(this.spConfig.baseBranch);
-
+  public async fetchAndCheckoutOriginBase(): Promise<string> {
     const now = new Date();
     const age = now.getTime() - this.lastPullTime.getTime();
-    if (age > 30000) {
-      // We only pull if old
-      await this.git.pull();
+    if (age > this.MIN_TIME_TO_FETCH) {
+      // We only fetch if old
+      await this.git.fetch();
+      await this.git.checkout(this.spConfig.originBaseBranch);
       this.lastPullTime = now;
     }
-    return this.spConfig.baseBranch;
+    return this.spConfig.originBaseBranch;
   }
 
   public async saveLanguageFiles(projectPath: string): Promise<string[]> {
@@ -101,7 +101,7 @@ export class RepoGit {
     addFiles: string[],
     commitMsg: string,
   ): Promise<void> {
-    await this.git.newBranch(branchName, this.spConfig.baseBranch);
+    await this.git.newBranch(branchName, this.spConfig.originBaseBranch);
     await this.git.add(addFiles);
     await this.git.commit(commitMsg);
     await this.git.push(branchName);

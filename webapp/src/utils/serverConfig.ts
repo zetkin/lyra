@@ -69,18 +69,21 @@ export class ServerConfig {
 }
 
 export class ServerProjectConfig {
+  public readonly originBaseBranch: string;
   constructor(
     public readonly name: string,
     /** absolute local path to repo */
     public readonly repoPath: string,
-    /** following GitHub terminology target branch called base branch */
+    /** following GitHub terminology target branch (typically named 'main or master') called base branch */
     public readonly baseBranch: string,
     /** relative path of project from repo_path */
     public readonly projectPath: string,
     public readonly owner: string,
     public readonly repo: string,
     public readonly githubToken: string,
-  ) {}
+  ) {
+    this.originBaseBranch = `origin/${this.baseBranch}`;
+  }
 
   public get cloneUrl(): string {
     // TODO: support other provider than github
