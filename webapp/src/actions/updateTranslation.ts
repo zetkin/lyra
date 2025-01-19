@@ -85,7 +85,12 @@ export default async function updateTranslation(
   const foundId = messageIds.find((id) => id == messageId);
 
   if (foundId === undefined) {
-    throw new MessageNotFound(languageName, messageId);
+    return {
+      errorMessage: 'Message Id not found',
+      original,
+      translationStatus: 'error',
+      translationText: translation,
+    };
   }
 
   try {
