@@ -14,8 +14,9 @@ This PR…
 
 
 ## Notes to reviewer
-[Add instructions for testing]
+Review the output of our GitHub action 'Test & Lint' for warnings.
 
+[Add more instructions for testing]
 
 ## Related issues
 Resolves #[id]
