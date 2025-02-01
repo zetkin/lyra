@@ -17,7 +17,7 @@ import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
 import { Store } from '@/store/Store';
 
 export class RepoGit {
-  private MIN_TIME_TO_FETCH = 30_000; // 30 sec before fetch again
+  private GIT_FETCH_TTL = 30_000; // 30 sec before fetch again
   private static repositories: {
     [name: string]: Promise<RepoGit>;
   } = {};
@@ -71,7 +71,7 @@ export class RepoGit {
   public async fetchAndCheckoutOriginBase(): Promise<string> {
     const now = new Date();
     const age = now.getTime() - this.lastPullTime.getTime();
-    if (age > this.MIN_TIME_TO_FETCH) {
+    if (age > this.GIT_FETCH_TTL) {
       // We only fetch if old
       await this.git.fetch();
       await this.git.checkout(this.spConfig.originBaseBranch);
