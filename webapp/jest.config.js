@@ -5,5 +5,5 @@ module.exports = {
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1',
   },
-  modulePathIgnorePatterns: ['<rootDir>/integrationTesting'],
+  testPathIgnorePatterns: ['<rootDir>/integrationTesting'],
 };
