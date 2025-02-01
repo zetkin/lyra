@@ -17,7 +17,7 @@ import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
 import { Store } from '@/store/Store';
 
 export class RepoGit {
-  private GIT_FETCH_TTL = 30_000; // 30 sec before fetch again
+  private readonly GIT_FETCH_TTL = 30_000; // 30 sec before fetch again
   private static repositories: {
     [name: string]: Promise<RepoGit>;
   } = {};
@@ -65,7 +65,7 @@ export class RepoGit {
   }
 
   /**
-   * Checkout base branch and pull
+   * Fetch then checkout origin/<base branch>
    * @returns base branch name
    */
   public async fetchAndCheckoutOriginBase(): Promise<string> {
