@@ -1,7 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from './ProjectStore';
-import { LanguageNotFound } from '@/errors';
 import { IMessageAdapter } from '@/utils/adapters';
 
 function mockMsgAdapter(): jest.Mocked<IMessageAdapter> {
@@ -58,7 +57,7 @@ describe('ProjectStore', () => {
     });
   });
 
-  it('throws exception for missing language', async () => {
+  it('returns empty object for missing language', async () => {
     expect.assertions(1);
     const msgAdapter = mockMsgAdapter();
     msgAdapter.getMessages.mockResolvedValue([]);
@@ -66,8 +65,8 @@ describe('ProjectStore', () => {
       getTranslations: async () => ({}),
     });
 
-    const actual = projectStore.getTranslations('fi');
-    await expect(actual).rejects.toThrowError(LanguageNotFound);
+    const actual = await projectStore.getTranslations('fi');
+    expect(actual).toEqual({});
   });
 
   it('returns updated translations', async () => {
@@ -141,27 +140,35 @@ describe('ProjectStore', () => {
     });
   });
 
-  it('throws exception for missing language', async () => {
-    expect.assertions(1);
-    const msgAdapter = mockMsgAdapter();
-    msgAdapter.getMessages.mockResolvedValue([
-      {
-        defaultMessage: '',
-        id: 'greeting.headline',
-        params: [],
-      },
-    ]);
-    const projectStore = new ProjectStore(msgAdapter, {
-      getTranslations: async () => ({}),
+  describe('updateTranslation', () => {
+    it('does not prefix source file with /', async () => {
+      const store = new ProjectStore(
+        {
+          getMessages: async () => [
+            {
+              defaultMessage: 'Click',
+              id: 'core.click',
+              params: [],
+            },
+          ],
+        },
+        {
+          getTranslations: async () => ({
+            en: {
+              'core.click': {
+                sourceFile: 'en.yml',
+                text: 'Click',
+              },
+            },
+          }),
+        },
+      );
+
+      await store.updateTranslation('sv', 'core.click', 'Klicka');
+
+      const actual = await store.getTranslations('sv');
+      expect(actual['core.click'].sourceFile).toEqual('sv.yml');
     });
-
-    const actual = projectStore.updateTranslation(
-      'de',
-      'greeting.headline',
-      'Hallo!',
-    );
-
-    await expect(actual).rejects.toThrowError(LanguageNotFound);
   });
 
   it('gives full access to all languages', async () => {

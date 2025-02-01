@@ -125,6 +125,30 @@ describe('mergeStoreData()', () => {
     const result = mergeStoreData(inMemory, fromRepo);
     expect(result).toEqual(fromRepo);
   });
+
+  it('should not return undefined if both memory and repo are falsy (undefined)', () => {
+    const inMemory: StoreData = {
+      languages: {
+        sv: {},
+      },
+      messages: [],
+    };
+
+    const fromRepo: StoreData = {
+      languages: {
+        sv: {},
+      },
+      messages: [mockMessage('any.message.id', 'Default message')],
+    };
+
+    const result = mergeStoreData(inMemory, fromRepo);
+    expect(result).toStrictEqual({
+      languages: {
+        sv: {},
+      },
+      messages: [mockMessage('any.message.id', 'Default message')],
+    });
+  });
 });
 
 const mockTranslation = (
