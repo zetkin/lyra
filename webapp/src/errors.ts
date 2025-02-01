@@ -1,9 +1,3 @@
-export class LanguageNotFound extends Error {
-  constructor(lang: string) {
-    super(`Language ${lang} not found`);
-  }
-}
-
 export class LanguageNotSupported extends Error {
   constructor(lang: string, projectName: string) {
     super(`Language ${lang} is not supported in project ${projectName}`);

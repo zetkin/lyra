@@ -4,7 +4,6 @@ import { Octokit } from '@octokit/rest';
 import path from 'path';
 import { stringify } from 'yaml';
 
-import { Cache } from '@/Cache';
 import { IGit } from '@/utils/git/IGit';
 import { LyraConfig } from '@/utils/lyraConfig';
 import packageJson from '../package.json';
@@ -15,6 +14,7 @@ import { debug, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { type TranslationMap } from '@/utils/adapters';
 import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
+import { Store } from '@/store/Store';
 
 export class RepoGit {
   private static repositories: {
@@ -83,7 +83,7 @@ export class RepoGit {
   public async saveLanguageFiles(projectPath: string): Promise<string[]> {
     const lyraConfig = await this.getLyraConfig();
     const projectConfig = lyraConfig.getProjectConfigByPath(projectPath);
-    const projectStore = await Cache.getProjectStore(projectConfig);
+    const projectStore = await Store.getProjectStore(projectConfig);
     const languages = await projectStore.getLanguageData();
 
     return await this.writeLangFiles(

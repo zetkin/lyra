@@ -16,6 +16,7 @@ const HomeDashboard: FC<HomeDashboardProps> = ({ projects }) => {
       flexDirection="column"
       justifyContent="center"
       minHeight="97vh"
+      p={2}
     >
       <CardGrid
         heading={
