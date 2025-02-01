@@ -10,9 +10,7 @@ import {
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
 
-import createPullRequest, {
-  type PullRequestState,
-} from '@/actions/createPullRequest';
+import { type PullRequestState } from '@/app/api/projects/[projectName]/pull-requests/route';
 
 type PullRequestButtonProps = {
   projectName: string;
@@ -25,8 +23,10 @@ const PullRequestButton: FC<PullRequestButtonProps> = ({ projectName }) => {
 
   const onClickSend = useCallback(async () => {
     setState({ pullRequestStatus: 'sending' });
-    const response = await createPullRequest(projectName);
-    setState(response);
+    const url = `/api/projects/${projectName}/pull-requests`;
+    const response = await fetch(url, { method: 'POST' });
+    const json = await response.json();
+    setState(json);
   }, [projectName]);
 
   const onDismissSnackbar = useCallback(() => {

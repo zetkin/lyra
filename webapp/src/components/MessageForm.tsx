@@ -14,9 +14,7 @@ import { LoadingButton } from '@mui/lab';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from '@mui/material';
 
-import updateTranslation, {
-  TranslationState,
-} from '@/actions/updateTranslation';
+import { type TranslationState } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/[messageId]/route';
 import { type MessageData } from '@/utils/adapters';
 
 export type MessageFormLayout = 'linear' | 'grid';
@@ -89,18 +87,24 @@ const MessageForm: FC<MessageFormProps> = ({
      * its use below, or if you change our use below to be
      * affected by setState above.
      */
-    const response = await updateTranslation(
-      projectName,
-      languageName,
-      message.id,
-      state.translationText,
-      state.original,
-    );
+    const url = `/api/projects/${projectName}/languages/${languageName}/messages/${message.id}`;
+    const body = {
+      original: state.original,
+      translation: state.translationText,
+    };
+    const response = await fetch(url, {
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    });
+    const json = await response.json();
 
-    if (response.translationStatus === 'success') {
-      resetValue.current = response.translationText;
+    if (json.translationStatus === 'success') {
+      resetValue.current = json.translationText;
     }
-    setState(response);
+    setState(json);
   }, [languageName, message.id, projectName, state]);
 
   const onReset = useCallback(() => {
