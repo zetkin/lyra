@@ -35,7 +35,7 @@ export class ServerConfig {
   public static async read(): Promise<ServerConfig> {
     // TODO: cache this call with TTL, it will be read on every request but only changes when admin changes it
     //       or only read one time and restart Lyra if change happens, need to make architecture decision about this
-    const filename = '../config/projects.yaml';
+    const filename = '/app/config/projects.yaml';
     try {
       const ymlBuf = await fs.readFile(filename);
       const configData = parse(ymlBuf.toString());
