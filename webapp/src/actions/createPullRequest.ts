@@ -59,7 +59,7 @@ export default async function sendPullRequest(
   try {
     syncLock.set(repoPath, true);
     const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
-    const baseBranch = await repoGit.checkoutBaseAndPull();
+    const baseBranch = await repoGit.fetchAndCheckoutOriginBase();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,
     );
@@ -89,7 +89,7 @@ export default async function sendPullRequest(
       serverProjectConfig.repo,
       serverProjectConfig.githubToken,
     );
-    await repoGit.checkoutBaseAndPull();
+    await repoGit.fetchAndCheckoutOriginBase();
     return {
       branchName,
       pullRequestStatus: 'success',
