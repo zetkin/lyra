@@ -3,7 +3,6 @@
 import { RepoGit } from '@/RepoGit';
 import { Store } from '@/store/Store';
 import { ServerConfig } from '@/utils/serverConfig';
-import { MessageNotFound } from '@/errors';
 
 export type TranslationSuccess = {
   translationStatus: 'success';
