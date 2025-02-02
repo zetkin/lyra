@@ -32,8 +32,6 @@ WORKDIR /app
 # Copy over the production build from builder stage
 COPY --from=builder /app/webapp/.next/standalone ./
 COPY --from=builder /app/webapp/.next/static ./webapp/.next/static
-# Copy over the configuration
-COPY --from=builder /app/config /app/config
 
 RUN mkdir -p /home/nodeuser/.ssh && \
     ssh-keyscan -t rsa,ed25519 github.com >> /home/nodeuser/.ssh/known_hosts && \
