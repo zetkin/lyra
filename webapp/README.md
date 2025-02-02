@@ -136,3 +136,21 @@ not typically have access to production data or production credentials,
 but they will very likely have access to very powerful developer
 credentials. Tracking published vulnerabilities in all these is beyond
 all hope and feasibility but we can try to keep them somewhat up to date.
+
+
+## Docker setup
+
+To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](../Dockerfile) in the root of this repository.
+The [`docker-compose.yaml`](../docker-compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
+```shell
+$ docker-compose up
+```
+
+or in a detached mode:
+```shell
+$ docker-compose up -d
+```
+
+Note that in order for the running docker container to be able to interact with the client repository, you need mount a private ssh key of a user with access to the repository into the docker container.
+Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/root/.ssh/id_rsa`.
+But the ssh key on your local machine might have a different path, so you need to adjust the path in the [`docker-compose.yaml`](../docker-compose.yaml) file accordingly.

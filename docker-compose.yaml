@@ -1,0 +1,9 @@
+services:
+  lyra:
+    container_name: lyra
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
