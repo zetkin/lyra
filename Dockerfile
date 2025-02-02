@@ -37,6 +37,7 @@ COPY --from=builder /app/config /app/config
 
 RUN mkdir -p /home/nodeuser/.ssh && \
     ssh-keyscan -t rsa,ed25519 github.com >> /home/nodeuser/.ssh/known_hosts && \
+    ssh-keyscan -t rsa,ed25519 gitlab.com >> /home/nodeuser/.ssh/known_hosts && \
     chown -R nodeuser:nodejs /home/nodeuser/.ssh && \
     chown -R nodeuser:nodejs /app
 
