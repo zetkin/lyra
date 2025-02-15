@@ -5,6 +5,9 @@ services:
       context: .
     ports:
       - "3000:3000"
+    environment:
+      - GIT_USER_EMAIL=lyra@zetk.in
+      - GIT_USER_NAME="Lyra Translator Bot"
     volumes:
       - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
       - ./config:/app/config

@@ -1,7 +1,7 @@
 ##################################################
 # 1) BUILD STAGE
 ##################################################
-FROM node:18-alpine AS builder
+FROM node:23-alpine AS builder
 
 WORKDIR /app
 
@@ -14,14 +14,14 @@ COPY webapp/package.json webapp/
 RUN npm ci
 
 # Copy the rest of the source code
-COPY . .
+COPY webapp webapp
 
 RUN npm --workspace webapp run build
 
 ##################################################
 # 2) RUNTIME STAGE
 ##################################################
-FROM node:18-alpine AS runner
+FROM node:23-alpine AS runner
 
 RUN apk add --no-cache git openssh && \
     addgroup -g 1001 nodejs && \
@@ -34,18 +34,16 @@ COPY --from=builder /app/webapp/.next/standalone ./
 COPY --from=builder /app/webapp/.next/static ./webapp/.next/static
 
 RUN mkdir -p /home/nodeuser/.ssh && \
-    mkdir -p /projects && \
-    ssh-keyscan -t rsa,ed25519 github.com >> /home/nodeuser/.ssh/known_hosts && \
-    ssh-keyscan -t rsa,ed25519 gitlab.com >> /home/nodeuser/.ssh/known_hosts && \
+    mkdir -p /lyra-projects && \
     chown -R nodeuser:nodejs /home/nodeuser/.ssh && \
     chown -R nodeuser:nodejs /app && \
-    chown -R nodeuser:nodejs /projects
+    chown -R nodeuser:nodejs /lyra-projects
+
+COPY known_hosts /home/nodeuser/.ssh/known_hosts
 
 # Switch to non-root user
 USER nodeuser
 
-RUN git config --global user.email "lyra@zetk.in" && \
-    git config --global user.name "Lyra User"
 
 EXPOSE 3000
-CMD ["node", "webapp/server.js"]
+CMD ["sh", "-c", "git config --global user.email \"$GIT_USER_EMAIL\" && git config --global user.name \"$GIT_USER_NAME\" && node webapp/server.js"]

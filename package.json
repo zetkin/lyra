@@ -1,10 +1,10 @@
 {
   "name": "lyra",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Root package of Lyra",
   "private": true,
   "engines": {
-    "node": ">=18.17"
+    "node": ">=23.8"
   },
   "workspaces": {
     "packages": [

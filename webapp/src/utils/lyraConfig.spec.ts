@@ -33,6 +33,29 @@ describe('LyraConfig', () => {
       expect(config.projects[0].languages).toEqual(['en']); // default value
     });
 
+    it('reads message kind and path from lyra.yaml', async () => {
+      mock({
+        '/path/to/repo/lyra.yaml': [
+          'projects:',
+          '- path: .',
+          '  messages:',
+          '    format: yaml',
+          '    path: locale',
+          '  translations:',
+          '    path: locale',
+        ].join('\n'),
+      });
+      const config = await LyraConfig.readFromDir('/path/to/repo');
+      expect(config.projects[0].messageKind).toEqual(MessageKind.YAML);
+      expect(config.projects[0].absMessagesPath).toEqual(
+        '/path/to/repo/locale',
+      );
+      expect(config.projects[0].absTranslationsPath).toEqual(
+        '/path/to/repo/locale',
+      );
+      expect(config.projects[0].languages).toEqual(['en']); // default value
+    });
+
     it('combines project path with messages path', async () => {
       mock({
         '/path/to/repo/lyra.yml': [

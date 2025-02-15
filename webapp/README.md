@@ -62,21 +62,19 @@ with example content:
 ```yaml
 projects:
   - name: example-unique-name
-    repo_path: /Users/username/fooRepo # absolute path to repo
     base_branch: main
     project_path: . # relative path of project from repo_path
     owner: amerharb
     repo: zetkin.app.zetkin.org
+    host: github.com
     github_token: << github token >>
 ```
 
-Multiple projects are supported, and multiple projects in the same local git repository
-are supported, but configuring multiple porjects with different `repo_path`, resolving to
-same local git repository, is _not_ supported.
+Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
-The project repository (client repository) needs to be cloned locally. and has in the root folder config
-file `lyra.yml` with the
-example content:
+The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file 
+`lyra.yml` or `lyra.yaml` in the root of the repository.
+This lyra configuration file looks like this:
 
 ```yaml
 projects:
@@ -152,5 +150,5 @@ $ docker-compose up -d
 ```
 
 Note that in order for the running docker container to be able to interact with the client repository, you need mount a private ssh key of a user with access to the repository into the docker container.
-Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/root/.ssh/id_rsa`.
+Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/home/nodeuser/.ssh/id_rsa`.
 But the ssh key on your local machine might have a different path, so you need to adjust the path in the [`docker-compose.yaml`](../docker-compose.yaml) file accordingly.
