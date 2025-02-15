@@ -34,13 +34,18 @@ COPY --from=builder /app/webapp/.next/standalone ./
 COPY --from=builder /app/webapp/.next/static ./webapp/.next/static
 
 RUN mkdir -p /home/nodeuser/.ssh && \
+    mkdir -p /projects && \
     ssh-keyscan -t rsa,ed25519 github.com >> /home/nodeuser/.ssh/known_hosts && \
     ssh-keyscan -t rsa,ed25519 gitlab.com >> /home/nodeuser/.ssh/known_hosts && \
     chown -R nodeuser:nodejs /home/nodeuser/.ssh && \
-    chown -R nodeuser:nodejs /app
+    chown -R nodeuser:nodejs /app && \
+    chown -R nodeuser:nodejs /projects
 
 # Switch to non-root user
 USER nodeuser
+
+RUN git config --global user.email "lyra@zetk.in" && \
+    git config --global user.name "Lyra User"
 
 EXPOSE 3000
 CMD ["node", "webapp/server.js"]
