@@ -1,4 +1,4 @@
-# Lyra web app
+# Lyra
 
 Lyra is a translation management system that integrates with
 source code repositories of internationalized applications.
@@ -24,11 +24,14 @@ Lyra needs control over a file system directory.
 > a local repository directory will also have
 > a lot of control over the Lyra process, probably
 > including arbitrary code execution.
-
 ## Setup
 
-1. Install npm
-2. Install dependencies: `npm install`
+1. Install node version `23`
+2. Install dependencies:
+
+```shell
+$ npm install
+```
 
 ### Visual Studio Code
 
@@ -41,9 +44,9 @@ you can take to setup your develop environment.
    It has an identifier `esbenp.prettier-vscode`.
 2. Configure Prettier as the default formatter.
 
-Steps 2 can be done with a `.vscode/settings.json`:
+Step 2 can be enforced via this `.vscode/settings.json`:
 
-```
+```json
 {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
@@ -52,12 +55,11 @@ Steps 2 can be done with a `.vscode/settings.json`:
 #### PlantUML
 
 1. Install the extension `PlantUML` (Id: `jebbs.plantuml`).
-2. Follow its documentation for setting up its requirments.
+2. Follow its documentation for setting up its requirements.
 
-## Running in development
+## Configuration
 
-In the root folder (outside webapp) create file `./config/projects.yaml`
-with example content:
+Create file [`./config/projects.yaml`](config/projects.yaml) with example content:
 
 ```yaml
 projects:
@@ -70,9 +72,15 @@ projects:
     github_token: << github token >>
 ```
 
+Ensure to add a github token that has the following permissions. 
+The fine-grained token can be created at https://github.com/settings/personal-access-tokens and needs the following permissions for the repositories lyra will interact with:
+
+- Read access to metadata
+- Read and Write access to pull requests
+
 Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
-The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file 
+The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file
 `lyra.yml` or `lyra.yaml` in the root of the repository.
 This lyra configuration file looks like this:
 
@@ -90,7 +98,13 @@ projects:
     base_branch: main # optional default to 'main'
 ```
 
-Start the server with `npm run dev` in `webapp`.
+## Running in development
+
+Start the server via
+```shell
+$ cd webapp
+$ npm run dev
+```
 
 Open the URL provided in the terminal to view projects.
 
@@ -135,20 +149,59 @@ but they will very likely have access to very powerful developer
 credentials. Tracking published vulnerabilities in all these is beyond
 all hope and feasibility but we can try to keep them somewhat up to date.
 
+## Running in a Container
 
-## Docker setup
+### Use locally built image
 
-To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](../Dockerfile) in the root of this repository.
-The [`docker-compose.yaml`](../docker-compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
+To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](Dockerfile) in the
+root of this repository.
+The [`docker-compose.yaml`](docker-compose.yaml) file in the root of this repository can be used to build the image
+and run the image as a container in one command:
+
 ```shell
 $ docker-compose up
 ```
 
 or in a detached mode:
+
 ```shell
 $ docker-compose up -d
 ```
 
-Note that in order for the running docker container to be able to interact with the client repository, you need mount a private ssh key of a user with access to the repository into the docker container.
-Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/home/nodeuser/.ssh/id_rsa`.
-But the ssh key on your local machine might have a different path, so you need to adjust the path in the [`docker-compose.yaml`](../docker-compose.yaml) file accordingly.
+Note that in order for the running docker container to be able to interact with the client repository, you need mount a
+private ssh key of a user with access to the repository into the docker container.
+Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at
+`/home/nodeuser/.ssh/id_rsa`.
+But the ssh key on your local machine might have a different path, so you need to adjust the path in the [
+`docker-compose.yaml`](docker-compose.yaml) file accordingly.
+
+### Use built image from the container registry
+
+In case you want to use the already built image that is pushed to the GitHub Container Registry, you can adjust the [
+`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `latest` with the version of your preference):
+
+```diff
+services:
+  lyra:
+    container_name: lyra
+-   build:
+-     context: .
++   image: ghcr.io/zetkin/lyra:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GIT_USER_EMAIL=lyra@zetk.in
+      - GIT_USER_NAME="Lyra Translator Bot"
+    volumes:
+      - ~/.ssh/id_github:/home/nodeuser/.ssh/id_rsa:ro
+      - ./config:/app/config
+```
+
+### Release a new container image
+
+The GitHub Actions workflow [`build-and-push-image.yaml`](.github/workflows/build-and-push-image.yaml) is designed to
+automate the process of building, tagging, and pushing a Docker image to the GitHub Container Registry (ghcr.io)
+whenever a new tag is pushed to the repository.
+The tags must follow semantic versioning, while release candidates are supported as well.
+
+Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHANGELOG.md) file and adjusting the version within the [`./webapp/package.json`](./webapp/package.json) file.
