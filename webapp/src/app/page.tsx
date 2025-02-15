@@ -1,6 +1,7 @@
 import { accessProjects } from '@/dataAccess';
 import { Promises } from '@/utils/Promises';
 import HomeDashboard from '@/components/HomeDashboard';
+import { info } from '@/utils/log';
 
 // Force dynamic rendering for this page. By default Next.js attempts to render
 // this page statically. That means that it tries to render the page at build
@@ -17,6 +18,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const projectData = await accessProjects();
+
   const projects = await Promises.of(projectData)
     .map(async ({ name, messages, languagesWithTranslations }) => {
       const languages = await Promises.of(languagesWithTranslations)
@@ -37,6 +39,11 @@ export default async function Home() {
       };
     })
     .all();
-
+  info(`Found ${projects.length} project(s) in server config: `);
+  projects.forEach((project) => {
+    info(
+      `\t- '${project.name}' with ${project.languages.length} languages and ${project.messageCount} messages`,
+    );
+  });
   return <HomeDashboard projects={projects} />;
 }

@@ -3,6 +3,7 @@
 import { RepoGit } from '@/RepoGit';
 import { Store } from '@/store/Store';
 import { ServerConfig } from '@/utils/serverConfig';
+import { info } from '@/utils/log';
 
 export type TranslationSuccess = {
   translationStatus: 'success';
@@ -63,8 +64,7 @@ export default async function updateTranslation(
     };
   }
 
-  await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
+  const repoGit = await RepoGit.get(project);
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
 
@@ -95,6 +95,7 @@ export default async function updateTranslation(
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
     await Store.persistToDisk();
+    info(`Updated '${languageName}' translation for '${messageId}' to '${translation}'`);
   } catch (e) {
     return {
       errorMessage: 'Failed to update translation',
