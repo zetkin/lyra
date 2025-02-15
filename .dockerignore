@@ -7,3 +7,4 @@ README.md
 .git
 webapp/.next
 webapp/node_modules
+config
