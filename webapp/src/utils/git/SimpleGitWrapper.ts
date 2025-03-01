@@ -35,7 +35,7 @@ export class SimpleGitWrapper implements IGit {
   }
 
   public async commit(commitMsg: string): Promise<void> {
-    await this.git.commit(commitMsg);
+    await this.git.commit(commitMsg, undefined, { '--no-gpg-sign': null });
   }
 
   public async newBranch(
