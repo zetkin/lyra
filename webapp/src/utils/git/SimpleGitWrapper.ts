@@ -26,8 +26,8 @@ export class SimpleGitWrapper implements IGit {
     await this.git.clone(repoPath, localPath);
   }
 
-  public async pull(): Promise<void> {
-    await this.git.pull();
+  public async fetch(): Promise<void> {
+    await this.git.fetch();
   }
 
   public async checkout(branch: string): Promise<void> {

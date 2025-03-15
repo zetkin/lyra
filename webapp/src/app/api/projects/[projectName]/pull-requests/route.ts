@@ -62,7 +62,7 @@ export async function POST(
   try {
     syncLock.set(repoPath, true);
     const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
-    const baseBranch = await repoGit.checkoutBaseAndPull();
+    const baseBranch = await repoGit.fetchAndCheckoutOriginBase();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,
     );
@@ -92,7 +92,7 @@ export async function POST(
       serverProjectConfig.repo,
       serverProjectConfig.githubToken,
     );
-    await repoGit.checkoutBaseAndPull();
+    await repoGit.fetchAndCheckoutOriginBase();
     return NextResponse.json({
       branchName,
       pullRequestStatus: 'success',

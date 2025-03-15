@@ -1,7 +1,7 @@
 export interface IGit {
   clone(repoPath: string, localPath: string): Promise<void>;
 
-  pull(): Promise<void>;
+  fetch(): Promise<void>;
 
   checkout(branch: string): Promise<void>;
 
