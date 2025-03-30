@@ -3,6 +3,7 @@ name: Task
 about: Features, improvements, etc.
 title: ''
 labels: ''
+type: Task
 assignees: ''
 ---
 
