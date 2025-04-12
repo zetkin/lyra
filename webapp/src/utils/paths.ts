@@ -1,6 +1,5 @@
 import path from 'path';
 
-
 const projectsYamlRelPath = 'config/projects.yaml';
 const projectsYmlRelPath = 'config/projects.yml';
 const lyraProjectsFolder = 'lyra-projects';
