@@ -11,8 +11,6 @@ assignees: ''
 
 A user should be able to...
 
-## Relevant Job Stories
-
 ## Estimated size (S, M, L)
 
 I think this issue is {size} because...
