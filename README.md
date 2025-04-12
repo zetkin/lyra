@@ -26,7 +26,7 @@ Lyra needs control over a file system directory.
 > including arbitrary code execution.
 ## Setup
 
-1. Install node version `23`
+1. Install node version `22`
 2. Install dependencies:
 
 ```shell
