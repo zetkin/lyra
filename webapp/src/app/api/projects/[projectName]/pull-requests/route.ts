@@ -1,6 +1,4 @@
-'use server';
-
-import { notFound } from 'next/navigation';
+import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 
 import { RepoGit } from '@/RepoGit';
@@ -34,14 +32,19 @@ export type PullRequestState =
   | PullRequestCreated
   | PullRequestError;
 
-export default async function sendPullRequest(
-  projectName: string,
-): Promise<PullRequestState> {
+export async function POST(
+  req: NextRequest,
+  context: { params: { projectName: string } },
+): Promise<NextResponse<PullRequestState>> {
+  const projectName = context.params.projectName;
   let serverProjectConfig: ServerProjectConfig;
   try {
     serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   } catch (e) {
-    return notFound();
+    return NextResponse.json(
+      { errorMessage: 'Not Found', pullRequestStatus: 'error' },
+      { status: 404 },
+    );
   }
   const repoPath = serverProjectConfig.repoPath;
 
@@ -50,10 +53,10 @@ export default async function sendPullRequest(
   }
 
   if (syncLock.get(repoPath) === true) {
-    return {
+    return NextResponse.json({
       errorMessage: `Another Request in progress for project: ${projectName} or a project that share same git repository`,
       pullRequestStatus: 'error',
-    };
+    });
   }
 
   try {
@@ -65,10 +68,10 @@ export default async function sendPullRequest(
     );
 
     if (!(await repoGit.statusChanged())) {
-      return {
+      return NextResponse.json({
         errorMessage: `There are no changes in ${baseBranch} branch`,
         pullRequestStatus: 'error',
-      };
+      });
     }
 
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
@@ -90,16 +93,16 @@ export default async function sendPullRequest(
       serverProjectConfig.githubToken,
     );
     await repoGit.fetchAndCheckoutOriginBase();
-    return {
+    return NextResponse.json({
       branchName,
       pullRequestStatus: 'success',
       pullRequestUrl,
-    };
+    });
   } catch (e) {
-    return {
+    return NextResponse.json({
       errorMessage: 'Error while creating pull request',
       pullRequestStatus: 'error',
-    };
+    });
   } finally {
     syncLock.set(repoPath, false);
   }
