@@ -16,22 +16,27 @@ import { info, warn } from '@/utils/log';
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
 }> = async ({ params }) => {
-
   const { languageName, messageId, projectName } = params;
   info(`Accessing project '${projectName}' language '${languageName}'`);
   const languageData = await accessLanguage(projectName, languageName);
-  info(`Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`);
+  info(
+    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
+  );
   if (!languageData) {
-    warn(`No language data found for language '${languageName}' in project '${projectName}'`);
+    warn(
+      `No language data found for language '${languageName}' in project '${projectName}'`,
+    );
     return notFound();
   }
 
   const { messages, translations } = languageData;
   const translationCount = Object.keys(translations).length;
-  const percentage = Math.round(100 * translationCount / messages.length);
-  info(`Found ${translationCount} translations (${percentage}%) for language '${languageName}' in project '${projectName}'`);
+  const percentage = Math.round((100 * translationCount) / messages.length);
+  info(
+    `Found ${translationCount} translations (${percentage}%) for language '${languageName}' in project '${projectName}'`,
+  );
 
-  const prefix = messageId ? messageId : '';
+  const prefix = messageId ?? '';
   const filteredMessages = messages.filter((message) =>
     message.id.startsWith(prefix),
   );

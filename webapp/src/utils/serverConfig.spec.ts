@@ -26,7 +26,9 @@ describe('ServerConfig', () => {
       });
       const config = await ServerConfig.read();
       expect(config.projects[0].name).toEqual('foo');
-      expect(config.projects[0].repoPath).toEqual(`${paths.lyraProjectsAbsPath}/app.zetkin.org`);
+      expect(config.projects[0].repoPath).toEqual(
+        `${paths.lyraProjectsAbsPath}/app.zetkin.org`,
+      );
       expect(config.projects[0].baseBranch).toEqual('fooBranch');
       expect(config.projects[0].originBaseBranch).toEqual('origin/fooBranch');
       expect(config.projects[0].projectPath).toEqual('project'); // Note: path changed after normalization
@@ -109,7 +111,9 @@ describe('ServerConfig', () => {
         ].join('\n'),
       });
       const projectConfig = await ServerConfig.getProjectConfig('bar');
-      expect(projectConfig.repoPath).toEqual(`${paths.lyraProjectsAbsPath}/app.zetkin.org`);
+      expect(projectConfig.repoPath).toEqual(
+        `${paths.lyraProjectsAbsPath}/app.zetkin.org`,
+      );
       expect(projectConfig.baseBranch).toEqual('main'); // Note: default value when missed in config
       expect(projectConfig.originBaseBranch).toEqual('origin/main'); // Note: default value when missed in config
       expect(projectConfig.projectPath).toEqual('project2');

@@ -95,7 +95,9 @@ export default async function updateTranslation(
   try {
     await projectStore.updateTranslation(languageName, messageId, translation);
     await Store.persistToDisk();
-    info(`Updated '${languageName}' translation for '${messageId}' to '${translation}'`);
+    info(
+      `Updated '${languageName}' translation for '${messageId}' to '${translation}'`,
+    );
   } catch (e) {
     return {
       errorMessage: 'Failed to update translation',
