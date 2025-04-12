@@ -10,4 +10,5 @@ services:
       - GIT_USER_NAME="Lyra Translator Bot"
     volumes:
       - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
+      - ./webapp/store.json:/app/webapp/store.json
       - ./config:/app/config

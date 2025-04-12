@@ -1,10 +1,3 @@
-Dockerfile
-.dockerignore
-node_modules
-npm-debug.log
-README.md
-.next
-.git
 webapp/.next
 webapp/node_modules
-config
+webapp/store.json
