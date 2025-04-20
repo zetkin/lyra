@@ -195,7 +195,7 @@ export class RepoGit {
                 singleQuote: true,
               });
               try {
-                await fsp.writeFile(yamlPath, yamlOutput);
+                await fsp.writeFile(yamlPath, yamlOutput, { flush: true });
                 info(`Successfully wrote to: ${yamlPath}`);
               } catch (e) {
                 throw new WriteLanguageFileError(yamlPath, e);
