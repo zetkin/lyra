@@ -1,0 +1,11 @@
+webapp/.next
+webapp/node_modules
+webapp/coverage
+webapp/store.json
+
+**/.DS_Store
+**/npm-debug.log*
+**/.env*.local
+**/.vercel
+**/*.tsbuildinfo
+**/next-env.d.ts

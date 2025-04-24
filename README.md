@@ -62,21 +62,19 @@ with example content:
 ```yaml
 projects:
   - name: example-unique-name
-    repo_path: /Users/username/fooRepo # absolute path to repo
     base_branch: main
     project_path: . # relative path of project from repo_path
     owner: amerharb
     repo: zetkin.app.zetkin.org
+    host: github.com
     github_token: << github token >>
 ```
 
-Multiple projects are supported, and multiple projects in the same local git repository
-are supported, but configuring multiple porjects with different `repo_path`, resolving to
-same local git repository, is _not_ supported.
+Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
-The project repository (client repository) needs to be cloned locally. and has in the root folder config
-file `lyra.yml` with the
-example content:
+The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file
+`lyra.yml` or `lyra.yaml` in the root of the repository.
+This lyra configuration file looks like this:
 
 ```yaml
 projects:
@@ -136,3 +134,56 @@ not typically have access to production data or production credentials,
 but they will very likely have access to very powerful developer
 credentials. Tracking published vulnerabilities in all these is beyond
 all hope and feasibility but we can try to keep them somewhat up to date.
+
+
+## Docker setup
+
+To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](../Dockerfile) in the root of this repository.
+The [`docker-compose.yaml`](../docker-compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
+```shell
+$ docker-compose up
+```
+
+or in a detached mode:
+```shell
+$ docker-compose up -d
+```
+
+Note that in order for the running docker container to be able to interact with the client repository, you need mount a private ssh key of a user with access to the repository into the docker container.
+Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/home/nodeuser/.ssh/id_rsa`.
+But the ssh key on your local machine might have a different path, so you need to adjust the path in the [`docker-compose.yaml`](../docker-compose.yaml) file accordingly.
+
+Also note that the store for lyra projects that is mounted into the container is located at `~/lyra-store.json`. 
+You can copy this via `cp store.json  ~/lyra-store.json` and adjust that file there to your needs.
+
+
+### Release a new container image
+
+The GitHub Actions workflow [`build-and-push-image.yaml`](.github/workflows/build-and-push-image.yaml) is designed to
+automate the process of building, tagging, and pushing a Docker image to the GitHub Container Registry (ghcr.io)
+whenever a new tag is pushed to the repository.
+The tags must follow semantic versioning, while release candidates are supported as well.
+
+Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHANGELOG.md) file and adjusting the version within the [`./webapp/package.json`](./webapp/package.json) file.
+
+### Use built image from the container registry
+
+In case you want to use the already built image that is pushed to the GitHub Container Registry, you can adjust the [
+`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `latest` with the version of your preference):
+
+```diff
+services:
+  lyra:
+    container_name: lyra
+-   build:
+-     context: .
++   image: ghcr.io/zetkin/lyra:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GIT_USER_EMAIL=lyra@zetk.in
+      - GIT_USER_NAME="Lyra Translator Bot"
+    volumes:
+      - ~/.ssh/id_github:/home/nodeuser/.ssh/id_rsa:ro
+      - ./config:/app/config
+```
