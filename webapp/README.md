@@ -72,7 +72,7 @@ projects:
 
 Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
-The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file 
+The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file
 `lyra.yml` or `lyra.yaml` in the root of the repository.
 This lyra configuration file looks like this:
 
