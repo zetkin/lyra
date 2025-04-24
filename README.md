@@ -155,3 +155,35 @@ But the ssh key on your local machine might have a different path, so you need t
 
 Also note that the store for lyra projects that is mounted into the container is located at `~/lyra-store.json`. 
 You can copy this via `cp store.json  ~/lyra-store.json` and adjust that file there to your needs.
+
+
+### Release a new container image
+
+The GitHub Actions workflow [`build-and-push-image.yaml`](.github/workflows/build-and-push-image.yaml) is designed to
+automate the process of building, tagging, and pushing a Docker image to the GitHub Container Registry (ghcr.io)
+whenever a new tag is pushed to the repository.
+The tags must follow semantic versioning, while release candidates are supported as well.
+
+Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHANGELOG.md) file and adjusting the version within the [`./webapp/package.json`](./webapp/package.json) file.
+
+### Use built image from the container registry
+
+In case you want to use the already built image that is pushed to the GitHub Container Registry, you can adjust the [
+`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `latest` with the version of your preference):
+
+```diff
+services:
+  lyra:
+    container_name: lyra
+-   build:
+-     context: .
++   image: ghcr.io/zetkin/lyra:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GIT_USER_EMAIL=lyra@zetk.in
+      - GIT_USER_NAME="Lyra Translator Bot"
+    volumes:
+      - ~/.ssh/id_github:/home/nodeuser/.ssh/id_rsa:ro
+      - ./config:/app/config
+```
