@@ -3,8 +3,8 @@ name: Build and Push Docker Image
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - 'v*.*.*-rc*'
+      - '*.*.*'
+      - '*.*.*-rc.*'
 
 jobs:
   build-and-push:
