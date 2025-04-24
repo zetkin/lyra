@@ -9,6 +9,7 @@ services:
       - GIT_USER_EMAIL=lyra@zetk.in
       - GIT_USER_NAME="Lyra Translator Bot"
     volumes:
+      # note: adjust the path to the ssh key you want to use to access the git repositories
       - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
       - ./webapp/store.json:/app/webapp/store.json
       - ./config:/app/config
