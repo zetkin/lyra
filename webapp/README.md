@@ -152,3 +152,6 @@ $ docker-compose up -d
 Note that in order for the running docker container to be able to interact with the client repository, you need mount a private ssh key of a user with access to the repository into the docker container.
 Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/home/nodeuser/.ssh/id_rsa`.
 But the ssh key on your local machine might have a different path, so you need to adjust the path in the [`docker-compose.yaml`](../docker-compose.yaml) file accordingly.
+
+Also note that the store for lyra projects that is mounted into the container is located at `~/lyra-store.json`. 
+You can copy this via `cp store.json  ~/lyra-store.json` and adjust that file there to your needs.
