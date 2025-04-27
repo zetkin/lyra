@@ -1,4 +1,3 @@
-import fs from 'fs';
 import fsp from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
@@ -47,8 +46,18 @@ export class RepoGit {
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
   ): Promise<void> {
-    if (!fs.existsSync(spConfig.repoPath)) {
+    const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
+    if (!repoFolderExists) {
       await RepoGit.clone(spConfig);
+    }
+  }
+
+  private static async isFolderExists(path: string): Promise<boolean> {
+    try {
+      const stat = await fsp.stat(path);
+      return stat.isDirectory();
+    } catch {
+      return false;
     }
   }
 
