@@ -1,5 +1,4 @@
-import fs from 'fs';
-import fsp from 'fs/promises';
+import fs from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
 import { stringify } from 'yaml';
@@ -47,14 +46,24 @@ export class RepoGit {
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
   ): Promise<void> {
-    if (!fs.existsSync(spConfig.repoPath)) {
+    const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
+    if (!repoFolderExists) {
       await RepoGit.clone(spConfig);
+    }
+  }
+
+  private static async isFolderExists(path: string): Promise<boolean> {
+    try {
+      const stat = await fs.stat(path);
+      return stat.isDirectory();
+    } catch {
+      return false;
     }
   }
 
   private static async clone(spConfig: ServerProjectConfig): Promise<void> {
     debug(`create directory: ${spConfig.repoPath} ...`);
-    await fsp.mkdir(spConfig.repoPath, { recursive: true });
+    await fs.mkdir(spConfig.repoPath, { recursive: true });
     const git = new SimpleGitWrapper(spConfig.repoPath);
     debug(`Cloning repo: ${spConfig.repoPath} ...`);
     await git.clone(spConfig.cloneUrl, spConfig.repoPath);
@@ -173,7 +182,7 @@ export class RepoGit {
                 singleQuote: true,
               });
               try {
-                await fsp.writeFile(yamlPath, yamlOutput, { flush: true });
+                await fs.writeFile(yamlPath, yamlOutput, { flush: true });
               } catch (e) {
                 throw new WriteLanguageFileError(yamlPath, e);
               }
