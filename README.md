@@ -149,13 +149,37 @@ or in a detached mode:
 $ docker-compose up -d
 ```
 
-Note that in order for the running docker container to be able to interact with the client repository, you need mount a private ssh key of a user with access to the repository into the docker container.
-Currently, this is being achieved by mounting the private ssh key at `~/.ssh/id_rsa` into the container at `/home/nodeuser/.ssh/id_rsa`.
-But the ssh key on your local machine might have a different path, so you need to adjust the path in the [`docker-compose.yaml`](../docker-compose.yaml) file accordingly.
+### Docker volume mounts
 
-Also note that the store for lyra projects that is mounted into the container is located at `~/lyra-store.json`. 
-You can copy this via `cp store.json  ~/lyra-store.json` and adjust that file there to your needs.
+#### SSH key
+Note that in order for the running docker container to be able to interact with the client repository,
+you need to mount a private SSH key of a user with access to the repository into the Docker container.
+Currently, this is achieved by mounting the private SSH key at `~/.ssh/id_rsa` into the container at
+`/home/nodeuser/.ssh/id_rsa`.
+If your SSH key is located elsewhere on your local machine, you will need to adjust the path in the
+[docker-compose.yaml](./docker-compose.yaml) file accordingly.
 
+When mounting the SSH key into the container, the file ownership and permissions from your local system are preserved. 
+Since the container runs as the nodeuser user (UID 1001), but the mounted key is owned by your local user, 
+it’s important to ensure that the SSH key has the correct permissions. 
+SSH requires that private keys are not accessible by others.
+To avoid permission issues, you should set the permissions of your private key to 600 on your local machine:
+
+```bash
+$ chmod 600 ~/.ssh/id_rsa
+```
+
+This ensures that the private key is only readable by the owner, which is sufficient for SSH to accept it inside the 
+container, even if the ownership does not exactly match the container user.
+
+**Tip:**
+For improved security, consider creating a dedicated SSH key specifically for use with this container, with restricted access to only the necessary repositories.
+
+#### Lyra Store
+
+Before running the container, ensure the file `lyra-store.json` exists on the host system.
+This file is the store for lyra projects and is mounted into the container via docker volume mounts. 
+You can copy this via `cp store.json  ~/lyra-store.json` to this location or just change it to use the [`store.json`](./store.json) file in the root of the repository.
 
 ### Release a new container image
 
@@ -185,5 +209,6 @@ services:
       - GIT_USER_NAME="Lyra Translator Bot"
     volumes:
       - ~/.ssh/id_github:/home/nodeuser/.ssh/id_rsa:ro
+      - ~/lyra-store.json:/app/webapp/store.json
       - ./config:/app/config
 ```
