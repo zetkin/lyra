@@ -58,18 +58,29 @@ export class RepoGit {
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
   ): Promise<void> {
+    const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
+
     // check if repoPath is empty folder, if yes delete it
     // this can happen when the mkdir command is executed but the clone command is not
-    if (fs.existsSync(spConfig.repoPath)) {
+    if (repoFolderExists) {
       const files = fs.readdirSync(spConfig.repoPath);
       if (files.length === 0) {
         fs.rmdirSync(spConfig.repoPath);
       }
     }
 
-    if (!fs.existsSync(spConfig.repoPath)) {
+    if (!repoFolderExists) {
       info(`Cloning repo because it does not exist at ${spConfig.repoPath}`);
       await RepoGit.clone(spConfig);
+    }
+  }
+
+  private static async isFolderExists(path: string): Promise<boolean> {
+    try {
+      const stat = await fsp.stat(path);
+      return stat.isDirectory();
+    } catch {
+      return false;
     }
   }
 
