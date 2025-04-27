@@ -12,3 +12,8 @@ export function warn(msg: string) {
   // eslint-disable-next-line no-console
   console.warn('[WARN] ' + msg);
 }
+
+export function error(msg: string) {
+  // eslint-disable-next-line no-console
+  console.error('[ERROR] ' + msg);
+}
