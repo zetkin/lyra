@@ -37,17 +37,7 @@ you can take to setup your develop environment.
 
 #### Prettier
 
-1. Install the extension `Prettier - Code formatter`.
-   It has an identifier `esbenp.prettier-vscode`.
-2. Configure Prettier as the default formatter.
-
-Steps 2 can be done with a `.vscode/settings.json`:
-
-```
-{
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-}
-```
+Install the recommended extension `Prettier - Code formatter`.
 
 #### PlantUML
 
