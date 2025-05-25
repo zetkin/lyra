@@ -162,6 +162,8 @@ $ chmod 600 ~/.ssh/id_rsa
 This ensures that the private key is only readable by the owner, which is sufficient for SSH to accept it inside the 
 container, even if the ownership does not exactly match the container user.
 
+File permissions for the private key and lyra-store.json on your local machine also need to allow access for a user ID of 1001.
+
 **Tip:**
 For improved security, consider creating a dedicated SSH key specifically for use with this container, with restricted access to only the necessary repositories.
 
