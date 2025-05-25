@@ -17,7 +17,6 @@ const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
 }> = async ({ params }) => {
   const { languageName, messageId, projectName } = params;
-  info(`Accessing project '${projectName}' language '${languageName}'`);
   const languageData = await accessLanguage(projectName, languageName);
   if (!languageData) {
     warn(
