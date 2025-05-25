@@ -19,15 +19,16 @@ const MessagesPage: NextPage<{
   const { languageName, messageId, projectName } = params;
   info(`Accessing project '${projectName}' language '${languageName}'`);
   const languageData = await accessLanguage(projectName, languageName);
-  info(
-    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
-  );
   if (!languageData) {
     warn(
       `No language data found for language '${languageName}' in project '${projectName}'`,
     );
     return notFound();
   }
+
+  info(
+    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
+  );
 
   const { messages, translations } = languageData;
   const translationCount = Object.keys(translations).length;
