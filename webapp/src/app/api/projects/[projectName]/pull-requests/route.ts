@@ -100,7 +100,7 @@ export async function POST(
     });
   } catch (e) {
     return NextResponse.json({
-      errorMessage: `Error while creating pull request: ${e}`,
+      errorMessage: 'Error while creating pull request',
       pullRequestStatus: 'error',
     });
   } finally {
