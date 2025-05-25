@@ -46,17 +46,17 @@ export class RepoGit {
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
   ): Promise<boolean> {
-    const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
+    const repoFolderExists = await RepoGit.isGitFolderExists(spConfig.repoPath);
     if (!repoFolderExists) {
       return await RepoGit.clone(spConfig);
     }
     return true;
   }
 
-  private static async isFolderExists(path: string): Promise<boolean> {
+  private static async isGitFolderExists(folderPath: string): Promise<boolean> {
     try {
-      const stat = await fs.stat(path);
-      return stat.isDirectory();
+      const gitFolderStat = await fs.stat(path.join(folderPath, '.git'));
+      return gitFolderStat.isDirectory();
     } catch {
       return false;
     }
