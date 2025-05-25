@@ -13,13 +13,19 @@ import SidebarContextProvider from '@/components/SidebarContext';
 import { accessLanguage } from '@/dataAccess';
 import { info, warn } from '@/utils/log';
 
+function toHex(value: string): string {
+  return [...value].map((c) => c.charCodeAt(0).toString(16)).join(' ');
+}
+
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
 }> = async ({ params }) => {
   const { languageName, messageId, projectName } = params;
   const languageData = await accessLanguage(projectName, languageName);
   if (!languageData) {
-    warn(`No language data found for project '${projectName}'`);
+    warn(
+      `No language data found for project with code units ${toHex(projectName)}`,
+    );
     return notFound();
   }
 
