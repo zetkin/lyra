@@ -57,7 +57,7 @@ export class RepoGit {
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
   ): Promise<boolean> {
-    const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
+    const repoFolderExists = await RepoGit.isGitFolderExists(spConfig.repoPath);
     if (!repoFolderExists) {
       info(
         `Cloning repo because it does not exist (or is empty) at ${spConfig.repoPath}`,
@@ -67,10 +67,10 @@ export class RepoGit {
     return true;
   }
 
-  private static async isFolderExists(path: string): Promise<boolean> {
+  private static async isGitFolderExists(folderPath: string): Promise<boolean> {
     try {
-      const stat = await fsp.stat(path);
-      return stat.isDirectory();
+      const gitFolderStat = await fsp.stat(path.join(folderPath, '.git'));
+      return gitFolderStat.isDirectory();
     } catch {
       return false;
     }
