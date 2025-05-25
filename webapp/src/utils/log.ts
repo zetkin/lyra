@@ -17,3 +17,7 @@ export function error(msg: string) {
   // eslint-disable-next-line no-console
   console.error('[ERROR] ' + msg);
 }
+
+export function toHex(value: string): string {
+  return [...value].map((c) => c.charCodeAt(0).toString(16)).join(' ');
+}

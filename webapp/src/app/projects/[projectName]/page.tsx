@@ -4,14 +4,14 @@ import { notFound } from 'next/navigation';
 import { accessProject } from '@/dataAccess';
 import { Promises } from '@/utils/Promises';
 import ProjectDashboard from '@/components/ProjectDashboard';
-import { info, warn } from '@/utils/log';
+import { info, toHex, warn } from '@/utils/log';
 
 const ProjectPage: NextPage<{
   params: { projectName: string };
 }> = async ({ params }) => {
   const project = await accessProject(params.projectName);
   if (!project) {
-    warn(`Project with name '${params.projectName}' not found`);
+    warn(`Project with name code units ${toHex(params.projectName)} not found`);
     return notFound();
   }
   const { name, messages, languagesWithTranslations } = project;

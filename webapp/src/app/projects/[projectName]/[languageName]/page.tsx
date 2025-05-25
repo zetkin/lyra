@@ -11,11 +11,7 @@ import PullRequestButton from '@/components/PullRequestButton';
 import TitleBar from '@/components/TitleBar';
 import SidebarContextProvider from '@/components/SidebarContext';
 import { accessLanguage } from '@/dataAccess';
-import { info, warn } from '@/utils/log';
-
-function toHex(value: string): string {
-  return [...value].map((c) => c.charCodeAt(0).toString(16)).join(' ');
-}
+import { info, toHex, warn } from '@/utils/log';
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
