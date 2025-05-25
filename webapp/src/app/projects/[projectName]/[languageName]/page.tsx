@@ -19,9 +19,7 @@ const MessagesPage: NextPage<{
   const { languageName, messageId, projectName } = params;
   const languageData = await accessLanguage(projectName, languageName);
   if (!languageData) {
-    warn(
-      `No language data found for language '${languageName}' in project '${projectName}'`,
-    );
+    warn(`No language data found for project '${projectName}'`);
     return notFound();
   }
 
