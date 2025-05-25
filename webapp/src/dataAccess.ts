@@ -61,7 +61,9 @@ export async function accessLanguage(
 }
 
 async function readProject(project: ServerProjectConfig) {
-  await RepoGit.cloneIfNotExist(project);
+  if (!(await RepoGit.cloneIfNotExist(project))) {
+    return { languagesWithTranslations: [], messages: [], name: project.name };
+  }
   const repoGit = await RepoGit.getRepoGit(project);
   await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();

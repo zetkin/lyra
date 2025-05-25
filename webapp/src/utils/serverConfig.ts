@@ -40,6 +40,10 @@ export class ServerConfig {
       const ymlBuf = await fs.readFile(filename);
       const configData = parse(ymlBuf.toString());
 
+      if (!configData) {
+        // empty config file
+        return new ServerConfig([]);
+      }
       const parsed = serverConfigSchema.parse(configData);
 
       return new ServerConfig(
@@ -55,7 +59,7 @@ export class ServerConfig {
           );
         }),
       );
-    } catch (e) {
+    } catch {
       throw new ServerConfigReadingError(filename);
     }
   }
@@ -70,6 +74,7 @@ export class ServerConfig {
 
 export class ServerProjectConfig {
   public readonly originBaseBranch: string;
+
   constructor(
     public readonly name: string,
     /** absolute local path to repo */

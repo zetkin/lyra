@@ -52,6 +52,10 @@ export class RepoGit {
     if (!repoFolderExists) {
       return await RepoGit.clone(spConfig);
     }
+    if (!(await SimpleGitWrapper.isGitRepo(spConfig.repoPath))) {
+      error(`Path ${spConfig.repoPath} is not a valid git repository`);
+      return false;
+    }
     return true;
   }
 
