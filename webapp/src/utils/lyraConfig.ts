@@ -57,7 +57,7 @@ export class LyraConfig {
 
       return new LyraConfig(
         parsed.projects.map((project) => {
-          LyraConfig.valdidateLanguages(project.languages);
+          LyraConfig.validateLanguages(project.languages);
           return new LyraProjectConfig(
             repoPath,
             project.path,
@@ -73,7 +73,7 @@ export class LyraConfig {
     }
   }
 
-  private static valdidateLanguages(languages?: string[]) {
+  private static validateLanguages(languages?: string[]) {
     if (languages === undefined) {
       return;
     }
