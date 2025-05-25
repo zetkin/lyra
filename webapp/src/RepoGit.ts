@@ -21,12 +21,13 @@ export class RepoGit {
     [name: string]: Promise<RepoGit>;
   } = {};
 
-  private readonly git: IGit;
   private lyraConfig?: LyraConfig;
   private lastPullTime: Date;
 
-  private constructor(private readonly spConfig: ServerProjectConfig) {
-    this.git = new SimpleGitWrapper(spConfig.repoPath);
+  private constructor(
+    private readonly spConfig: ServerProjectConfig,
+    private readonly git: IGit,
+  ) {
     this.lastPullTime = new Date(0);
   }
 
@@ -35,7 +36,8 @@ export class RepoGit {
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
     }
-    const repository = new RepoGit(spConfig);
+    const simpleGitWrapper = await SimpleGitWrapper.of(spConfig.repoPath);
+    const repository = new RepoGit(spConfig, simpleGitWrapper);
     const work = repository.fetchAndCheckoutOriginBase();
     const promise = work.then(() => repository);
     RepoGit.repositories[key] = promise;
@@ -66,7 +68,7 @@ export class RepoGit {
     try {
       debug(`create directory: ${spConfig.repoPath} ...`);
       await fs.mkdir(spConfig.repoPath, { recursive: true });
-      const git = new SimpleGitWrapper(spConfig.repoPath);
+      const git = await SimpleGitWrapper.of(spConfig.repoPath);
       debug(`Cloning repo: ${spConfig.repoPath} ...`);
       await git.clone(spConfig.cloneUrl, spConfig.repoPath);
       debug(`Cloned repo: ${spConfig.repoPath}`);
