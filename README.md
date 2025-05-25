@@ -131,12 +131,12 @@ all hope and feasibility but we can try to keep them somewhat up to date.
 To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](../Dockerfile) in the root of this repository.
 The [`docker-compose.yaml`](../docker-compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
 ```shell
-$ docker-compose up
+$ docker compose up
 ```
 
 or in a detached mode:
 ```shell
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
 ### Docker volume mounts
