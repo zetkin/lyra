@@ -59,13 +59,20 @@ export class RepoGit {
     spConfig: ServerProjectConfig,
   ): Promise<void> {
     const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
-
-    // check if repoPath is empty folder, if yes delete it
-    // this can happen when the mkdir command is executed but the clone command is not
+    /*
+    check if directory at repoPath contains something.
+    if it does, we skip cloning
+    if it does not, we clone the repo there since
+    "Cloning into an existing directory is [...] allowed if the directory is empty." according to git docs:
+    https://git-scm.com/docs/git-clone#Documentation/git-clone.txt-emltdirectorygtem
+    */
     if (repoFolderExists) {
-      const files = fs.readdirSync(spConfig.repoPath);
-      if (files.length === 0) {
-        fs.rmdirSync(spConfig.repoPath);
+      const content = fs.readdirSync(spConfig.repoPath);
+      if (content.length !== 0) {
+        info(
+          `Repo folder at ${spConfig.repoPath} exists but is not empty, skipping clone.`,
+        );
+        return;
       }
     }
 
