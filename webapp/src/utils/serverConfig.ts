@@ -11,7 +11,7 @@ const serverConfigSchema = z.object({
     z.object({
       base_branch: z.string().optional(),
       github_token: z.string(),
-      host: z.string(),
+      host: z.string().optional(),
       name: z.string(),
       owner: z.string(),
       project_path: z.string(),
@@ -65,7 +65,7 @@ export class ServerConfig {
           return new ServerProjectConfig({
             baseBranch: project.base_branch ?? 'main',
             githubToken: project.github_token,
-            host: project.host,
+            host: project.host ?? 'github.com',
             name: project.name,
             owner: project.owner,
             projectPath: path.normalize(project.project_path),
