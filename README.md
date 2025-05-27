@@ -53,7 +53,7 @@ with example content:
 projects:
   - name: example-unique-name
     base_branch: main
-    project_path: . # relative path of project from repo_path
+    project_path: . # relative path of project from repository root
     owner: amerharb
     repo: zetkin.app.zetkin.org
     host: github.com
