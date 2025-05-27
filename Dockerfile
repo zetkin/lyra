@@ -1,7 +1,7 @@
 ##################################################
 # 1) BUILD STAGE
 ##################################################
-FROM node:23-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN npm --workspace webapp run build
 ##################################################
 # 2) RUNTIME STAGE
 ##################################################
-FROM node:23-alpine AS runner
+FROM node:22-alpine AS runner
 
 RUN apk add --no-cache git openssh && \
     addgroup -g 1001 nodejs && \
