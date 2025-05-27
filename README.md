@@ -125,6 +125,49 @@ but they will very likely have access to very powerful developer
 credentials. Tracking published vulnerabilities in all these is beyond
 all hope and feasibility but we can try to keep them somewhat up to date.
 
+## Standalone build (monorepo)
+
+We enable Next.js **standalone output** to keep Docker images tiny.
+Because this package lives in a workspace, we must widen dependency tracing.
+
+### `next.config.js`
+
+```js
+const path = require('path');
+
+/** @type {import('next').NextConfig} */
+module.exports = {
+  output: 'standalone',
+  experimental: {
+    // trace files from the repository root
+    outputFileTracingRoot: path.join(__dirname, '../..'),
+  },
+};
+```
+
+### Gotchas
+
+* Place every module that is **imported at runtime** in this package’s `dependencies` (not `devDependencies`).
+  Example: `typescript` required by `src/utils/readTypedMessages.ts`.
+
+* After upgrading **Next.js** or adding workspace packages, check the bundle:
+
+  ```bash
+  npm run build
+  node webapp/.next/standalone/lyra/webapp/server.js --check
+  ```
+
+### References
+
+* Next.js docs – “output › Caveats”
+  [https://nextjs.org/docs/13/app/api-reference/next-config-js/output#caveats](https://nextjs.org/docs/13/app/api-reference/next-config-js/output#caveats)
+
+* GitHub discussion – deep `webapp/server.js` path (#72436)
+  [https://github.com/vercel/next.js/discussions/72436](https://github.com/vercel/next.js/discussions/72436)
+
+* GitHub issue – public assets missing in monorepo builds (#33895)
+  [https://github.com/vercel/next.js/issues/33895](https://github.com/vercel/next.js/issues/33895)
+
 
 ## Docker setup
 
