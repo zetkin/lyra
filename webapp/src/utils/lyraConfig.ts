@@ -117,7 +117,7 @@ export class LyraProjectConfig {
   private readonly repoPath: string;
   private readonly path: string;
   public readonly messageKind: string;
-  public readonly messagesPath: string;
+  private readonly messagesPath: string;
   private readonly translationsPath: string;
   public readonly languages: string[];
 
