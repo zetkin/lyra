@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { ProjectNameNotFoundError, ServerConfigReadingError } from '@/errors';
 import { paths } from '@/utils/paths';
+import { info } from '@/utils/log';
 
 const serverConfigSchema = z.object({
   projects: z.array(
@@ -20,20 +21,29 @@ const serverConfigSchema = z.object({
   ),
 });
 
-async function getProjectsConfigPath(): Promise<string> {
-  try {
-    await fs.access(paths.projectsYamlAbsPath);
-    return paths.projectsYamlAbsPath;
-  } catch {
+/**
+ * Resolves the absolute path to the projects configuration file (either
+ * `projects.yaml` or `projects.yml`). The search order is YAML first, then YML.
+ *
+ * Throws {@link ServerConfigReadingError} when neither file exists.
+ * The thrown error message intentionally avoids leaking absolute paths so that
+ * it can be propagated to unauthenticated clients without exposing the local
+ * file‑system structure.
+ */
+export async function getProjectsConfigPath(): Promise<string> {
+  for (const absPath of [paths.projectsYamlAbsPath, paths.projectsYmlAbsPath]) {
     try {
-      await fs.access(paths.projectsYmlAbsPath);
-      return paths.projectsYmlAbsPath;
+      await fs.access(absPath);
+      return absPath;
     } catch {
-      throw new ServerConfigReadingError(
-        `${paths.projectsYamlAbsPath} or ${paths.projectsYmlAbsPath}`,
-      );
+      /* ignored – try the next candidate */
     }
   }
+
+  throw new ServerConfigReadingError(
+    `${path.basename(paths.projectsYamlAbsPath)}/
+    ${path.basename(paths.projectsYmlAbsPath)}`,
+  );
 }
 
 export class ServerConfig {
@@ -75,7 +85,7 @@ export class ServerConfig {
         }),
       );
     } catch (e) {
-      throw new ServerConfigReadingError(projectsConfigPath);
+      throw new ServerConfigReadingError(path.basename(projectsConfigPath));
     }
   }
 
