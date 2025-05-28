@@ -95,9 +95,7 @@ export async function POST(
   try {
     await projectStore.updateTranslation(languageId, messageId, translation);
     await Store.persistToDisk();
-    info(
-      `Updated '${languageId}' translation for '${messageId}' to '${translation}'`,
-    );
+    info(`Updated '${languageId}' translation for '${messageId}'`);
   } catch (e) {
     return NextResponse.json({
       errorMessage: 'Failed to update translation',

@@ -11,23 +11,23 @@ import PullRequestButton from '@/components/PullRequestButton';
 import TitleBar from '@/components/TitleBar';
 import SidebarContextProvider from '@/components/SidebarContext';
 import { accessLanguage } from '@/dataAccess';
-import { info, warn } from '@/utils/log';
+import { info, toHex, warn } from '@/utils/log';
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
 }> = async ({ params }) => {
   const { languageName, messageId, projectName } = params;
-  info(`Accessing project '${projectName}' language '${languageName}'`);
   const languageData = await accessLanguage(projectName, languageName);
-  info(
-    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
-  );
   if (!languageData) {
     warn(
-      `No language data found for language '${languageName}' in project '${projectName}'`,
+      `No language data found for project with code units ${toHex(projectName)}`,
     );
     return notFound();
   }
+
+  info(
+    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
+  );
 
   const { messages, translations } = languageData;
   const translationCount = Object.keys(translations).length;
