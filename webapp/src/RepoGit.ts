@@ -76,10 +76,8 @@ export class RepoGit {
       }
     }
 
-    if (!repoFolderExists) {
-      info(`Cloning repo because it does not exist at ${spConfig.repoPath}`);
-      await RepoGit.clone(spConfig);
-    }
+    info(`Cloning repo because it does not exist (or is empty) at ${spConfig.repoPath}`);
+    await RepoGit.clone(spConfig);
   }
 
   private static async isFolderExists(path: string): Promise<boolean> {
