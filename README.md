@@ -217,7 +217,7 @@ For improved security, consider creating a dedicated SSH key specifically for us
 
 Before running the container, ensure the file `lyra-store.json` exists on the host system.
 This file is the store for lyra projects and is mounted into the container via docker volume mounts. 
-You can copy this via `cp store.json  ~/lyra-store.json` to this location or just change it to use the [`store.json`](./store.json) file in the root of the repository.
+You can copy this via `cp ./webapp/store.json ~/lyra-store.json` to this location or just change it to use [`webapp/store.json`](./webapp/store.json).
 
 ### Release a new container image
 
