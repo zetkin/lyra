@@ -6,7 +6,7 @@ const nextConfig = {
 
   // 👇 make tracing start at the monorepo root
   experimental: {
-    outputFileTracingRoot: path.join(__dirname, '../..'),
+    outputFileTracingRoot: path.join(__dirname, '..'),
   },
 };
 
