@@ -154,7 +154,7 @@ module.exports = {
 
   ```bash
   npm run build
-  node webapp/.next/standalone/lyra/webapp/server.js --check
+  node --check webapp/.next/standalone/lyra/webapp/server.js
   ```
 
 ### References
