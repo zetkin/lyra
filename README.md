@@ -193,6 +193,7 @@ Currently, this is achieved by mounting the private SSH key at `~/.ssh/id_rsa` i
 `/home/nodeuser/.ssh/id_rsa`.
 If your SSH key is located elsewhere on your local machine, you will need to adjust the path in the
 [docker-compose.yaml](./docker-compose.yaml) file accordingly.
+⚠️ Note that encrypted private keys are not supported for now.
 
 When mounting the SSH key into the container, the file ownership and permissions from your local system are preserved. 
 Since the container runs as the nodeuser user (UID 1001), but the mounted key is owned by your local user, 
