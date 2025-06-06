@@ -57,13 +57,12 @@ describe('ServerConfig', () => {
       expect(config.projects[1].name).toEqual('bar');
       expect(config.projects[1].projectPath).toEqual('project2');
     });
-    it('throws for empty projects file', async () => {
-      expect.assertions(1);
+    it('return empty array for empty projects file', async () => {
       mock({
         '../config/projects.yaml': '',
       });
-      const actual = ServerConfig.read();
-      await expect(actual).rejects.toThrow();
+      const actual = await ServerConfig.read();
+      expect(actual.projects).toEqual([]);
     });
     it('throws for missing projects file', async () => {
       expect.assertions(1);
