@@ -5,7 +5,6 @@ import { z } from 'zod';
 
 import { ProjectNameNotFoundError, ServerConfigReadingError } from '@/errors';
 import { paths } from '@/utils/paths';
-import { info } from '@/utils/log';
 
 const serverConfigSchema = z.object({
   projects: z.array(
