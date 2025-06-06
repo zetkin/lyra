@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+### Patch Changes
+
+- Added changesets
+
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
 # [0.4.0] - 2025-06-06
