@@ -5,7 +5,6 @@ import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { LyraProjectConfig } from '@/utils/lyraConfig';
 import { StoreData } from './types';
-import { isNodeError } from '@/utils/error';
 import { error } from '@/utils/log';
 
 const FILE_PATH = './store.json';
@@ -101,21 +100,8 @@ export class Store {
   }
 
   private async loadFromDisk(): Promise<void> {
-    try {
-      await fs.access(FILE_PATH);
-      const json = await fs.readFile(FILE_PATH, 'utf-8');
-      this.initialState = JSON.parse(json);
-    } catch (err) {
-      if (isNodeError(err) && err.code === 'ENOENT') {
-        // File not found, create a file with empty object: "{}\n"
-        await fs.writeFile(
-          FILE_PATH,
-          JSON.stringify(this.initialState, null, 2),
-          'utf-8',
-        );
-        return;
-      }
-      throw err;
-    }
+    await fs.access(FILE_PATH);
+    const json = await fs.readFile(FILE_PATH, 'utf-8');
+    this.initialState = JSON.parse(json);
   }
 }
