@@ -10,9 +10,9 @@ describe('LyraConfig', () => {
   });
 
   describe('readFromDir()', () => {
-    it('reads message kind and path from lyra.yml', async () => {
+    it('reads message kind and path from .lyra.yaml', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: .',
           '  messages:',
@@ -33,9 +33,9 @@ describe('LyraConfig', () => {
       expect(config.projects[0].languages).toEqual(['en']); // default value
     });
 
-    it('reads message kind and path from lyra.yaml', async () => {
+    it('reads message kind and path from .lyra.yaml', async () => {
       mock({
-        '/path/to/repo/lyra.yaml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: .',
           '  messages:',
@@ -58,7 +58,7 @@ describe('LyraConfig', () => {
 
     it('combines project path with messages path', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: project',
           '  messages:',
@@ -80,7 +80,7 @@ describe('LyraConfig', () => {
 
     it('reads more than one projects', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: project1',
           '  messages:',
@@ -124,7 +124,7 @@ describe('LyraConfig', () => {
     describe('LyraConfigReadingError', () => {
       it('throws for empty file', async () => {
         expect.assertions(1);
-        mock({ '/path/to/repo/lyra.yml': '' });
+        mock({ '/path/to/repo/.lyra.yaml': '' });
 
         const actual = LyraConfig.readFromDir('/path/to/repo');
         await expect(actual).rejects.toThrow(LyraConfigReadingError);
@@ -133,7 +133,7 @@ describe('LyraConfig', () => {
       it('throws for missing messages path', async () => {
         expect.assertions(1);
         mock({
-          '/path/to/repo/lyra.yml': [
+          '/path/to/repo/.lyra.yaml': [
             'projects:',
             '- path: project',
             '  messages:',
@@ -149,7 +149,7 @@ describe('LyraConfig', () => {
       it('throws for define deprecated property baseBranch', async () => {
         expect.assertions(1);
         mock({
-          '/path/to/repo/lyra.yml': [
+          '/path/to/repo/.lyra.yaml': [
             'baseBranch: anyValue', // deprecated
             'projects:',
             '- path: project',
@@ -166,7 +166,7 @@ describe('LyraConfig', () => {
 
       it('throws for suspicious character in language', async () => {
         mock({
-          '/a/lyra.yml': [
+          '/a/.lyra.yaml': [
             'projects:',
             '- path: .',
             '  messages:',
@@ -204,9 +204,9 @@ describe('LyraConfig', () => {
   });
 
   describe('getProjectConfigByPath()', () => {
-    it('reads config from lyra.yml of single project repo', async () => {
+    it('reads config from .lyra.yaml of single project repo', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: .',
           '  messages:',
@@ -223,9 +223,10 @@ describe('LyraConfig', () => {
       expect(projectConfig.absTranslationsPath).toEqual('/path/to/repo/locale');
       expect(projectConfig.languages).toEqual(['en']); // default value
     });
-    it('reads message kind and path from lyra.yml', async () => {
+
+    it('reads message kind and path from .lyra.yaml', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: foo',
           '  messages:',
@@ -244,9 +245,9 @@ describe('LyraConfig', () => {
       );
     });
 
-    it('reads message kind and path from lyra.yml with multi projects', async () => {
+    it('reads message kind and path from .lyra.yaml with multi projects', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: foo1',
           '  messages:',
@@ -280,9 +281,9 @@ describe('LyraConfig', () => {
       );
     });
 
-    it('reads languages from lyra.yml with multi projects', async () => {
+    it('reads languages from .lyra.yaml with multi projects', async () => {
       mock({
-        '/path/to/repo/lyra.yml': [
+        '/path/to/repo/.lyra.yaml': [
           'projects:',
           '- path: foo1',
           '  languages: [en, fr]',
@@ -317,7 +318,7 @@ describe('LyraConfig', () => {
     describe('ProjectPathNotFoundError', () => {
       it('throws for for invalid project path', async () => {
         mock({
-          '/path/to/repo/lyra.yml': [
+          '/path/to/repo/.lyra.yaml': [
             'projects:',
             '- path: project',
             '  messages:',
