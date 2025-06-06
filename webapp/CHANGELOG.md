@@ -8,6 +8,10 @@
 
 - Containerization
 
+### Changed
+
+- rename `lyra.yml` to `.lyra.yaml`
+
 ## [0.3.0]
 
 ### Added
