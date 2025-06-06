@@ -73,7 +73,9 @@ export class RepoGit {
       }
     }
 
-    info(`Cloning repo because it does not exist (or is empty) at ${spConfig.repoPath}`);
+    info(
+      `Cloning repo because it does not exist (or is empty) at ${spConfig.repoPath}`,
+    );
     await RepoGit.clone(spConfig);
   }
 
