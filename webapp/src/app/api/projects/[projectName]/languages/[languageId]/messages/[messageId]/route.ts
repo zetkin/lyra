@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig } from '@/utils/serverConfig';
-import { info } from '@/utils/log';
+import { error, info } from '@/utils/log';
 import { Store } from '@/store/Store';
 
 export type TranslationSuccess = {
@@ -97,6 +97,7 @@ export async function POST(
     await Store.persistToDisk();
     info(`Updated '${languageId}' translation for '${messageId}'`);
   } catch (e) {
+    error(`Failed to update translation: ${e}`);
     return NextResponse.json({
       errorMessage: 'Failed to update translation',
       original,
