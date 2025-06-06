@@ -69,9 +69,6 @@ export class RepoGit {
     if (repoFolderExists) {
       const content = fs.readdirSync(spConfig.repoPath);
       if (content.length !== 0) {
-        info(
-          `Repo folder at ${spConfig.repoPath} exists but is not empty, skipping clone.`,
-        );
         return;
       }
     }
