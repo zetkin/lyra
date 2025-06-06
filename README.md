@@ -210,9 +210,6 @@ container.
 
 File permissions for the private key and lyra-store.json on your local machine also need to allow access for a user ID of 1001.
 
-**Tip:**
-For improved security, consider creating a dedicated SSH key specifically for use with this container, with restricted access to only the necessary repositories.
-
 #### Lyra Store
 
 Before running the container, ensure the file `lyra-store.json` exists on the host system.
