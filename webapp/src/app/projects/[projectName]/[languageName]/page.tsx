@@ -11,20 +11,32 @@ import PullRequestButton from '@/components/PullRequestButton';
 import TitleBar from '@/components/TitleBar';
 import SidebarContextProvider from '@/components/SidebarContext';
 import { accessLanguage } from '@/dataAccess';
+import { info, toHex, warn } from '@/utils/log';
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
 }> = async ({ params }) => {
   const { languageName, messageId, projectName } = params;
-
   const languageData = await accessLanguage(projectName, languageName);
   if (!languageData) {
+    warn(
+      `No language data found for project with code units ${toHex(projectName)}`,
+    );
     return notFound();
   }
 
-  const { messages, translations } = languageData;
+  info(
+    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
+  );
 
-  const prefix = messageId ? messageId : '';
+  const { messages, translations } = languageData;
+  const translationCount = Object.keys(translations).length;
+  const percentage = Math.round((100 * translationCount) / messages.length);
+  info(
+    `Found ${translationCount} translations (${percentage}%) for language '${languageName}' in project '${projectName}'`,
+  );
+
+  const prefix = messageId ?? '';
   const filteredMessages = messages.filter((message) =>
     message.id.startsWith(prefix),
   );

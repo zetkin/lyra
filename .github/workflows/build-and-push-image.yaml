@@ -1,0 +1,39 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+      - '*.*.*-rc.*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Validate version
+        run: |
+          if [[ ! "${{ env.VERSION }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-rc.[0-9]+)?$ ]]; then
+            echo "Invalid tag version: ${{ env.VERSION }}. Ensure to respect semantic versioning."
+            exit 1
+          fi
+
+      - name: Build and tag image
+        run: docker build -t ghcr.io/zetkin/lyra:${{ env.VERSION }} .
+
+      - name: Push image
+        run: docker push ghcr.io/zetkin/lyra:${{ env.VERSION }}

@@ -1,0 +1,16 @@
+services:
+  lyra:
+    container_name: lyra
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      - GIT_USER_EMAIL=lyra@zetk.in
+      - GIT_USER_NAME="Lyra Translator Bot"
+    volumes:
+      # note: adjust the path to the ssh key you want to use to access the git repositories
+      - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
+      # note: adjust the path to the lyra-store-file you want to use
+      - ~/lyra-store.json:/app/webapp/store.json
+      - ./config:/app/config

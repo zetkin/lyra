@@ -37,8 +37,7 @@ export async function accessLanguage(
     return null;
   }
 
-  await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
+  const repoGit = await RepoGit.get(project);
   await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
@@ -62,7 +61,7 @@ export async function accessLanguage(
 
 async function readProject(project: ServerProjectConfig) {
   await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
+  const repoGit = await RepoGit.get(project);
   await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);

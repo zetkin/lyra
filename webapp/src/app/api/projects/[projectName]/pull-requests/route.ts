@@ -61,7 +61,7 @@ export async function POST(
 
   try {
     syncLock.set(repoPath, true);
-    const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
+    const repoGit = await RepoGit.get(serverProjectConfig);
     const baseBranch = await repoGit.fetchAndCheckoutOriginBase();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,
@@ -84,14 +84,14 @@ export async function POST(
       `Lyra translate: ${nowIso}-${uuidSnippet}`,
     );
 
-    const pullRequestUrl = await repoGit.createPR(
-      branchName,
-      'LYRA Translate PR: ' + nowIso,
-      'Created by LYRA at: ' + nowIso,
-      serverProjectConfig.owner,
-      serverProjectConfig.repo,
-      serverProjectConfig.githubToken,
-    );
+    const pullRequestUrl = await repoGit.createPR({
+      body: 'Created by LYRA at: ' + nowIso,
+      branchName: branchName,
+      githubOwner: serverProjectConfig.owner,
+      githubRepo: serverProjectConfig.repo,
+      githubToken: serverProjectConfig.githubToken,
+      title: 'LYRA Translate PR: ' + nowIso,
+    });
     await repoGit.fetchAndCheckoutOriginBase();
     return NextResponse.json({
       branchName,
