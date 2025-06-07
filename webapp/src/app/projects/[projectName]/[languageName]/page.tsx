@@ -1,14 +1,8 @@
-import { Box } from '@mui/material';
 import { NextPage } from 'next';
 import { notFound } from 'next/navigation';
+import React from 'react';
 
-import Header from '@/components/Header';
-import Main from '@/components/Main';
-import Sidebar from '@/components/Sidebar';
-import MessageTree from '@/components/MessageTree';
 import MessageList from '@/components/MessageList';
-import TitleBar from '@/components/TitleBar';
-import SidebarContextProvider from '@/components/SidebarContext';
 import { accessLanguage } from '@/dataAccess';
 import { info, toHex, warn } from '@/utils/log';
 
@@ -58,32 +52,12 @@ const MessagesPage: NextPage<{
   });
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
-      <SidebarContextProvider>
-        <Header
-          languageName={languageName}
-          messageId={messageId}
-          projectName={projectName}
-        />
-        <Sidebar>
-          <TitleBar languageName={languageName} projectName={projectName} />
-          <MessageTree
-            languageName={languageName}
-            messageId={messageId}
-            messages={messages}
-            projectName={projectName}
-          />
-        </Sidebar>
-      </SidebarContextProvider>
-      <Main>
-        <MessageList
-          languageName={languageName}
-          messages={filteredMessages}
-          projectName={projectName}
-          translations={translations}
-        />
-      </Main>
-    </Box>
+    <MessageList
+      languageName={languageName}
+      messages={filteredMessages}
+      projectName={projectName}
+      translations={translations}
+    />
   );
 };
 
