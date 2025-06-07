@@ -187,8 +187,8 @@ export class RepoGit {
   async getLyraConfig(): Promise<LyraConfig> {
     if (!this.lyraConfig) {
       if (!(await RepoGit.cloneIfNotExist(this.spConfig))) {
-        return Promise.reject(
-          new Error(`Failed to clone repository: ${this.spConfig.repoPath}`),
+        throw new Error(
+          `Failed to clone repository: ${this.spConfig.repoPath}`,
         );
       }
       this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
