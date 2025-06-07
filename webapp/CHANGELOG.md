@@ -2,6 +2,12 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+# [0.5.0] - 2025-06-07
+
+### Removed
+
+- Publish button from webapp
+
 # [0.4.1] - 2025-06-07
 
 ### Added
