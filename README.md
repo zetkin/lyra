@@ -229,7 +229,7 @@ Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHAN
 ### Use built image from the container registry
 
 In case you want to use the already built image that is pushed to the GitHub Container Registry, you can adjust the [
-`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `latest` with the version of your preference):
+`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `${version}` with the version of your preference):
 
 ```diff
 services:
@@ -237,7 +237,7 @@ services:
     container_name: lyra
 -   build:
 -     context: .
-+   image: ghcr.io/zetkin/lyra:latest
++   image: ghcr.io/zetkin/lyra:${version}
     ports:
       - "3000:3000"
     environment:
