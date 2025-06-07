@@ -13,6 +13,16 @@ export class SimpleGitWrapper implements IGit {
     return new SimpleGitWrapper(repoPath);
   }
 
+  public static async isGitRepo(repoPath: string): Promise<boolean> {
+    try {
+      const options = SimpleGitWrapper.getSimpleGitOptions(repoPath);
+      await simpleGit(options).status();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   private static getSimpleGitOptions(
     repoPath: string,
   ): Partial<SimpleGitOptions> {
