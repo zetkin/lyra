@@ -28,6 +28,7 @@ describe('Store', () => {
       const actual = store.getProjectStore('repoPath/projectPath');
       expect(actual).toBe(projectStore);
     });
+
     it('throws "ProjectStore not found for ..."', async () => {
       const store = new Store();
       expect(() => store.getProjectStore('repoPath/projectPath')).toThrowError(
