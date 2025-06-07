@@ -10,7 +10,7 @@ import packageJson from '../package.json';
 import { ServerProjectConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { unflattenObject } from '@/utils/unflattenObject';
-import { debug, info, warn } from '@/utils/log';
+import { debug, error, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { type TranslationMap } from '@/utils/adapters';
 import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
@@ -57,26 +57,15 @@ export class RepoGit {
 
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const repoFolderExists = await RepoGit.isFolderExists(spConfig.repoPath);
-    /*
-    check if directory at repoPath contains something.
-    if it does, we skip cloning
-    if it does not, we clone the repo there since
-    "Cloning into an existing directory is [...] allowed if the directory is empty." according to git docs:
-    https://git-scm.com/docs/git-clone#Documentation/git-clone.txt-emltdirectorygtem
-    */
-    if (repoFolderExists) {
-      const content = fs.readdirSync(spConfig.repoPath);
-      if (content.length !== 0) {
-        return;
-      }
+    if (!repoFolderExists) {
+      info(
+        `Cloning repo because it does not exist (or is empty) at ${spConfig.repoPath}`,
+      );
+      return await RepoGit.clone(spConfig);
     }
-
-    info(
-      `Cloning repo because it does not exist (or is empty) at ${spConfig.repoPath}`,
-    );
-    await RepoGit.clone(spConfig);
+    return true;
   }
 
   private static async isFolderExists(path: string): Promise<boolean> {
@@ -88,14 +77,22 @@ export class RepoGit {
     }
   }
 
-  private static async clone(spConfig: ServerProjectConfig): Promise<void> {
-    await fsp.mkdir(spConfig.repoPath, { recursive: true });
-    debug(`Created directory at ${spConfig.repoPath}`);
-    const git = new SimpleGitWrapper(spConfig.repoPath);
-    await git.clone(spConfig.cloneUrl, spConfig.repoPath);
-    debug(`Cloned repo into ${spConfig.repoPath}`);
-    await git.checkout(spConfig.originBaseBranch);
-    debug(`Checked out base branch '${spConfig.originBaseBranch}'`);
+  private static async clone(spConfig: ServerProjectConfig): Promise<boolean> {
+    try {
+      debug(`create directory: ${spConfig.repoPath} ...`);
+      await fsp.mkdir(spConfig.repoPath, { recursive: true });
+      const git = new SimpleGitWrapper(spConfig.repoPath);
+      debug(`Cloning repo: ${spConfig.repoPath} ...`);
+      await git.clone(spConfig.cloneUrl, spConfig.repoPath);
+      debug(`Cloned repo: ${spConfig.repoPath}`);
+      debug(`Checkout base branch: ${spConfig.originBaseBranch} ...`);
+      await git.checkout(spConfig.originBaseBranch);
+      debug(`Checked out base branch: ${spConfig.originBaseBranch}`);
+      return true;
+    } catch (e) {
+      error(`Failed to clone repo: ${spConfig.cloneUrl} - ${e}`);
+      return false;
+    }
   }
 
   /**
@@ -184,7 +181,11 @@ export class RepoGit {
 
   async getLyraConfig(): Promise<LyraConfig> {
     if (!this.lyraConfig) {
-      await RepoGit.cloneIfNotExist(this.spConfig);
+      if (!(await RepoGit.cloneIfNotExist(this.spConfig))) {
+        return Promise.reject(
+          new Error(`Failed to clone repository: ${this.spConfig.repoPath}`),
+        );
+      }
       this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
     }
     return this.lyraConfig;
