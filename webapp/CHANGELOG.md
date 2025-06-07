@@ -4,6 +4,12 @@
 
 # [0.5.0] - 2025-06-07
 
+### Added
+- Layout file for message tree file
+
+
+# [0.5.0] - 2025-06-07
+
 ### Removed
 
 - Publish button from webapp
