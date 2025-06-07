@@ -2,11 +2,11 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
-# [0.5.0] - 2025-06-07
+# [0.6.0] - 2025-06-08
 
 ### Added
-- Layout file for message tree file
 
+- Layout file for messages tree
 
 # [0.5.0] - 2025-06-07
 
