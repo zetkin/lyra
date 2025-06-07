@@ -1,4 +1,4 @@
-import fsp from 'fs/promises';
+import fs from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
 import { stringify } from 'yaml';
@@ -75,7 +75,7 @@ export class RepoGit {
 
   private static async isGitFolderExists(folderPath: string): Promise<boolean> {
     try {
-      const gitFolderStat = await fsp.stat(path.join(folderPath, '.git'));
+      const gitFolderStat = await fs.stat(path.join(folderPath, '.git'));
       return gitFolderStat.isDirectory();
     } catch {
       return false;
@@ -85,7 +85,7 @@ export class RepoGit {
   private static async clone(spConfig: ServerProjectConfig): Promise<boolean> {
     try {
       debug(`create directory: ${spConfig.repoPath} ...`);
-      await fsp.mkdir(spConfig.repoPath, { recursive: true });
+      await fs.mkdir(spConfig.repoPath, { recursive: true });
       const git = await SimpleGitWrapper.of(spConfig.repoPath);
       debug(`Cloning repo: ${spConfig.repoPath} ...`);
       await git.clone(spConfig.cloneUrl, spConfig.repoPath);
@@ -216,7 +216,7 @@ export class RepoGit {
                 singleQuote: true,
               });
               try {
-                await fsp.writeFile(yamlPath, yamlOutput, { flush: true });
+                await fs.writeFile(yamlPath, yamlOutput, { flush: true });
                 info(`Successfully wrote to: ${yamlPath}`);
               } catch (e) {
                 throw new WriteLanguageFileError(yamlPath, e);
