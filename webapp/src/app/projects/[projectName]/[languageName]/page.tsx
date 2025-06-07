@@ -7,7 +7,6 @@ import Main from '@/components/Main';
 import Sidebar from '@/components/Sidebar';
 import MessageTree from '@/components/MessageTree';
 import MessageList from '@/components/MessageList';
-import PullRequestButton from '@/components/PullRequestButton';
 import TitleBar from '@/components/TitleBar';
 import SidebarContextProvider from '@/components/SidebarContext';
 import { accessLanguage } from '@/dataAccess';
@@ -74,7 +73,6 @@ const MessagesPage: NextPage<{
             messages={messages}
             projectName={projectName}
           />
-          <PullRequestButton projectName={projectName} />
         </Sidebar>
       </SidebarContextProvider>
       <Main>
