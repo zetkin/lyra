@@ -1,7 +1,7 @@
 'use client';
 
-import { FC, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { TreeItem2 } from '@mui/x-tree-view/TreeItem2';
@@ -22,7 +22,10 @@ const MessageTree: FC<MessageTreeProps> = ({
   messages,
   projectName,
 }) => {
+  const treeRef = useRef<HTMLUListElement>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const tree = useMemo(() => {
     const record = messages.reduce(
@@ -57,12 +60,30 @@ const MessageTree: FC<MessageTreeProps> = ({
 
   const onItemSelectionToggle = useCallback(
     (e: React.SyntheticEvent, id: string, isSelected: boolean) => {
+      const newPathname = `/projects/${projectName}/${languageName}/${id}`;
+      if (loading || pathname === newPathname) {
+        return;
+      }
       if (isSelected) {
+        if (treeRef.current) {
+          localStorage.setItem(
+            'MessageTree.ScrollPosition',
+            treeRef.current.scrollTop.toString(),
+          );
+        }
+        setLoading(true);
         router.push(`/projects/${projectName}/${languageName}/${id}`, {});
       }
     },
-    [languageName, projectName, router],
+    [languageName, loading, pathname, projectName, router],
   );
+
+  useEffect(() => {
+    const storedScroll = localStorage.getItem('MessageTree.ScrollPosition');
+    if (storedScroll && treeRef.current) {
+      treeRef.current.scrollTop = parseInt(storedScroll, 10);
+    }
+  }, []);
 
   const defaultExpandedItems = useMemo(() => {
     if (!messageId) {
@@ -77,7 +98,10 @@ const MessageTree: FC<MessageTreeProps> = ({
 
   return (
     <RichTreeView
+      ref={treeRef}
       defaultExpandedItems={defaultExpandedItems}
+      defaultSelectedItems={messageId}
+      isItemDisabled={() => loading}
       items={tree}
       onItemSelectionToggle={onItemSelectionToggle}
       slots={{ item: TreeItem2 }}
