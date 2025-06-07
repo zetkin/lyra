@@ -1,4 +1,3 @@
-import fs from 'fs';
 import fsp from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
