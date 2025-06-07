@@ -175,7 +175,7 @@ module.exports = {
 ## Docker setup
 
 To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](./Dockerfile) in the root of this repository.
-The [`docker-compose.yaml`](./docker-compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
+The [`compose.yaml`](compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
 ```shell
 $ docker compose up
 ```
@@ -193,7 +193,7 @@ you need to mount a private SSH key of a user with access to the repository into
 Currently, this is achieved by mounting the private SSH key at `~/.ssh/id_rsa` into the container at
 `/home/nodeuser/.ssh/id_rsa`.
 If your SSH key is located elsewhere on your local machine, you will need to adjust the path in the
-[docker-compose.yaml](./docker-compose.yaml) file accordingly.
+[compose.yaml](compose.yaml) file accordingly.
 ⚠️ Note that encrypted private keys are not supported for now.
 
 When mounting the SSH key into the container, the file ownership and permissions from your local system are preserved. 
@@ -229,7 +229,7 @@ Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHAN
 ### Use built image from the container registry
 
 In case you want to use the already built image that is pushed to the GitHub Container Registry, you can adjust the [
-`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `${version}` with the version of your preference):
+`compose.yaml`](compose.yaml) file as follows (replace `${version}` with the version of your preference):
 
 ```diff
 services:
@@ -248,3 +248,26 @@ services:
       - ~/lyra-store.json:/app/webapp/store.json
       - ./config:/app/config
 ```
+
+### Docker setup for production
+
+The [`compose.prod.yaml`](compose.prod.yaml) file in the root of this repository can be used to set up the production environment.
+The setup for lyra in production is a little bit more complex and provides automatic HTTPS using NGINX and Certbot (Let's Encrypt).
+
+Run the following one-time command to generate your initial certificate:
+
+```bash
+docker compose run --rm certbot certonly \
+  --webroot -w /var/www/certbot \
+  -d lyra.zetkin.org \
+  --email admin@zetkin.org \
+  --agree-tos --no-eff-email
+```
+
+Then start the services in detached mode:
+
+```bash
+docker compose -f compose.prod.yaml up -d
+```
+
+The Certbot container will automatically renew certificates and reload NGINX using a Docker signal.

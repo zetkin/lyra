@@ -1,0 +1,48 @@
+services:
+  lyra:
+    container_name: lyra
+    image: ghcr.io/zetkin/lyra:0.4.1
+    environment:
+      - GIT_USER_EMAIL=lyra@zetkin.org
+      - GIT_USER_NAME="Lyra Translator Bot"
+    volumes:
+      # note: adjust the path to the ssh key you want to use to access the git repositories
+      - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
+      # note: adjust the path to the lyra-store-file you want to use
+      - ~/lyra-store.json:/app/webapp/store.json
+      - ./config:/app/config
+  nginx:
+    image: nginx:stable
+    container_name: nginx-reverse-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot_data:/etc/letsencrypt:ro
+      - certbot_data:/var/www/certbot:ro
+    networks:
+      - web
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    restart: unless-stopped
+    command: >
+      sh -c "trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot \
+        --deploy-hook 'docker kill --signal=HUP nginx-reverse-proxy';
+        sleep 12h;
+      done"
+    volumes:
+      - certbot_data:/etc/letsencrypt
+      - certbot_data:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - web
+volumes:
+  certbot_data:
+networks:
+  web:
+    driver: bridge
