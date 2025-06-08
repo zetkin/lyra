@@ -9,6 +9,10 @@ source code repositories of internationalized applications.
 - Lyra can create pull requests to merge updated
   translations into the source code repository.
 
+For a more detailed overview of Lyra, see the diagram below:
+![Lyra Overview](./doc/workflow_user.svg)
+
+
 > [!WARNING]
 > A party who controls a source code repository branch
 > which Lyra is set up to translate will also have
@@ -271,3 +275,6 @@ docker compose -f compose.prod.yaml up -d
 ```
 
 The Certbot container will automatically renew certificates and reload NGINX using a Docker signal.
+
+The whole developer workflow is illustrated in the diagram below:
+![Developer Workflow](./doc/workflow_developer.svg)
