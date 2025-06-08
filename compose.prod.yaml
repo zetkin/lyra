@@ -19,30 +19,5 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - certbot_data:/etc/letsencrypt:ro
-      - certbot_data:/var/www/certbot:ro
-    networks:
-      - web
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    restart: unless-stopped
-    command: >
-      sh -c "trap exit TERM;
-      while :; do
-        certbot renew --webroot -w /var/www/certbot \
-        --deploy-hook 'docker kill --signal=HUP nginx-reverse-proxy';
-        sleep 12h;
-      done"
-    volumes:
-      - certbot_data:/etc/letsencrypt
-      - certbot_data:/var/www/certbot
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - web
-volumes:
-  certbot_data:
-networks:
-  web:
-    driver: bridge
+      - ./nginx/nginx.conf:/etc/nginx/conf.d:ro
+

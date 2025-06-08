@@ -258,23 +258,40 @@ services:
 The [`compose.prod.yaml`](compose.prod.yaml) file in the root of this repository can be used to set up the production environment.
 The setup for lyra in production is a little bit more complex and provides automatic HTTPS using NGINX and Certbot (Let's Encrypt).
 
-Run the following one-time command to generate your initial certificate:
+**1. Install Certbot CLI via snap**
 
 ```bash
-docker compose run --rm certbot certonly \
-  --webroot -w /var/www/certbot \
-  -d lyra.zetkin.org \
-  --email admin@zetkin.org \
-  --agree-tos --no-eff-email
+sudo snap install --classic certbot
 ```
 
-Then start the services in detached mode:
+**2. Start NGINX**
+
+```bash
+docker compose -f compose.prod.yaml up -d nginx
+```
+
+**3. Request the production certificate**
+
+```bash
+sudo certbot certonly \
+  -d lyra.zetkin.org \
+  --nginx \ 
+  --autorenew \
+  --email admin@zetkin.org \ 
+  --agree-tos \ 
+  --no-eff-email
+```
+
+`certbot` puts the trusted certificate from Let’s Encrypt into `/etc/letsencrypt/live/lyra.zetkin.org/fullchain.pem`
+and the private key into `/etc/letsencrypt/live/lyra.zetkin.org/privkey.pem`.
+Certbot installed via *snap* already ships with a **systemd timer** that runs twice a day as setup via the 
+`--autorenew` and `--nginx` flags.
+
+**4. Start all services in detached mode**
 
 ```bash
 docker compose -f compose.prod.yaml up -d
 ```
-
-The Certbot container will automatically renew certificates and reload NGINX using a Docker signal.
 
 The whole developer workflow is illustrated in the diagram below:
 ![Developer Workflow](./doc/workflow_developer.svg)
