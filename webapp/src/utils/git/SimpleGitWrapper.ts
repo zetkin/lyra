@@ -9,7 +9,7 @@ export class SimpleGitWrapper implements IGit {
     this.git = simpleGit(SimpleGitWrapper.getSimpleGitOptions(repoPath));
   }
 
-  public static async of(repoPath: string): Promise<SimpleGitWrapper> {
+  public static of(repoPath: string): SimpleGitWrapper {
     return new SimpleGitWrapper(repoPath);
   }
 

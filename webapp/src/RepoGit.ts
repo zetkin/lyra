@@ -49,7 +49,7 @@ export class RepoGit {
       return RepoGit.repositories[key];
     }
     debug(`Found git repo at ${spConfig.repoPath}`);
-    const simpleGitWrapper = await SimpleGitWrapper.of(spConfig.repoPath);
+    const simpleGitWrapper = SimpleGitWrapper.of(spConfig.repoPath);
     const repository = new RepoGit(spConfig, simpleGitWrapper);
     const work = repository.fetchAndCheckoutOriginBase();
     const promise = work.then(() => repository);
@@ -90,7 +90,7 @@ export class RepoGit {
     try {
       debug(`create directory: ${spConfig.repoPath} ...`);
       await fs.mkdir(spConfig.repoPath, { recursive: true });
-      const git = await SimpleGitWrapper.of(spConfig.repoPath);
+      const git = SimpleGitWrapper.of(spConfig.repoPath);
       debug(`Cloning repo: ${spConfig.repoPath} ...`);
       await git.clone(spConfig.cloneUrl, spConfig.repoPath);
       debug(`Cloned repo: ${spConfig.repoPath}`);
