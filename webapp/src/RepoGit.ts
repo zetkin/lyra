@@ -41,7 +41,9 @@ export class RepoGit {
   }
 
   static async get(spConfig: ServerProjectConfig): Promise<RepoGit> {
-    await RepoGit.cloneIfNotExist(spConfig);
+    if (!(await RepoGit.cloneIfNotExist(spConfig))) {
+      throw new Error(`Failed to clone repository: ${spConfig.repoPath}`);
+    }
     const key = spConfig.repoPath;
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
