@@ -66,7 +66,7 @@ export class RepoGit {
     );
     if (!isGitFolderExists) {
       info(
-        `Cloning repo because [${spConfig.repoPath}] does not exist, empty, or contain no ".git" folder.`,
+        `Cloning because there is not .git folder in [${spConfig.repoPath}] or that path itself does not exist`,
       );
       return await RepoGit.clone(spConfig);
     }
