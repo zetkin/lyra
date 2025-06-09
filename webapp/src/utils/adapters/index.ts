@@ -9,9 +9,16 @@ export type MessageData = {
   }[];
 };
 
+export enum TranslateState {
+  UPDATED = 'UPDATED',
+  PUBLISHED = 'PUBLISHED',
+}
+
 export type MessageTranslation = {
   sourceFile: string;
+  state: TranslateState;
   text: string;
+  timestamp?: number; // optional timestamp for tracking changes
 };
 
 export type MessageMap = Record<

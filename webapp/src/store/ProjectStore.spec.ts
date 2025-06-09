@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from './ProjectStore';
-import { IMessageAdapter } from '@/utils/adapters';
+import { IMessageAdapter, TranslateState } from '@/utils/adapters';
 
 function mockMsgAdapter(): jest.Mocked<IMessageAdapter> {
   return {
@@ -39,12 +39,14 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
         sv: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hej',
           },
         },
@@ -53,7 +55,11 @@ describe('ProjectStore', () => {
 
     const actual = await projectStore.getTranslations('de');
     expect(actual).toEqual({
-      'greeting.headline': { sourceFile: '', text: 'Hallo' },
+      'greeting.headline': {
+        sourceFile: '',
+        state: TranslateState.PUBLISHED,
+        text: 'Hallo',
+      },
     });
   });
 
@@ -84,6 +90,7 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
@@ -97,12 +104,14 @@ describe('ProjectStore', () => {
     expect(before).toEqual({
       'greeting.headline': {
         sourceFile: '',
+        state: TranslateState.PUBLISHED,
         text: 'Hallo',
       },
     });
     expect(after).toEqual({
       'greeting.headline': {
         sourceFile: '',
+        state: TranslateState.PUBLISHED,
         text: 'Hallo!',
       },
     });
@@ -123,6 +132,7 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
@@ -135,6 +145,7 @@ describe('ProjectStore', () => {
     expect(actual).toEqual({
       'greeting.headline': {
         sourceFile: '',
+        state: TranslateState.PUBLISHED,
         text: 'Hallo!',
       },
     });
@@ -157,6 +168,7 @@ describe('ProjectStore', () => {
             en: {
               'core.click': {
                 sourceFile: 'en.yml',
+                state: TranslateState.PUBLISHED,
                 text: 'Click',
               },
             },
@@ -185,12 +197,14 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
         sv: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hej',
           },
         },
@@ -202,12 +216,14 @@ describe('ProjectStore', () => {
       de: {
         'greeting.headline': {
           sourceFile: '',
+          state: TranslateState.PUBLISHED,
           text: 'Hallo',
         },
       },
       sv: {
         'greeting.headline': {
           sourceFile: '',
+          state: TranslateState.PUBLISHED,
           text: 'Hej',
         },
       },
