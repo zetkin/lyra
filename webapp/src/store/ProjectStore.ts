@@ -3,6 +3,7 @@ import {
   ITranslationAdapter,
   MessageData,
   MessageMap,
+  TranslateState,
   TranslationMap,
 } from '@/utils/adapters';
 import { StoreData } from './types';
@@ -69,7 +70,11 @@ export class ProjectStore {
 
     if (!this.data.languages[lang][id]) {
       const sourceFile = this.generateSourceFile(lang, id);
-      this.data.languages[lang][id] = { sourceFile, text };
+      this.data.languages[lang][id] = {
+        sourceFile,
+        state: TranslateState.UPDATED,
+        text,
+      };
     }
 
     this.data.languages[lang][id].text = text;
