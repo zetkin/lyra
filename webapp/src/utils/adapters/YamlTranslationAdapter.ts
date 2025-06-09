@@ -3,10 +3,10 @@ import { parse } from 'yaml';
 import path from 'path';
 
 import flattenObject from '../flattenObject';
-import { ITranslationAdapter, type TranslationMap } from '.';
+import { ITranslationAdapter, TranslateState, type TranslationMap } from '.';
 
 export default class YamlTranslationAdapter implements ITranslationAdapter {
-  private basePath: string;
+  private readonly basePath: string;
 
   constructor(basePath: string) {
     this.basePath = basePath;
@@ -41,7 +41,9 @@ export default class YamlTranslationAdapter implements ITranslationAdapter {
 
         map[lang][id] = {
           sourceFile: sourceFilePath,
+          state: TranslateState.PUBLISHED,
           text: value,
+          timestamp: undefined, // maybe in future we can add a timestamp of file change
         };
       });
     }

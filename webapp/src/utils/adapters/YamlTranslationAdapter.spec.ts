@@ -2,6 +2,7 @@ import mock from 'mock-fs';
 import { afterEach, describe, expect, it } from '@jest/globals';
 
 import YamlTranslationAdapter from './YamlTranslationAdapter';
+import { TranslateState } from '@/utils/adapters/index';
 
 describe('YamlTranslationAdapter', () => {
   describe('getTranslations()', () => {
@@ -22,12 +23,14 @@ describe('YamlTranslationAdapter', () => {
         de: {
           no: {
             sourceFile: 'de.yml',
+            state: TranslateState.PUBLISHED,
             text: 'Nein',
           },
         },
         sv: {
           no: {
             sourceFile: 'sv.yml',
+            state: TranslateState.PUBLISHED,
             text: 'Nej',
           },
         },
@@ -46,6 +49,7 @@ describe('YamlTranslationAdapter', () => {
         de: {
           no: {
             sourceFile: 'de.yml',
+            state: TranslateState.PUBLISHED,
             text: 'Nein',
           },
         },
@@ -68,6 +72,7 @@ describe('YamlTranslationAdapter', () => {
         de: {
           'options.no': {
             sourceFile: 'de.yml',
+            state: TranslateState.PUBLISHED,
             text: 'Nein',
           },
         },
@@ -90,6 +95,7 @@ describe('YamlTranslationAdapter', () => {
         de: {
           'my.feature.options.no': {
             sourceFile: 'my/feature/de.yml',
+            state: TranslateState.PUBLISHED,
             text: 'Nein',
           },
         },
