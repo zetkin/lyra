@@ -15,6 +15,8 @@ services:
     image: nginx:stable
     container_name: nginx-reverse-proxy
     restart: unless-stopped
+    links:
+      - lyra:lyra
     ports:
       - "80:80"
       - "443:443"
