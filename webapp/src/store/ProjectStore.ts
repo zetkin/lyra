@@ -40,8 +40,6 @@ export class ProjectStore {
   }
 
   async getTranslations(lang: string): Promise<MessageMap> {
-    await this.refresh();
-
     const language = this.data.languages[lang];
 
     const output: MessageMap = {};
@@ -53,7 +51,6 @@ export class ProjectStore {
   }
 
   async getMessages(): Promise<MessageData[]> {
-    await this.refresh();
     return this.data.messages;
   }
 
@@ -62,8 +59,6 @@ export class ProjectStore {
   }
 
   async updateTranslation(lang: string, id: string, text: string) {
-    await this.refresh();
-
     if (!this.data.languages[lang]) {
       this.data.languages[lang] = {};
     }
@@ -84,7 +79,7 @@ export class ProjectStore {
     }
   }
 
-  private async refresh() {
+  public async refresh() {
     const fromRepo: StoreData = {
       languages: await this.translationAdapter.getTranslations(),
       messages: await this.messageAdapter.getMessages(),
