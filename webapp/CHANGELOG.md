@@ -6,6 +6,7 @@
 
 ### Fixed
 
+- Reduce load times by not refreshing ProjectStore if we skipped fetch.
 - Reduce load times by not refreshing ProjectStore many times per page load.
 
 ## [0.6.0] - 2025-06-08
