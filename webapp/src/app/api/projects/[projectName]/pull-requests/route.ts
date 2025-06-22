@@ -63,12 +63,13 @@ export async function POST(
   try {
     syncLock.set(repoPath, true);
     const repoGit = await RepoGit.get(serverProjectConfig);
-    const baseBranch = await repoGit.fetchAndCheckoutOriginBase();
+    await repoGit.fetchAndCheckoutOriginBase();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,
     );
 
     if (!(await repoGit.statusChanged())) {
+      const baseBranch = serverProjectConfig.originBaseBranch;
       return NextResponse.json({
         errorMessage: `There are no changes in ${baseBranch} branch`,
         pullRequestStatus: 'error',
