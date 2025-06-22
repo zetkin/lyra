@@ -2,6 +2,12 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## [Unreleased]
+
+### Fixed
+
+- Reduce load times by not refreshing ProjectStore many times per page load.
+
 ## [0.6.0] - 2025-06-08
 
 ### Added
