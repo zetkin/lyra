@@ -51,6 +51,7 @@ describe('ProjectStore', () => {
       }),
     });
 
+    await projectStore.refresh();
     const actual = await projectStore.getTranslations('de');
     expect(actual).toEqual({
       'greeting.headline': { sourceFile: '', text: 'Hallo' },
@@ -89,9 +90,14 @@ describe('ProjectStore', () => {
         },
       }),
     });
+    await projectStore.refresh();
 
     const before = await projectStore.getTranslations('de');
+
+    await projectStore.refresh();
     await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
+
+    await projectStore.refresh();
     const after = await projectStore.getTranslations('de');
 
     expect(before).toEqual({
@@ -129,7 +135,10 @@ describe('ProjectStore', () => {
       }),
     });
 
+    await projectStore.refresh();
     await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
+
+    await projectStore.refresh();
     const actual = await projectStore.getTranslations('de');
 
     expect(actual).toEqual({

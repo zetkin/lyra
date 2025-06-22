@@ -79,6 +79,7 @@ export async function POST(
 
   const projectStore = await Store.getProjectStore(projectConfig);
 
+  await projectStore.refresh();
   const messages = await projectStore.getMessages();
   const messageIds = messages.map((message) => message.id);
   const foundId = messageIds.find((id) => id == messageId);
