@@ -1,6 +1,6 @@
 'use client';
 
-import { parse } from '@messageformat/parser';
+import { PlainArg, parse } from '@messageformat/parser';
 import { Check, Error as MuiError, RestartAlt } from '@mui/icons-material';
 import {
   Alert,
@@ -58,8 +58,9 @@ const MessageForm: FC<MessageFormProps> = ({
       if (state.translationStatus === 'updating') {
         return;
       }
+      let ast;
       try {
-        parse(ev.target.value);
+        ast = parse(ev.target.value);
       } catch (e) {
         if (e instanceof Error) {
           setState({
@@ -71,13 +72,32 @@ const MessageForm: FC<MessageFormProps> = ({
           return;
         }
       }
+
+      const invalidArguments = (ast || []).filter(
+        (e) =>
+          e.type === 'argument' &&
+          !message.params.some((p) => p.name === e.arg),
+      ) as PlainArg[];
+      if (invalidArguments.length > 0) {
+        setState({
+          original: resetValue.current,
+          translationStatus: 'invalid',
+          translationText: ev.target.value,
+          validationError:
+            `"${invalidArguments[0].arg}" is not available in this message.` +
+            '\n' +
+            `Valid parameters are: ${message.params.map((p) => `"${p.name}"`).join(', ')}`,
+        });
+        return;
+      }
+
       setState({
         original: resetValue.current,
         translationStatus: 'modified',
         translationText: ev.target.value,
       });
     },
-    [state.translationStatus],
+    [state.translationStatus, message.params],
   );
 
   const onSave = useCallback(async () => {
