@@ -77,11 +77,11 @@ export class ProjectStore {
         text,
         timestamp: Date.now(),
       };
+    } else {
+      existingTranslation.text = text;
+      existingTranslation.state = TranslateState.UPDATED;
+      existingTranslation.timestamp = Date.now();
     }
-
-    existingTranslation.text = text;
-    existingTranslation.state = TranslateState.UPDATED;
-    existingTranslation.timestamp = Date.now();
   }
 
   private async refresh() {

@@ -111,8 +111,9 @@ describe('ProjectStore', () => {
     expect(after).toEqual({
       'greeting.headline': {
         sourceFile: '',
-        state: TranslateState.PUBLISHED,
+        state: TranslateState.UPDATED,
         text: 'Hallo!',
+        timestamp: expect.any(Number),
       },
     });
   });
@@ -145,8 +146,9 @@ describe('ProjectStore', () => {
     expect(actual).toEqual({
       'greeting.headline': {
         sourceFile: '',
-        state: TranslateState.PUBLISHED,
+        state: TranslateState.UPDATED,
         text: 'Hallo!',
+        timestamp: expect.any(Number),
       },
     });
   });
