@@ -2,25 +2,31 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
-# [0.6.0] - 2025-06-08
+## [Unreleased]
+
+### Fixed
+
+- Reduce load times by not refreshing ProjectStore many times per page load.
+
+## [0.6.0] - 2025-06-08
 
 ### Added
 
 - Layout file for messages tree
 
-# [0.5.0] - 2025-06-07
+## [0.5.0] - 2025-06-07
 
 ### Removed
 
 - Publish button from webapp
 
-# [0.4.1] - 2025-06-07
+## [0.4.1] - 2025-06-07
 
 ### Added
 
 - Debug logging flagged with env var
 
-# [0.4.0] - 2025-06-06
+## [0.4.0] - 2025-06-06
 
 ### Added
 

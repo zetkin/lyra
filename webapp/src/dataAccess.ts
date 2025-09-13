@@ -42,6 +42,7 @@ export async function accessLanguage(
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const projectStore = await Store.getProjectStore(projectConfig);
+  await projectStore.refresh();
   const messages = await projectStore.getMessages();
 
   if (!projectConfig.isLanguageSupported(languageName)) {
@@ -68,6 +69,7 @@ async function readProject(project: ServerProjectConfig) {
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const store = await Store.getProjectStore(projectConfig);
+  await store.refresh();
   const messages = await store.getMessages();
   const languagesWithTranslations = projectConfig.languages.map(
     async (lang) => {
