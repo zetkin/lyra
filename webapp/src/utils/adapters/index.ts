@@ -31,8 +31,12 @@ export type TranslationMap = Record<
   MessageMap
 >;
 
-export type TranslateIdText = Record<string, string>;
-export type TranslateBySourceFile = Record<string, TranslateIdText>;
+export type TextState = {
+  state: TranslateState;
+  text: string;
+};
+export type TranslateIdTextState = Record<string, TextState>;
+export type TranslateBySourceFile = Record<string, TranslateIdTextState>;
 
 export interface IMessageAdapter {
   getMessages(): Promise<MessageData[]>;

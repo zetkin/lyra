@@ -1,18 +1,17 @@
 'use client';
 
-import { ListItem } from '@mui/material';
+import { ListItem, useMediaQuery, useTheme } from '@mui/material';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { useMediaQuery, useTheme } from '@mui/material';
 
 import MessageForm, { messageFormHeight } from '@/components/MessageForm';
-import { MessageData } from '@/utils/adapters';
+import { MessageData, TranslateIdTextState } from '@/utils/adapters';
 
 type MessageListProps = {
   languageName: string;
   messages: MessageData[];
   projectName: string;
-  translations: Record<string, string>;
+  translations: TranslateIdTextState;
 };
 
 const MessageList: FC<MessageListProps> = ({
@@ -55,7 +54,7 @@ const MessageList: FC<MessageListProps> = ({
             layout={layout}
             message={message}
             projectName={projectName}
-            translation={translations[message.id] || ''}
+            translation={translations[message.id]?.text || ''}
           />
         </ListItem>
       );
