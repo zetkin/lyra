@@ -9,9 +9,16 @@ export type MessageData = {
   }[];
 };
 
+export enum TranslateState {
+  UPDATED = 'UPDATED',
+  PUBLISHED = 'PUBLISHED',
+}
+
 export type MessageTranslation = {
   sourceFile: string;
+  state: TranslateState;
   text: string;
+  timestamp?: number; // optional timestamp for tracking changes
 };
 
 export type MessageMap = Record<
@@ -24,8 +31,12 @@ export type TranslationMap = Record<
   MessageMap
 >;
 
-export type TranslateIdText = Record<string, string>;
-export type TranslateBySourceFile = Record<string, TranslateIdText>;
+export type TextState = {
+  state: TranslateState;
+  text: string;
+};
+export type TranslateIdTextState = Record<string, TextState>;
+export type TranslateBySourceFile = Record<string, TranslateIdTextState>;
 
 export interface IMessageAdapter {
   getMessages(): Promise<MessageData[]>;
