@@ -1,17 +1,19 @@
 import {
   MessageMap,
   TranslateBySourceFile,
-  TranslateIdText,
+  TranslateIdTextState,
 } from '@/utils/adapters';
 
 /**
  * get a basic object of message id and text from MessageMap, by remove sourceFile and keep text
- * ex: { 'a.b.c': {sourceFile, text} } => { 'a.b.c': 'text' }
+ * ex: { 'a.b.c': {sourceFile, text, state} } => { 'a.b.c': {text, state} }
  */
-export function getTranslationsIdText(messageMap: MessageMap): TranslateIdText {
-  const result: TranslateIdText = {};
+export function getTranslationsIdTextState(
+  messageMap: MessageMap,
+): TranslateIdTextState {
+  const result: TranslateIdTextState = {};
   Object.entries(messageMap).forEach(([id, mt]) => {
-    result[id] = mt.text;
+    result[id] = { state: mt.state, text: mt.text };
   });
   return result;
 }
@@ -29,7 +31,7 @@ export function getTranslationsBySourceFile(
       acc[mt.sourceFile] = {};
     }
     const idWithoutPrefix = removePrefix(mt.sourceFile, id);
-    acc[mt.sourceFile][idWithoutPrefix] = mt.text;
+    acc[mt.sourceFile][idWithoutPrefix] = { state: mt.state, text: mt.text };
     return acc;
   }, {} as TranslateBySourceFile);
 }
