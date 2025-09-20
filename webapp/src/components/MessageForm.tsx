@@ -1,6 +1,7 @@
 'use client';
 
-import { Check, Error, RestartAlt } from '@mui/icons-material';
+import { parse } from '@messageformat/parser';
+import { Check, Error as MuiError, RestartAlt } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -9,6 +10,7 @@ import {
   Snackbar,
   TextField,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -40,6 +42,7 @@ const MessageForm: FC<MessageFormProps> = ({
 }) => {
   const theme = useTheme();
   const resetValue = useRef(translation);
+  const lg = useMediaQuery(theme.breakpoints.up('lg'));
 
   const [state, setState] = useState<TranslationState>({
     translationStatus: 'idle',
@@ -54,6 +57,19 @@ const MessageForm: FC<MessageFormProps> = ({
     (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (state.translationStatus === 'updating') {
         return;
+      }
+      try {
+        parse(ev.target.value);
+      } catch (e) {
+        if (e instanceof Error) {
+          setState({
+            original: resetValue.current,
+            translationStatus: 'invalid',
+            translationText: ev.target.value,
+            validationError: e.toString(),
+          });
+          return;
+        }
       }
       setState({
         original: resetValue.current,
@@ -111,6 +127,7 @@ const MessageForm: FC<MessageFormProps> = ({
     setState((s): TranslationState => {
       if (
         s.translationStatus === 'modified' ||
+        s.translationStatus === 'invalid' ||
         s.translationStatus === 'error'
       ) {
         return {
@@ -175,31 +192,80 @@ const MessageForm: FC<MessageFormProps> = ({
               }),
         }}
       >
-        <Box sx={{ flex: 1, maxWidth: '100%', overflow: 'hidden' }}>
-          <Typography
-            component="h2"
-            maxWidth="100%"
-            overflow="hidden"
-            textOverflow="ellipsis"
-            whiteSpace="nowrap"
-            width="100%"
-          >
-            {messageIdParts.map((part, i) => (
+        <Box
+          sx={{
+            flex: 1,
+            maxWidth: '100%',
+            minHeight: '3rem',
+            overflow: 'hidden',
+          }}
+        >
+          {state.translationStatus !== 'invalid' ? (
+            <>
               <Typography
-                key={part}
-                color={
-                  i === messageIdParts.length - 1
-                    ? 'text.primary'
-                    : 'text.secondary'
-                }
-                component="span"
+                component="h2"
+                maxWidth="100%"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                width="100%"
               >
-                {part}
-                {i < messageIdParts.length - 1 && '.'}
+                {messageIdParts.map((part, i) => (
+                  <Typography
+                    key={part}
+                    color={
+                      i === messageIdParts.length - 1
+                        ? 'text.primary'
+                        : 'text.secondary'
+                    }
+                    component="span"
+                  >
+                    {part}
+                    {i < messageIdParts.length - 1 && '.'}
+                  </Typography>
+                ))}
               </Typography>
-            ))}
-          </Typography>
-          <Typography color="text.primary">{message.defaultMessage}</Typography>
+              <Typography color="text.primary">
+                {message.defaultMessage}
+              </Typography>
+            </>
+          ) : (
+            <Box
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                maxHeight: lg ? undefined : '3rem',
+                minHeight: lg ? undefined : '3rem',
+                overflowY: 'auto',
+                rowGap: '0.5rem',
+              }}
+            >
+              {lg && (
+                <Typography color="red" variant="subtitle2">
+                  Mistake detected in translation string
+                </Typography>
+              )}
+              <Typography
+                color="red"
+                component="pre"
+                sx={{
+                  flex: 1,
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  margin: 0,
+                  padding: 0,
+                }}
+              >
+                {lg
+                  ? state.validationError
+                  : state.validationError
+                      .split('\n')
+                      .filter((l) => !!l)
+                      .join('\n')}
+              </Typography>
+            </Box>
+          )}
         </Box>
         <Box
           sx={{
@@ -211,6 +277,7 @@ const MessageForm: FC<MessageFormProps> = ({
         >
           <TextField
             aria-readonly={state.translationStatus === 'updating'}
+            error={state.translationStatus === 'invalid'}
             fullWidth
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: state.translationStatus === 'updating' }}
@@ -227,6 +294,7 @@ const MessageForm: FC<MessageFormProps> = ({
             sx={{ justifyContent: 'flex-end' }}
           >
             {(state.translationStatus === 'modified' ||
+              state.translationStatus === 'invalid' ||
               state.translationStatus === 'error' ||
               state.translationStatus === 'updating') && (
               <Button
@@ -240,6 +308,7 @@ const MessageForm: FC<MessageFormProps> = ({
             <LoadingButton
               disabled={
                 state.translationStatus === 'idle' ||
+                state.translationStatus === 'invalid' ||
                 state.translationStatus === 'success'
               }
               loading={state.translationStatus === 'updating'}
@@ -248,7 +317,7 @@ const MessageForm: FC<MessageFormProps> = ({
               startIcon={
                 state.translationStatus === 'idle' &&
                 state.translationText === '' ? (
-                  <Error />
+                  <MuiError />
                 ) : (
                   <Check />
                 )
