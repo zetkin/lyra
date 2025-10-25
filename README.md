@@ -44,6 +44,68 @@ Install the recommended extension `Prettier - Code formatter`.
 1. Install the extension `PlantUML` (Id: `jebbs.plantuml`).
 2. Follow its documentation for setting up its requirments.
 
+## Document Changes with Changesets
+
+For managing versioning and changelogs we use [changesets](https://github.com/changesets/changesets)
+All the unreleased changes are stored within the [`.changeset/`](.changeset) folder.
+
+### Create an Unreleased Changeset
+
+After you have made a significant change to the codebase, you can create a changeset to document it.
+
+```bash
+npm run changeset
+```
+
+- You'll be prompted to select packages and specify the type of change (`patch`, `minor`, `major`).
+- It will create a markdown file in `.changeset/` describing the change. Don't for get to add it via `git add`.
+- These files are considered "unreleased" until a version bump is triggered via `npm run changeset:version`
+- It's totally fine to have several of these unreleased changesets on the main branch.
+
+### Create a new version and update changelog
+
+When you're ready to release:
+
+```bash
+npm run changeset:version
+```
+
+- This command:
+  - Applies the changesets to bump versions in `package.json`s.
+  - updates the [`./webapp/CHANGELOG.md`](./webapp/CHANGELOG.md) with the changes from `.changeset/*.md`.
+  - Deletes applied `.changeset/*.md` files.
+
+### Create a release candidate (rc)
+
+To enter pre-release mode in order to create a release candidate with an `rc` tag:
+
+```bash
+npn run changeset:enter-pre-release
+```
+
+This sets the project into pre-release mode. Versions will become something like `1.0.0-rc.0`.
+To increment and update, you can now run (as with normal releases):
+
+```bash
+npm run changeset:version
+```
+
+To exit pre-release mode (usually when doing final release):
+
+```bash
+npn run changeset:exit-pre-release
+```
+
+### Create a tag
+
+To create and push a Git tag after versioning:
+After running `npm run changeset:version`, you can create a git tag using.
+Please only create the tags on the main branch (except for release candidates).
+
+```bash
+npm run changeset:tag
+```
+
 ## Running in development
 
 In the root folder (outside webapp) create file `./config/projects.yaml`
@@ -170,7 +232,6 @@ module.exports = {
 
 * GitHub issue – public assets missing in monorepo builds (#33895)
   [https://github.com/vercel/next.js/issues/33895](https://github.com/vercel/next.js/issues/33895)
-
 
 ## Docker setup
 

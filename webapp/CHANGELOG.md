@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+
+### Patch Changes
+
+- Added Changesets
+
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
 # [0.7.0] - 2025-10-25
