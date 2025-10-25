@@ -22,6 +22,13 @@ type TranslationIdle = {
   translationText: string;
 };
 
+type TranslationInvalid = {
+  original: string;
+  translationStatus: 'invalid';
+  translationText: string;
+  validationError: string;
+};
+
 type TranslationUpdating = {
   original: string;
   translationStatus: 'updating';
@@ -36,6 +43,7 @@ type TranslationModified = {
 
 export type TranslationState =
   | TranslationIdle
+  | TranslationInvalid
   | TranslationUpdating
   | TranslationSuccess
   | TranslationModified
