@@ -106,9 +106,9 @@ export class RepoGit {
 
   /**
    * Fetch then checkout origin/<base branch>
-   * @returns base branch name
+   * @returns true if we fetched, false if we skipped fetch
    */
-  public async fetchAndCheckoutOriginBase(): Promise<string> {
+  public async fetchAndCheckoutOriginBase(): Promise<boolean> {
     const now = new Date();
     const age = now.getTime() - this.lastPullTime.getTime();
     if (age > this.GIT_FETCH_TTL) {
@@ -119,8 +119,9 @@ export class RepoGit {
       await this.git.fetch();
       await this.git.checkout(this.spConfig.originBaseBranch);
       this.lastPullTime = now;
+      return true;
     }
-    return this.spConfig.originBaseBranch;
+    return false;
   }
 
   public async saveLanguageFiles(projectPath: string): Promise<string[]> {
