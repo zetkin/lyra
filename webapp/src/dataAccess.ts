@@ -1,6 +1,6 @@
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
-import { getTranslationsIdText } from './utils/translationObjectUtil';
+import { getTranslationsIdTextState } from './utils/translationObjectUtil';
 import { LanguageNotSupported } from './errors';
 import { Store } from '@/store/Store';
 
@@ -51,7 +51,7 @@ export async function accessLanguage(
   const translationsWithFilePath =
     await projectStore.getTranslations(languageName);
 
-  const translations = getTranslationsIdText(translationsWithFilePath);
+  const translations = getTranslationsIdTextState(translationsWithFilePath);
 
   return {
     messages,
