@@ -9,6 +9,10 @@ source code repositories of internationalized applications.
 - Lyra can create pull requests to merge updated
   translations into the source code repository.
 
+For a more detailed overview of Lyra, see the diagram below:
+![Lyra Overview](./doc/workflow_user.svg)
+
+
 > [!WARNING]
 > A party who controls a source code repository branch
 > which Lyra is set up to translate will also have
@@ -60,11 +64,13 @@ projects:
     github_token: << github token >>
 ```
 
-⚠️  Note that `repo` must not have the same value for two different projects.
+⚠️ Note that `repo` must not have the same value for two different projects.
 
-Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
+Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra
+repository itself.
 
-The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file
+The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra
+configuration file
 `.lyra.yaml` in the root of the repository.
 This lyra configuration file looks like this:
 
@@ -171,16 +177,19 @@ module.exports = {
 * GitHub issue – public assets missing in monorepo builds (#33895)
   [https://github.com/vercel/next.js/issues/33895](https://github.com/vercel/next.js/issues/33895)
 
-
 ## Docker setup
 
-To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](./Dockerfile) in the root of this repository.
-The [`docker-compose.yaml`](./docker-compose.yaml) file in the root of this repository can be used to build the image and run the image as a container in one command:
+To run Lyra in a docker container, you need to build the Docker image using the [`Dockerfile`](./Dockerfile) in the root
+of this repository.
+The [`compose.yaml`](compose.yaml) file in the root of this repository can be used to build the image and run the image
+as a container in one command:
+
 ```shell
 $ docker compose up
 ```
 
 or in a detached mode:
+
 ```shell
 $ docker compose up -d
 ```
@@ -188,17 +197,18 @@ $ docker compose up -d
 ### Docker volume mounts
 
 #### SSH key
+
 Note that in order for the running docker container to be able to interact with the client repository,
 you need to mount a private SSH key of a user with access to the repository into the Docker container.
 Currently, this is achieved by mounting the private SSH key at `~/.ssh/id_rsa` into the container at
 `/home/nodeuser/.ssh/id_rsa`.
 If your SSH key is located elsewhere on your local machine, you will need to adjust the path in the
-[docker-compose.yaml](./docker-compose.yaml) file accordingly.
+[compose.yaml](compose.yaml) file accordingly.
 ⚠️ Note that encrypted private keys are not supported for now.
 
-When mounting the SSH key into the container, the file ownership and permissions from your local system are preserved. 
-Since the container runs as the nodeuser user (UID 1001), but the mounted key is owned by your local user, 
-it’s important to ensure that the SSH key has the correct permissions. 
+When mounting the SSH key into the container, the file ownership and permissions from your local system are preserved.
+Since the container runs as the nodeuser user (UID 1001), but the mounted key is owned by your local user,
+it’s important to ensure that the SSH key has the correct permissions.
 SSH requires that private keys are not accessible by others.
 To avoid permission issues, you should set the permissions of your private key to 600 on your local machine:
 
@@ -206,16 +216,18 @@ To avoid permission issues, you should set the permissions of your private key t
 $ chmod 600 ~/.ssh/id_rsa
 ```
 
-This ensures that the private key is only readable by the owner, which is sufficient for SSH to accept it inside the 
+This ensures that the private key is only readable by the owner, which is sufficient for SSH to accept it inside the
 container.
 
-File permissions for the private key and lyra-store.json on your local machine also need to allow access for a user ID of 1001.
+File permissions for the private key and lyra-store.json on your local machine also need to allow access for a user ID
+of 1001.
 
 #### Lyra Store
 
 Before running the container, ensure the file `lyra-store.json` exists on the host system.
-This file is the store for lyra projects and is mounted into the container via docker volume mounts. 
-You can copy this via `cp ./webapp/store.json ~/lyra-store.json` to this location or just change it to use [`webapp/store.json`](./webapp/store.json).
+This file is the store for lyra projects and is mounted into the container via docker volume mounts.
+You can copy this via `cp ./webapp/store.json ~/lyra-store.json` to this location or just change it to use [
+`webapp/store.json`](./webapp/store.json).
 
 ### Release a new container image
 
@@ -224,12 +236,13 @@ automate the process of building, tagging, and pushing a Docker image to the Git
 whenever a new tag is pushed to the repository.
 The tags must follow semantic versioning, while release candidates are supported as well.
 
-Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHANGELOG.md) file and adjusting the version within the [`./webapp/package.json`](./webapp/package.json) file.
+Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHANGELOG.md) file and adjusting the version
+within the [`./webapp/package.json`](./webapp/package.json) file.
 
 ### Use built image from the container registry
 
 In case you want to use the already built image that is pushed to the GitHub Container Registry, you can adjust the [
-`docker-compose.yaml`](docker-compose.yaml) file as follows (replace `${version}` with the version of your preference):
+`compose.yaml`](compose.yaml) file as follows (replace `${version}` with the version of your preference):
 
 ```diff
 services:
@@ -248,3 +261,53 @@ services:
       - ~/lyra-store.json:/app/webapp/store.json
       - ./config:/app/config
 ```
+
+### Docker setup for production
+
+The [`compose.prod.yaml`](compose.prod.yaml) file in the root of this repository can be used to set up the production
+environment.
+The setup for lyra in production is a little bit more complex and provides automatic HTTPS using NGINX and Certbot (
+Let's Encrypt).
+
+**1. Install Certbot CLI via snap**
+
+```bash
+sudo snap install --classic certbot
+```
+
+Create two host folders that will be bind-mounted:
+
+```bash
+mkdir -p ./certbot/www          # ACME challenge files
+mkdir -p ./certbot/conf         # certs + keys (persisted)
+```
+
+**2. Start NGINX**
+
+```bash
+docker compose -f compose.prod.yaml up -d nginx
+```
+
+**3. Request the production certificate**
+
+```bash
+sudo certbot certonly --webroot \
+  -w "$(pwd)/certbot/www" \
+  -d lyra.zetkin.org \
+  --email admin@zetkin.org \
+  --agree-tos --no-eff-email
+```
+
+`certbot` puts the trusted certificate from Let’s Encrypt into
+Certbot writes certs into `./certbot/conf/live/lyra.zetkin.org/fullchain.pem`
+and the private key into `.certbot/conf/live/lyra.zetkin.org/privkey.pem`. 
+Certificates renewal is handled by Certbot’s systemd timer (Certbot installed via *snap* already ships with this.)
+
+**4. Start all services in detached mode**
+
+```bash
+docker compose -f compose.prod.yaml up -d
+```
+
+The whole developer workflow is illustrated in the diagram below:
+![Developer Workflow](./doc/workflow_developer.svg)
