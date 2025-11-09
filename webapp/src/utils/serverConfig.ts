@@ -21,28 +21,22 @@ const serverConfigSchema = z.object({
 });
 
 /**
- * Resolves the absolute path to the projects configuration file (either
- * `projects.yaml` or `projects.yml`). The search order is YAML first, then YML.
+ * Resolves the absolute path to the projects configuration file `projects.yaml`.
  *
- * Throws {@link ServerConfigReadingError} when neither file exists.
+ * Throws {@link ServerConfigReadingError} when the file doesn't exist.
  * The thrown error message intentionally avoids leaking absolute paths so that
  * it can be propagated to unauthenticated clients without exposing the local
  * file‑system structure.
  */
 export async function getProjectsConfigPath(): Promise<string> {
-  for (const absPath of [paths.projectsYamlAbsPath, paths.projectsYmlAbsPath]) {
-    try {
-      await fs.access(absPath);
-      return absPath;
-    } catch {
-      /* ignored – try the next candidate */
-    }
+  try {
+    await fs.access(paths.projectsYamlAbsPath);
+    return paths.projectsYamlAbsPath;
+  } catch {
+    throw new ServerConfigReadingError(
+      path.basename(paths.projectsYamlAbsPath),
+    );
   }
-
-  throw new ServerConfigReadingError(
-    `${path.basename(paths.projectsYamlAbsPath)}/
-    ${path.basename(paths.projectsYmlAbsPath)}`,
-  );
 }
 
 export class ServerConfig {
