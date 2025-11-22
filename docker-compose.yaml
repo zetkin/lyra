@@ -5,12 +5,45 @@ services:
       context: .
     ports:
       - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      - GIT_USER_EMAIL=lyra@zetk.in
-      - GIT_USER_NAME="Lyra Translator Bot"
+      GIT_USER_EMAIL: ${GIT_USER_EMAIL}
+      GIT_USER_NAME: ${GIT_USER_NAME}
     volumes:
       # note: adjust the path to the ssh key you want to use to access the git repositories
       - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
       # note: adjust the path to the lyra-store-file you want to use
       - ~/lyra-store.json:/app/webapp/store.json
       - ./config:/app/config
+  flyway:
+    image: flyway/flyway:11.17-alpine
+    entrypoint: ["flyway", "-url=jdbc:postgresql://db/${LYRA_POSTGRES_DB}", "-user=${LYRA_POSTGRES_USER}", "-password=${LYRA_POSTGRES_PASSWORD}", "-baselineOnMigrate=true", "migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./sql/migrations:/flyway/sql
+  db:
+    container_name: lyra-db
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${LYRA_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${LYRA_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${LYRA_POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - lyra_db_data:/var/lib/postgresql/data
+    healthcheck:
+      # checks that the DB is accepting connections to the target DB
+      test: [ "CMD-SHELL", "pg_isready -U ${LYRA_POSTGRES_USER} -d ${LYRA_POSTGRES_DB} -h localhost" ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+volumes:
+  lyra_db_data:
