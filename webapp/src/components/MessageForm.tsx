@@ -30,7 +30,7 @@ type MessageFormProps = {
   layout: MessageFormLayout;
   message: MessageData;
   projectName: string;
-  translation: string;
+  translation: TranslationState;
 };
 
 const MessageForm: FC<MessageFormProps> = ({
@@ -44,10 +44,7 @@ const MessageForm: FC<MessageFormProps> = ({
   const resetValue = useRef(translation);
   const lg = useMediaQuery(theme.breakpoints.up('lg'));
 
-  const [state, setState] = useState<TranslationState>({
-    translationStatus: 'idle',
-    translationText: translation,
-  });
+  const [state, setState] = useState<TranslationState>(translation);
 
   useEffect(() => {
     resetValue.current = translation;
@@ -63,7 +60,7 @@ const MessageForm: FC<MessageFormProps> = ({
       } catch (e) {
         if (e instanceof Error) {
           setState({
-            original: resetValue.current,
+            original: resetValue.current.translationText,
             translationStatus: 'invalid',
             translationText: ev.target.value,
             validationError: e.toString(),
@@ -72,7 +69,7 @@ const MessageForm: FC<MessageFormProps> = ({
         }
       }
       setState({
-        original: resetValue.current,
+        original: resetValue.current.translationText,
         translationStatus: 'modified',
         translationText: ev.target.value,
       });
@@ -131,7 +128,7 @@ const MessageForm: FC<MessageFormProps> = ({
         s.translationStatus === 'error'
       ) {
         return {
-          translationStatus: 'idle',
+          translationStatus: s.original ? 'missing' : 'updated',
           translationText: s.original,
         };
       }
@@ -150,7 +147,7 @@ const MessageForm: FC<MessageFormProps> = ({
       }
       if (s.translationStatus === 'success') {
         return {
-          translationStatus: 'idle',
+          translationStatus: 'updated',
           translationText: s.translationText,
         };
       }
@@ -307,7 +304,9 @@ const MessageForm: FC<MessageFormProps> = ({
             )}
             <LoadingButton
               disabled={
-                state.translationStatus === 'idle' ||
+                state.translationStatus === 'missing' ||
+                state.translationStatus === 'published' ||
+                state.translationStatus === 'updated' ||
                 state.translationStatus === 'invalid' ||
                 state.translationStatus === 'success'
               }
@@ -315,22 +314,19 @@ const MessageForm: FC<MessageFormProps> = ({
               loadingPosition="start"
               onClick={onSave}
               startIcon={
-                state.translationStatus === 'idle' &&
-                state.translationText === '' ? (
-                  <MuiError />
-                ) : (
-                  <Check />
-                )
+                state.translationStatus === 'missing' ? <MuiError /> : <Check />
               }
               sx={{ minWidth: 'max-content' }}
             >
-              {state.translationStatus === 'idle'
-                ? state.translationText
-                  ? 'Published'
-                  : 'Missing'
-                : state.translationStatus === 'success'
+              {state.translationStatus === 'published'
+                ? 'Published'
+                : state.translationStatus === 'updated'
                   ? 'Updated'
-                  : 'Save'}
+                  : state.translationStatus === 'missing'
+                    ? 'Missing'
+                    : state.translationStatus === 'success'
+                      ? 'Updated'
+                      : 'Save'}
             </LoadingButton>
           </ButtonGroup>
         </Box>

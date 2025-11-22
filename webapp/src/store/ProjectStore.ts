@@ -3,6 +3,7 @@ import {
   ITranslationAdapter,
   MessageData,
   MessageMap,
+  TranslateState,
   TranslationMap,
 } from '@/utils/adapters';
 import { StoreData } from './types';
@@ -67,12 +68,20 @@ export class ProjectStore {
       this.data.languages[lang] = {};
     }
 
-    if (!this.data.languages[lang][id]) {
+    const existingTranslation = this.data.languages[lang][id];
+    if (!existingTranslation) {
       const sourceFile = this.generateSourceFile(lang, id);
-      this.data.languages[lang][id] = { sourceFile, text };
+      this.data.languages[lang][id] = {
+        sourceFile,
+        state: TranslateState.UPDATED,
+        text,
+        timestamp: Date.now(),
+      };
+    } else {
+      existingTranslation.text = text;
+      existingTranslation.state = TranslateState.UPDATED;
+      existingTranslation.timestamp = Date.now();
     }
-
-    this.data.languages[lang][id].text = text;
   }
 
   private async refresh() {
