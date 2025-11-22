@@ -54,7 +54,19 @@ const MessageList: FC<MessageListProps> = ({
             layout={layout}
             message={message}
             projectName={projectName}
-            translation={translations[message.id]?.text || ''}
+            translation={
+              translations[message.id]
+                ? translations[message.id].state === 'UPDATED'
+                  ? {
+                      translationStatus: 'updated',
+                      translationText: translations[message.id].text,
+                    }
+                  : {
+                      translationStatus: 'published',
+                      translationText: translations[message.id].text,
+                    }
+                : { translationStatus: 'missing', translationText: '' }
+            }
           />
         </ListItem>
       );
