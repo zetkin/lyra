@@ -2,6 +2,18 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+# [0.8.1] - 2025-11-23
+
+### Changed
+
+- npm audit fix
+
+# [0.8.0] - 2025-11-22
+
+### Added
+
+- Translation state now saved in store and send this states to FE, so FE can show the correct state [PUBLISHED, UPDATED]
+
 # [0.7.0] - 2025-10-25
 
 ### Added
