@@ -14,7 +14,6 @@
 
 - Translation state now saved in store and send this states to FE, so FE can show the correct state [PUBLISHED, UPDATED]
 
-
 # [0.7.0] - 2025-10-25
 
 ### Added
