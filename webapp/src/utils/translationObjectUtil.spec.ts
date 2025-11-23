@@ -3,39 +3,56 @@ import { describe, expect, it } from '@jest/globals';
 import {
   getPrefixKeyFromSourceFile,
   getTranslationsBySourceFile,
-  getTranslationsIdText,
+  getTranslationsIdTextState,
   removePrefix,
 } from './translationObjectUtil';
+import { TranslateState } from './adapters';
 
 describe('translationObjectUtil', () => {
   describe('getTranslationsIdText()', () => {
     it('returns empty object for empty obj', () => {
-      const actual = getTranslationsIdText({});
+      const actual = getTranslationsIdTextState({});
       expect(actual).toEqual({});
     });
 
     it('dehydrate obj one property', () => {
-      const actual = getTranslationsIdText({
-        a: { sourceFile: '', text: 'A' },
+      const actual = getTranslationsIdTextState({
+        a: { sourceFile: '', state: TranslateState.PUBLISHED, text: 'A' },
       });
-      expect(actual).toEqual({ a: 'A' });
+      expect(actual).toEqual({
+        a: { state: TranslateState.PUBLISHED, text: 'A' },
+      });
     });
 
     it('unflat simple obj one object property', () => {
-      const actual = getTranslationsIdText({
-        'a.b.c': { sourceFile: '', text: 'ABC' },
+      const actual = getTranslationsIdTextState({
+        'a.b.c': {
+          sourceFile: '',
+          state: TranslateState.PUBLISHED,
+          text: 'ABC',
+        },
       });
-      expect(actual).toEqual({ 'a.b.c': 'ABC' });
+      expect(actual).toEqual({
+        'a.b.c': { state: TranslateState.PUBLISHED, text: 'ABC' },
+      });
     });
 
     it('unflat two properties obj', () => {
-      const actual = getTranslationsIdText({
-        'a.b.c': { sourceFile: '', text: 'ABC' },
-        'a.b.e': { sourceFile: '', text: 'ABE' },
+      const actual = getTranslationsIdTextState({
+        'a.b.c': {
+          sourceFile: '',
+          state: TranslateState.PUBLISHED,
+          text: 'ABC',
+        },
+        'a.b.e': {
+          sourceFile: '',
+          state: TranslateState.PUBLISHED,
+          text: 'ABE',
+        },
       });
       const expected = {
-        'a.b.c': 'ABC',
-        'a.b.e': 'ABE',
+        'a.b.c': { state: TranslateState.PUBLISHED, text: 'ABC' },
+        'a.b.e': { state: TranslateState.PUBLISHED, text: 'ABE' },
       };
       expect(actual).toEqual(expected);
     });
@@ -48,39 +65,82 @@ describe('translationObjectUtil', () => {
 
     it('group by sourceFile obj one property', () => {
       const actual = getTranslationsBySourceFile({
-        a: { sourceFile: 'en.yaml', text: 'A' },
+        a: {
+          sourceFile: 'en.yaml',
+          state: TranslateState.PUBLISHED,
+          text: 'A',
+        },
       });
-      expect(actual).toEqual({ 'en.yaml': { a: 'A' } });
+      expect(actual).toEqual({
+        'en.yaml': { a: { state: TranslateState.PUBLISHED, text: 'A' } },
+      });
     });
 
     it('group by sourceFile simple obj one object property', () => {
       const actual = getTranslationsBySourceFile({
-        'a.b.c': { sourceFile: 'en.yaml', text: 'ABC' },
+        'a.b.c': {
+          sourceFile: 'en.yaml',
+          state: TranslateState.PUBLISHED,
+          text: 'ABC',
+        },
       });
-      expect(actual).toEqual({ 'en.yaml': { 'a.b.c': 'ABC' } });
+      expect(actual).toEqual({
+        'en.yaml': {
+          'a.b.c': { state: TranslateState.PUBLISHED, text: 'ABC' },
+        },
+      });
     });
 
     it('group by sourceFile two properties obj', () => {
       const actual = getTranslationsBySourceFile({
-        'f1.a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
-        'f2.a.b.e': { sourceFile: 'f2/en.yml', text: 'ABE' },
+        'f1.a.b.c': {
+          sourceFile: 'f1/en.yaml',
+          state: TranslateState.PUBLISHED,
+          text: 'ABC',
+        },
+        'f2.a.b.e': {
+          sourceFile: 'f2/en.yml',
+          state: TranslateState.PUBLISHED,
+          text: 'ABE',
+        },
       });
       const expected = {
-        'f1/en.yaml': { 'a.b.c': 'ABC' },
-        'f2/en.yml': { 'a.b.e': 'ABE' },
+        'f1/en.yaml': {
+          'a.b.c': { state: TranslateState.PUBLISHED, text: 'ABC' },
+        },
+        'f2/en.yml': {
+          'a.b.e': { state: TranslateState.PUBLISHED, text: 'ABE' },
+        },
       };
       expect(actual).toEqual(expected);
     });
 
     it('group by sourceFile two sourceFiles obj', () => {
       const actual = getTranslationsBySourceFile({
-        'f1.a.b.c': { sourceFile: 'f1/en.yaml', text: 'ABC' },
-        'f1.a.b.e': { sourceFile: 'f1/en.yaml', text: 'ABE' },
-        'f2.a.b.f': { sourceFile: 'f2/en.yml', text: 'ABF' },
+        'f1.a.b.c': {
+          sourceFile: 'f1/en.yaml',
+          state: TranslateState.PUBLISHED,
+          text: 'ABC',
+        },
+        'f1.a.b.e': {
+          sourceFile: 'f1/en.yaml',
+          state: TranslateState.PUBLISHED,
+          text: 'ABE',
+        },
+        'f2.a.b.f': {
+          sourceFile: 'f2/en.yml',
+          state: TranslateState.PUBLISHED,
+          text: 'ABF',
+        },
       });
       const expected = {
-        'f1/en.yaml': { 'a.b.c': 'ABC', 'a.b.e': 'ABE' },
-        'f2/en.yml': { 'a.b.f': 'ABF' },
+        'f1/en.yaml': {
+          'a.b.c': { state: TranslateState.PUBLISHED, text: 'ABC' },
+          'a.b.e': { state: TranslateState.PUBLISHED, text: 'ABE' },
+        },
+        'f2/en.yml': {
+          'a.b.f': { state: TranslateState.PUBLISHED, text: 'ABF' },
+        },
       };
       expect(actual).toEqual(expected);
     });
