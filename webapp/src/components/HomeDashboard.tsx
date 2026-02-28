@@ -7,7 +7,7 @@ import { CardGrid } from '@/components/CardGrid';
 import ProjectCard, { ProjectCardProps } from '@/components/ProjectCard';
 
 const HomeDashboard: FC = () => {
-  const [projects, setProjects] = useState<ProjectCardProps>([]);
+  const [projects, setProjects] = useState<ProjectCardProps[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready'>('loading');
 
   useEffect(() => {
