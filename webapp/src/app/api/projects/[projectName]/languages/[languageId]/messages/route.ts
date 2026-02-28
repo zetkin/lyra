@@ -18,7 +18,12 @@ export async function GET(
   const { languageId, projectName } = context.params;
   const messageId = req.nextUrl.searchParams.get('messageId');
 
-  const languageData = await accessLanguage(projectName, languageId);
+  let languageData;
+  try {
+    languageData = await accessLanguage(projectName, languageId);
+  } catch (e) {
+    return NextResponse.json({ errorMessage: 'Not Found' }, { status: 404 });
+  }
   if (!languageData) {
     warn(
       `No language data found for project with code units ${toHex(projectName)}`,
