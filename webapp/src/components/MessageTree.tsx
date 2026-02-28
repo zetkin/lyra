@@ -1,7 +1,6 @@
 'use client';
 
-import { FC, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { FC, useMemo } from 'react';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { TreeItem2 } from '@mui/x-tree-view/TreeItem2';
@@ -10,20 +9,20 @@ import { MessageData } from '@/utils/adapters';
 import { type UnflattenObject, unflattenObject } from '@/utils/unflattenObject';
 
 type MessageTreeProps = {
-  languageName: string;
   messageId?: string;
   messages: MessageData[];
-  projectName: string;
+  onItemSelectionToggle: (
+    e: React.SyntheticEvent,
+    id: string,
+    isSelected: boolean,
+  ) => void;
 };
 
 const MessageTree: FC<MessageTreeProps> = ({
-  languageName,
   messageId,
   messages,
-  projectName,
+  onItemSelectionToggle,
 }) => {
-  const router = useRouter();
-
   const tree = useMemo(() => {
     const record = messages.reduce(
       (acc, msg) => {
@@ -54,15 +53,6 @@ const MessageTree: FC<MessageTreeProps> = ({
 
     return recurse(unflattened, '');
   }, [messages]);
-
-  const onItemSelectionToggle = useCallback(
-    (e: React.SyntheticEvent, id: string, isSelected: boolean) => {
-      if (isSelected) {
-        router.push(`/projects/${projectName}/${languageName}/${id}`, {});
-      }
-    },
-    [languageName, projectName, router],
-  );
 
   const defaultExpandedItems = useMemo(() => {
     if (!messageId) {

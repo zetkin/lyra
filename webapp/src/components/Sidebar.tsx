@@ -52,10 +52,9 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
           backgroundColor: 'background.paper',
           borderColor: 'divider',
           borderRight: '1px solid',
-          display: 'flex',
-          flexDirection: 'column',
-          flexShrink: 0,
+          display: 'grid',
           gap: 2,
+          gridTemplateRows: '1fr',
           height: '100dvh',
           position: { md: 'sticky', xs: 'fixed' },
           top: 0,
@@ -82,8 +81,8 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
         <SidebarOverlay />
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
+            gridTemplateRows: 'min-content 1fr',
             overflow: 'hidden',
           }}
         >
