@@ -6,9 +6,7 @@ import { ProjectCardProps } from '@/components/ProjectCard';
 
 type ProjectsResponse = ProjectCardProps[];
 
-export async function GET(
-  req: NextRequest,
-): Promise<NextResponse<ProjectsResponse>> {
+export async function GET(): Promise<NextResponse<ProjectsResponse>> {
   const projectData = await accessProjects();
 
   const projects = await Promises.of(projectData)
