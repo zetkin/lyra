@@ -20,10 +20,7 @@ export async function GET(
 ): Promise<NextResponse> {
   const project = await accessProject(context.params.projectName);
   if (!project) {
-    return NextResponse.json(
-      { errorMessage: 'Not Found' },
-      { status: 404 },
-    );
+    return NextResponse.json({ errorMessage: 'Not Found' }, { status: 404 });
   }
   const { name, messages, languagesWithTranslations } = project;
   const languages = await Promises.of(languagesWithTranslations)
