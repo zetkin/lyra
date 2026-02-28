@@ -21,7 +21,7 @@ export async function GET(
   const project = await accessProject(context.params.projectName);
   if (!project) {
     return NextResponse.json(
-      { errorMessage: 'Not Found', pullRequestStatus: 'error' },
+      { errorMessage: 'Not Found' },
       { status: 404 },
     );
   }
