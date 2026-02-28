@@ -22,10 +22,10 @@ export class I18nDAO extends BaseDAO {
          ON CONFLICT(path, value) DO UPDATE SET default_text = excluded.default_text, params = excluded.params`,
       )
       .run({
-        $default_text: defaultText,
-        $params: params,
-        $path: pathId,
-        $value: value,
+        default_text: defaultText,
+        params: params,
+        path: pathId,
+        value: value,
       });
     return this.db
       .prepare(

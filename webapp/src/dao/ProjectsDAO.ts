@@ -30,10 +30,10 @@ export class ProjectsDAO extends BaseDAO {
         'INSERT INTO project (name, base_branch, project_path, host) VALUES ($name, $base_branch, $project_path, $host)',
       )
       .run({
-        $base_branch: data.base_branch,
-        $host: data.host,
-        $name: data.name,
-        $project_path: data.project_path,
+        base_branch: data.base_branch,
+        host: data.host,
+        name: data.name,
+        project_path: data.project_path,
       });
     return this.findById(Number(result.lastInsertRowid))!;
   }

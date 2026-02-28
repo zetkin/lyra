@@ -17,6 +17,6 @@ export class LangDAO extends BaseDAO {
       .prepare(
         'INSERT INTO lang (id, name) VALUES ($id, $name) ON CONFLICT(id) DO UPDATE SET name = excluded.name',
       )
-      .run({ $id: lang.id, $name: lang.name });
+      .run({ id: lang.id, name: lang.name });
   }
 }
