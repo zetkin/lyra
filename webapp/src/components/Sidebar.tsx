@@ -82,7 +82,7 @@ const Sidebar: FC<SidebarProps> = ({ children }) => {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateRows: 'min-content 1fr',
+            gridTemplateRows: 'min-content min-content 1fr',
             overflow: 'hidden',
           }}
         >
