@@ -12,10 +12,12 @@
 ### Changed
 
 - `/` is now a static page powered by REST API endpoints
+- `/projects/[projectName]` is now a static page powered by REST API endpoints
 
 ### Add
 
 - `GET /api/projects` endpoint
+- `GET /api/projects/[projectName]` endpoint
 
 ## [0.8.1] - 2025-11-23
 
