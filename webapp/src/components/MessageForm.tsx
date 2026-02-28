@@ -28,6 +28,7 @@ import { type TranslationState } from '@/app/api/projects/[projectName]/language
 import { type MessageData } from '@/utils/adapters';
 import { SearchContext } from '@/components/SearchContext';
 import HighlightSearchQuery from './HighlightSearchQuery';
+import { textIncludesQuery } from '@/utils/search';
 
 export type MessageFormLayout = 'linear' | 'grid';
 
@@ -218,7 +219,7 @@ const MessageForm: FC<MessageFormProps> = ({
                 width="100%"
               >
                 {search.status === 'busy' &&
-                message.id.includes(search.query) ? (
+                textIncludesQuery(message.id, search.query) ? (
                   <HighlightSearchQuery
                     query={search.query}
                     text={message.id}
@@ -243,7 +244,7 @@ const MessageForm: FC<MessageFormProps> = ({
 
               <Box>
                 {search.status === 'busy' &&
-                message.defaultMessage.includes(search.query) ? (
+                textIncludesQuery(message.defaultMessage, search.query) ? (
                   <HighlightSearchQuery
                     query={search.query}
                     text={message.defaultMessage}

@@ -25,6 +25,7 @@ import Header from '@/components/Header';
 import Main from '@/components/Main';
 import { LanguageResponse } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/route';
 import SearchContextProvider, { SearchState } from '@/components/SearchContext';
+import { textIncludesQuery } from '@/utils/search';
 
 type LanguageLoadingState = {
   language: undefined;
@@ -158,9 +159,10 @@ const MessagesPage: NextPage<{
       return languageState.language.messages.filter((m) => {
         const translation = languageState.language.translations[m.id];
         return (
-          m.id.includes(searchState.query) ||
-          m.defaultMessage.includes(searchState.query) ||
-          (translation && translation.text.includes(searchState.query))
+          textIncludesQuery(m.id, searchState.query) ||
+          textIncludesQuery(m.defaultMessage, searchState.query) ||
+          (translation &&
+            textIncludesQuery(translation.text, searchState.query))
         );
       });
     }
