@@ -1,63 +1,154 @@
-import { NextPage } from 'next';
-import { notFound } from 'next/navigation';
-import React from 'react';
+'use client';
 
+import { NextPage } from 'next';
+import React, { useCallback, useEffect, useState } from 'react';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Box, CircularProgress, Typography } from '@mui/material';
+
+import Sidebar from '@/components/Sidebar';
+import TitleBar from '@/components/TitleBar';
 import MessageList from '@/components/MessageList';
-import { accessLanguage } from '@/dataAccess';
-import { info, toHex, warn } from '@/utils/log';
+import MessageTree from '@/components/MessageTree';
+import SidebarContextProvider from '@/components/SidebarContext';
+import Header from '@/components/Header';
+import Main from '@/components/Main';
+import { LanguageResponse } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/route';
+
+type LanguageLoadingState = {
+  language: undefined;
+  status: 'loading';
+};
+
+type LanguageNotFoundState = {
+  language: undefined;
+  status: 'not-found';
+};
+
+type LanguageReadyState = {
+  language: LanguageResponse;
+  status: 'ready';
+};
+
+type LanguageState =
+  | LanguageLoadingState
+  | LanguageNotFoundState
+  | LanguageReadyState;
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
-}> = async ({ params }) => {
-  const { languageName, messageId, projectName } = params;
-  const languageData = await accessLanguage(projectName, languageName);
-  if (!languageData) {
-    warn(
-      `No language data found for project with code units ${toHex(projectName)}`,
-    );
-    return notFound();
-  }
+}> = ({ params }) => {
+  const { languageName, projectName } = params;
 
-  info(
-    `Found ${languageData?.messages.length} messages for language '${languageName}' in project '${projectName}'`,
-  );
-
-  const { messages, translations } = languageData;
-  const translationCount = Object.keys(translations).length;
-  const percentage = Math.round((100 * translationCount) / messages.length);
-  info(
-    `Found ${translationCount} translations (${percentage}%) for language '${languageName}' in project '${projectName}'`,
-  );
-
-  const prefix = messageId ?? '';
-  const filteredMessages = messages.filter((message) =>
-    message.id.startsWith(prefix),
-  );
-
-  if (filteredMessages.length === 0) {
-    return notFound();
-  }
-
-  filteredMessages.sort((m0, m1) => {
-    const trans0 = translations[m0.id]?.text.trim() ?? '';
-    const trans1 = translations[m1.id]?.text.trim() ?? '';
-
-    if (!trans0) {
-      return -1;
-    } else if (trans1) {
-      return 1;
-    } else {
-      return 0;
-    }
+  const [messageId, setMessageId] = useState(params.messageId);
+  const [state, setLanguageState] = useState<LanguageState>({
+    language: undefined,
+    status: 'loading',
   });
 
+  useEffect(() => {
+    fetch(`/api/projects/${projectName}/languages/${languageName}/messages`)
+      .then((r) => r.json())
+      .then((l) => {
+        if (l.errorMessage) {
+          setLanguageState({
+            language: undefined,
+            status: 'not-found',
+          });
+          return;
+        }
+        setLanguageState({
+          language: l,
+          status: 'ready',
+        });
+      });
+  }, [projectName, languageName]);
+
+  const onItemSelectionToggle = useCallback(
+    (_e: React.SyntheticEvent, id: string, isSelected: boolean) => {
+      if (isSelected) {
+        setMessageId(id);
+        window.history.pushState(
+          null,
+          '',
+          `/projects/${projectName}/${languageName}/${id}`,
+        );
+      }
+    },
+    [languageName, projectName],
+  );
+
   return (
-    <MessageList
-      languageName={languageName}
-      messages={filteredMessages}
-      projectName={projectName}
-      translations={translations}
-    />
+    <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
+      <SidebarContextProvider>
+        <Header
+          languageName={languageName}
+          messageId={messageId}
+          projectName={projectName}
+        />
+        <Sidebar>
+          <TitleBar languageName={languageName} projectName={projectName} />
+          {state.status === 'loading' && (
+            <Box
+              alignItems="center"
+              display="flex"
+              flexDirection="column"
+              height="100%"
+              justifyContent="center"
+            >
+              <CircularProgress />
+            </Box>
+          )}
+          {state.status === 'ready' && (
+            <MessageTree
+              messageId={messageId}
+              messages={state.language.messages}
+              onItemSelectionToggle={onItemSelectionToggle}
+            />
+          )}
+        </Sidebar>
+      </SidebarContextProvider>
+      <Main>
+        {state.status === 'loading' && (
+          <Box
+            alignItems="center"
+            display="flex"
+            flexDirection="column"
+            height="100%"
+            justifyContent="center"
+          >
+            <CircularProgress />
+          </Box>
+        )}
+        {state.status === 'not-found' && (
+          <Box
+            alignItems="center"
+            display="flex"
+            flexDirection="column"
+            height="100%"
+            justifyContent="center"
+          >
+            <ErrorIcon />
+            <Typography component="h1" fontWeight="bold">
+              Not Found
+            </Typography>
+          </Box>
+        )}
+        {state.status === 'ready' && (
+          <MessageList
+            languageName={languageName}
+            messages={
+              messageId
+                ? state.language.messages.filter((m) =>
+                    m.id.startsWith(messageId),
+                  )
+                : state.language.messages
+            }
+            projectName={projectName}
+            translations={state.language.translations}
+          />
+        )}
+      </Main>
+    </Box>
   );
 };
 
