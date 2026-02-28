@@ -1,0 +1,11 @@
+[[language]]
+name = "tsx"
+language-servers = ["typescript-language-server", "eslint"]
+auto-format = true
+formatter = { command = "npx", args = ["prettier", "--parser", "typescript"] }
+
+[[language]]
+name = "typescript"
+language-servers = ["typescript-language-server", "eslint"]
+auto-format = true
+formatter = { command = "npx", args = ["prettier", "--parser", "typescript"] }
