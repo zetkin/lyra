@@ -41,7 +41,7 @@ export async function POST(
   let serverProjectConfig: ServerProjectConfig;
   try {
     serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
-  } catch (e) {
+  } catch {
     return NextResponse.json(
       { errorMessage: 'Not Found', pullRequestStatus: 'error' },
       { status: 404 },
