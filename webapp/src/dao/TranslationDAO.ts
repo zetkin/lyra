@@ -1,14 +1,21 @@
 import { BaseDAO } from './db';
-import { Translation, TranslateState } from './types';
+import { TranslateState, Translation } from './types';
 
 export class TranslationDAO extends BaseDAO {
   find(keyId: number, langId: string): Translation | undefined {
     return this.db
-      .prepare('SELECT id, key, lang, text, state FROM translation WHERE key = ? AND lang = ?')
+      .prepare(
+        'SELECT id, key, lang, text, state FROM translation WHERE key = ? AND lang = ?',
+      )
       .get(keyId, langId) as Translation | undefined;
   }
 
-  upsert(keyId: number, langId: string, text: string, state: TranslateState): Translation {
+  upsert(
+    keyId: number,
+    langId: string,
+    text: string,
+    state: TranslateState,
+  ): Translation {
     this.db
       .prepare(
         `INSERT INTO translation (key, lang, text, state) VALUES ($key, $lang, $text, $state)
@@ -16,7 +23,9 @@ export class TranslationDAO extends BaseDAO {
       )
       .run({ $key: keyId, $lang: langId, $state: state, $text: text });
     return this.db
-      .prepare('SELECT id, key, lang, text, state FROM translation WHERE key = ? AND lang = ?')
+      .prepare(
+        'SELECT id, key, lang, text, state FROM translation WHERE key = ? AND lang = ?',
+      )
       .get(keyId, langId) as Translation;
   }
 

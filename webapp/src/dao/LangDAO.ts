@@ -7,9 +7,9 @@ export class LangDAO extends BaseDAO {
   }
 
   findById(id: string): Lang | undefined {
-    return this.db
-      .prepare('SELECT id, name FROM lang WHERE id = ?')
-      .get(id) as Lang | undefined;
+    return this.db.prepare('SELECT id, name FROM lang WHERE id = ?').get(id) as
+      | Lang
+      | undefined;
   }
 
   upsert(lang: Lang): void {

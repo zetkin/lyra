@@ -12,7 +12,9 @@ export class ProjectLangDAO extends BaseDAO {
 
   add(projectId: number, langId: string): void {
     this.db
-      .prepare('INSERT OR IGNORE INTO project_lang (project, lang) VALUES (?, ?)')
+      .prepare(
+        'INSERT OR IGNORE INTO project_lang (project, lang) VALUES (?, ?)',
+      )
       .run(projectId, langId);
   }
 

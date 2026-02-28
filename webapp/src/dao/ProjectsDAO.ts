@@ -10,13 +10,17 @@ export class ProjectsDAO extends BaseDAO {
 
   findById(id: number): Project | undefined {
     return this.db
-      .prepare('SELECT id, name, base_branch, project_path, host FROM project WHERE id = ?')
+      .prepare(
+        'SELECT id, name, base_branch, project_path, host FROM project WHERE id = ?',
+      )
       .get(id) as Project | undefined;
   }
 
   findByName(name: string): Project | undefined {
     return this.db
-      .prepare('SELECT id, name, base_branch, project_path, host FROM project WHERE name = ?')
+      .prepare(
+        'SELECT id, name, base_branch, project_path, host FROM project WHERE name = ?',
+      )
       .get(name) as Project | undefined;
   }
 

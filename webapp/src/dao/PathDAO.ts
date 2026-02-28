@@ -10,7 +10,9 @@ export class PathDAO extends BaseDAO {
 
   findOrCreate(projectId: number, value: string): Path {
     const existing = this.db
-      .prepare('SELECT id, project, value FROM path WHERE project = ? AND value = ?')
+      .prepare(
+        'SELECT id, project, value FROM path WHERE project = ? AND value = ?',
+      )
       .get(projectId, value) as Path | undefined;
     if (existing) {
       return existing;
