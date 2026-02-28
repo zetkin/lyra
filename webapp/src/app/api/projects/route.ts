@@ -6,6 +6,8 @@ import { ProjectCardProps } from '@/components/ProjectCard';
 
 type ProjectsResponse = ProjectCardProps[];
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(): Promise<NextResponse<ProjectsResponse>> {
   const projectData = await accessProjects();
 
