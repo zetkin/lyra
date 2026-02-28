@@ -16,7 +16,6 @@ export async function GET(
   },
 ): Promise<NextResponse> {
   const { languageId, projectName } = context.params;
-  const messageId = req.nextUrl.searchParams.get('messageId');
 
   let languageData;
   try {
@@ -42,16 +41,7 @@ export async function GET(
     `Found ${translationCount} translations (${percentage}%) for language '${languageId}' in project '${projectName}'`,
   );
 
-  const prefix = messageId ?? '';
-  const filteredMessages = messages.filter((message) =>
-    message.id.startsWith(prefix),
-  );
-
-  if (filteredMessages.length === 0) {
-    return NextResponse.json({ errorMessage: 'Not Found' }, { status: 404 });
-  }
-
-  filteredMessages.sort((m0, m1) => {
+  messages.sort((m0, m1) => {
     const trans0 = translations[m0.id]?.text.trim() ?? '';
     const trans1 = translations[m1.id]?.text.trim() ?? '';
     if (!trans0) {
@@ -64,7 +54,7 @@ export async function GET(
   });
 
   return NextResponse.json<LanguageResponse>({
-    messages: filteredMessages,
+    messages,
     translations,
   });
 }

@@ -10,20 +10,20 @@ import { MessageData } from '@/utils/adapters';
 import { type UnflattenObject, unflattenObject } from '@/utils/unflattenObject';
 
 type MessageTreeProps = {
-  languageName: string;
   messageId?: string;
   messages: MessageData[];
-  projectName: string;
+  onItemSelectionToggle: (
+    e: React.SyntheticEvent,
+    id: string,
+    isSelected: boolean,
+  ) => void;
 };
 
 const MessageTree: FC<MessageTreeProps> = ({
-  languageName,
   messageId,
   messages,
-  projectName,
+  onItemSelectionToggle,
 }) => {
-  const router = useRouter();
-
   const tree = useMemo(() => {
     const record = messages.reduce(
       (acc, msg) => {
@@ -54,15 +54,6 @@ const MessageTree: FC<MessageTreeProps> = ({
 
     return recurse(unflattened, '');
   }, [messages]);
-
-  const onItemSelectionToggle = useCallback(
-    (e: React.SyntheticEvent, id: string, isSelected: boolean) => {
-      if (isSelected) {
-        router.push(`/projects/${projectName}/${languageName}/${id}`, {});
-      }
-    },
-    [languageName, projectName, router],
-  );
 
   const defaultExpandedItems = useMemo(() => {
     if (!messageId) {

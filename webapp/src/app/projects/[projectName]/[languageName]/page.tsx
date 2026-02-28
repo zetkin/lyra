@@ -1,7 +1,7 @@
 'use client';
 
 import { NextPage } from 'next';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
@@ -37,8 +37,9 @@ type LanguageState =
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
 }> = ({ params }) => {
-  const { languageName, messageId, projectName } = params;
+  const { languageName, projectName } = params;
 
+  const [messageId, setMessageId] = useState(params.messageId);
   const [state, setLanguageState] = useState<LanguageState>({
     language: undefined,
     status: 'loading',
@@ -46,12 +47,7 @@ const MessagesPage: NextPage<{
 
   useEffect(() => {
     const params = new URLSearchParams();
-    if (messageId) {
-      params.append('messageId', messageId);
-    }
-    fetch(
-      `/api/projects/${projectName}/languages/${languageName}/messages?${params}`,
-    )
+    fetch(`/api/projects/${projectName}/languages/${languageName}/messages`)
       .then((r) => r.json())
       .then((l) => {
         if (l.errorMessage) {
@@ -66,7 +62,21 @@ const MessagesPage: NextPage<{
           status: 'ready',
         });
       });
-  }, [projectName, languageName, messageId]);
+  }, [projectName, languageName]);
+
+  const onItemSelectionToggle = useCallback(
+    (_e: React.SyntheticEvent, id: string, isSelected: boolean) => {
+      if (isSelected) {
+        setMessageId(id);
+        window.history.pushState(
+          null,
+          '',
+          `/projects/${projectName}/${languageName}/${id}`,
+        );
+      }
+    },
+    [languageName, projectName],
+  );
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
@@ -91,10 +101,9 @@ const MessagesPage: NextPage<{
           )}
           {state.status === 'ready' && (
             <MessageTree
-              languageName={languageName}
               messageId={messageId}
               messages={state.language.messages}
-              projectName={projectName}
+              onItemSelectionToggle={onItemSelectionToggle}
             />
           )}
         </Sidebar>
@@ -128,7 +137,13 @@ const MessagesPage: NextPage<{
         {state.status === 'ready' && (
           <MessageList
             languageName={languageName}
-            messages={state.language.messages}
+            messages={
+              messageId
+                ? state.language.messages.filter((m) =>
+                    m.id.startsWith(messageId),
+                  )
+                : state.language.messages
+            }
             projectName={projectName}
             translations={state.language.translations}
           />
