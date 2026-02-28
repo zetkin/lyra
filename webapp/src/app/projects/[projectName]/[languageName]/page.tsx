@@ -46,7 +46,6 @@ const MessagesPage: NextPage<{
   });
 
   useEffect(() => {
-    const params = new URLSearchParams();
     fetch(`/api/projects/${projectName}/languages/${languageName}/messages`)
       .then((r) => r.json())
       .then((l) => {
