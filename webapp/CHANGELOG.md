@@ -2,7 +2,11 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
-## Unreleased
+## [Unreleased]
+
+### Fixed
+
+- Reduce load times by not refreshing ProjectStore many times per page load.
 
 ### Changed
 
@@ -12,43 +16,43 @@
 
 - `GET /api/projects` endpoint
 
-# [0.8.1] - 2025-11-23
+## [0.8.1] - 2025-11-23
 
 ### Changed
 
 - npm audit fix
 
-# [0.8.0] - 2025-11-22
+## [0.8.0] - 2025-11-22
 
 ### Added
 
 - Translation state now saved in store and send this states to FE, so FE can show the correct state [PUBLISHED, UPDATED]
 
-# [0.7.0] - 2025-10-25
+## [0.7.0] - 2025-10-25
 
 ### Added
 
 - Translation syntax validation
 
-# [0.6.0] - 2025-06-08
+## [0.6.0] - 2025-06-08
 
 ### Added
 
 - Layout file for messages tree
 
-# [0.5.0] - 2025-06-07
+## [0.5.0] - 2025-06-07
 
 ### Removed
 
 - Publish button from webapp
 
-# [0.4.1] - 2025-06-07
+## [0.4.1] - 2025-06-07
 
 ### Added
 
 - Debug logging flagged with env var
 
-# [0.4.0] - 2025-06-06
+## [0.4.0] - 2025-06-06
 
 ### Added
 
