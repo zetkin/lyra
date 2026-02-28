@@ -2,6 +2,16 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+## Unreleased
+
+### Changed
+
+- `/` is now a static page powered by REST API endpoints
+
+### Add
+
+- `GET /api/projects` endpoint
+
 # [0.8.1] - 2025-11-23
 
 ### Changed
