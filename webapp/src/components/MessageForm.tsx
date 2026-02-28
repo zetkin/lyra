@@ -313,7 +313,18 @@ const MessageForm: FC<MessageFormProps> = ({
             minRows={4}
             multiline
             onChange={onChange}
-            sx={{ flexGrow: 1 }}
+            sx={{
+              '& .MuiInputLabel-root': {
+                backgroundColor:
+                  textIncludesQuery(
+                    translation.translationText,
+                    search.query,
+                  ) && search.status === 'busy'
+                    ? 'yellow'
+                    : undefined,
+              },
+              flexGrow: 1,
+            }}
             value={state.translationText}
           />
           <ButtonGroup
