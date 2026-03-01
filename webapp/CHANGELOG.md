@@ -13,11 +13,15 @@
 
 - `/` is now a static page powered by REST API endpoints
 - `/projects/[projectName]` is now a static page powered by REST API endpoints
+- `/projects/[projectName]/[language]` is now a static page powered by REST API endpoints
+- `/projects/[projectName]/[language]/[messageId]` is now a static page powered by REST API endpoints
 
 ### Add
 
+- Search
 - `GET /api/projects` endpoint
 - `GET /api/projects/[projectName]` endpoint
+- `GET /api/projects/[projectName]/languages/[languageId]/messages` endpoint
 
 ## [0.8.1] - 2025-11-23
 
