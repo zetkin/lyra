@@ -2,17 +2,10 @@
 
 import { createContext, FC, ReactNode } from 'react';
 
-export type SearchIdleState = {
-  query: '';
-  status: 'idle';
-};
-
-export type SearchBusyState = {
+export type SearchState = {
   query: string;
-  status: 'busy';
+  status: 'idle' | 'busy';
 };
-
-export type SearchState = SearchIdleState | SearchBusyState;
 
 export const SearchContext = createContext<SearchState>({
   query: '',
