@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-01
+
 ### Fixed
 
 - Reduce load times by not refreshing ProjectStore if we skipped fetch.
