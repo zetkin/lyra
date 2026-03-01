@@ -5,21 +5,15 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 import MessageForm, { messageFormHeight } from '@/components/MessageForm';
-import { MessageData, TranslateIdTextState } from '@/utils/adapters';
+import { MessageDto } from '@/dto/MessageDto';
 
-type MessageListProps = {
-  languageName: string;
-  messages: MessageData[];
-  projectName: string;
-  translations: TranslateIdTextState;
-};
+type MessageListProps = MessageDto[] & { language: string };
 
-const MessageList: FC<MessageListProps> = ({
-  languageName,
-  messages,
-  projectName,
-  translations,
-}) => {
+const MessageList: FC<MessageListProps> = (
+  messages: MessageDto[],
+  language: string,
+  project: string;
+) => {
   const theme = useTheme();
   const [height, setHeight] = useState<number | undefined>(undefined);
 
@@ -50,7 +44,7 @@ const MessageList: FC<MessageListProps> = ({
       return (
         <ListItem component="div" disablePadding style={style}>
           <MessageForm
-            languageName={languageName}
+            languageName={language}
             layout={layout}
             message={message}
             projectName={projectName}

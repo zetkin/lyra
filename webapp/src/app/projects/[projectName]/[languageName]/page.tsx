@@ -12,27 +12,13 @@ import MessageTree from '@/components/MessageTree';
 import SidebarContextProvider from '@/components/SidebarContext';
 import Header from '@/components/Header';
 import Main from '@/components/Main';
-import { LanguageResponse } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/route';
+import { ErrorDto } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/route';
+import { MessageDto } from '@/dto/MessageDto';
 
-type LanguageLoadingState = {
-  language: undefined;
-  status: 'loading';
+type MessagesState = {
+  messageData: MessageDto[];
+  status: 'ready' | 'not-found' | 'loading';
 };
-
-type LanguageNotFoundState = {
-  language: undefined;
-  status: 'not-found';
-};
-
-type LanguageReadyState = {
-  language: LanguageResponse;
-  status: 'ready';
-};
-
-type LanguageState =
-  | LanguageLoadingState
-  | LanguageNotFoundState
-  | LanguageReadyState;
 
 const MessagesPage: NextPage<{
   params: { languageName: string; messageId?: string; projectName: string };
@@ -40,24 +26,24 @@ const MessagesPage: NextPage<{
   const { languageName, projectName } = params;
 
   const [messageId, setMessageId] = useState(params.messageId);
-  const [state, setLanguageState] = useState<LanguageState>({
-    language: undefined,
+  const [messagesState, setMessagesState] = useState<MessagesState>({
+    messageData: [],
     status: 'loading',
   });
 
   useEffect(() => {
     fetch(`/api/projects/${projectName}/languages/${languageName}/messages`)
       .then((r) => r.json())
-      .then((l) => {
-        if (l.errorMessage) {
-          setLanguageState({
-            language: undefined,
+      .then((l: MessageDto[] | ErrorDto) => {
+        if (l satisfies ErrorDto) {
+          setMessagesState({
+            messageData: [],
             status: 'not-found',
           });
           return;
         }
-        setLanguageState({
-          language: l,
+        setMessagesState({
+          messageData: l as MessageDto[],
           status: 'ready',
         });
       });
@@ -87,7 +73,7 @@ const MessagesPage: NextPage<{
         />
         <Sidebar>
           <TitleBar languageName={languageName} projectName={projectName} />
-          {state.status === 'loading' && (
+          {messagesState.status === 'loading' && (
             <Box
               alignItems="center"
               display="flex"
@@ -98,17 +84,17 @@ const MessagesPage: NextPage<{
               <CircularProgress />
             </Box>
           )}
-          {state.status === 'ready' && (
+          {messagesState.status === 'ready' && (
             <MessageTree
               messageId={messageId}
-              messages={state.language.messages}
+              messages={messagesState.messageData}
               onItemSelectionToggle={onItemSelectionToggle}
             />
           )}
         </Sidebar>
       </SidebarContextProvider>
       <Main>
-        {state.status === 'loading' && (
+        {messagesState.status === 'loading' && (
           <Box
             alignItems="center"
             display="flex"
@@ -119,7 +105,7 @@ const MessagesPage: NextPage<{
             <CircularProgress />
           </Box>
         )}
-        {state.status === 'not-found' && (
+        {messagesState.status === 'not-found' && (
           <Box
             alignItems="center"
             display="flex"
@@ -133,18 +119,17 @@ const MessagesPage: NextPage<{
             </Typography>
           </Box>
         )}
-        {state.status === 'ready' && (
+        {messagesState.status === 'ready' && (
           <MessageList
-            languageName={languageName}
+            language={languageName}
             messages={
               messageId
-                ? state.language.messages.filter((m) =>
-                    m.id.startsWith(messageId),
+                ? messagesState.messageData.filter((m) =>
+                    m.i18nKey.startsWith(messageId),
                   )
-                : state.language.messages
+                : messagesState.messageData
             }
             projectName={projectName}
-            translations={state.language.translations}
           />
         )}
       </Main>

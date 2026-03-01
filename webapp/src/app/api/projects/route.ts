@@ -1,37 +1,13 @@
 import { NextResponse } from 'next/server';
 
-import { Promises } from '@/utils/Promises';
-import { accessProjects } from '@/dataAccess';
-import { ProjectCardProps } from '@/components/ProjectCard';
-
-type ProjectsResponse = ProjectCardProps[];
+import { ProjectDto } from '@/dto/ProjectDto';
+import { ProjectService } from '@/services/ProjectService';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(): Promise<NextResponse<ProjectsResponse>> {
-  const projectData = await accessProjects();
+const projectService = new ProjectService();
 
-  const projects = await Promises.of(projectData)
-    .map(async ({ name, messages, languagesWithTranslations }) => {
-      const languages = await Promises.of(languagesWithTranslations)
-        .map(({ lang, translations }) => ({
-          href: `/projects/${name}/${lang}`,
-          language: lang,
-          progress: translations
-            ? (Object.keys(translations).length / messages.length) * 100
-            : 0,
-        }))
-        .all();
-
-      return {
-        href: `/projects/${name}`,
-        languages,
-        messageCount: messages.length,
-        name,
-      };
-    })
-
-    .all();
-
-  return NextResponse.json(projects);
+export async function GET(): Promise<NextResponse<ProjectDto[]>> {
+  const projectData = projectService.getProjects();
+  return NextResponse.json(projectData);
 }

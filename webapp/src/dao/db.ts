@@ -16,5 +16,5 @@ export function getDb(): DatabaseSync {
 }
 
 export abstract class BaseDAO {
-  protected readonly db: DatabaseSync = getDb();
+  static readonly db: DatabaseSync = getDb();
 }

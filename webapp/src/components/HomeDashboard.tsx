@@ -4,16 +4,17 @@ import { FC, useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
-import ProjectCard, { ProjectCardProps } from '@/components/ProjectCard';
+import ProjectCard from '@/components/ProjectCard';
+import { ProjectDto } from '@/dto/ProjectDto';
 
 const HomeDashboard: FC = () => {
-  const [projects, setProjects] = useState<ProjectCardProps[]>([]);
+  const [projects, setProjects] = useState<ProjectDto[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready'>('loading');
 
   useEffect(() => {
     fetch('/api/projects')
       .then((r) => r.json())
-      .then((p) => {
+      .then((p: ProjectDto[]) => {
         setProjects(p);
         setStatus('ready');
       });
