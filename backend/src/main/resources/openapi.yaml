@@ -1,0 +1,399 @@
+openapi: 3.1.0
+info:
+  title: Lyra API
+  description: API for the Lyra i18n management tool
+  version: "0.9.0"
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: http://lyra-backend:8080
+    description: The backend running in the container
+
+paths:
+  /api/repositories:
+    get:
+      tags: [ Lyra ]
+      operationId: getRepositories
+      summary: List all repositories
+      responses:
+        "200":
+          description: List of repositories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Repo"
+
+  /api/repository/{repositoryName}/projects:
+    get:
+      tags: [ Lyra ]
+      operationId: getProjects
+      summary: List all projects for a repository
+      parameters:
+        - $ref: "#/components/parameters/repositoryName"
+          example: app.zetkin.org
+      responses:
+        "200":
+          description: List of projects with supported languages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        "404":
+          description: Repository not found
+
+  /api/repository/{repositoryName}/projects/{projectId}:
+    get:
+      tags: [ Lyra ]
+      operationId: getProjectById
+      summary: Lists the projet in the repository for the given id
+      parameters:
+        - $ref: "#/components/parameters/repositoryName"
+          example: app.zetkin.org
+        - $ref: "#/components/parameters/projectId"
+          example: 1
+      responses:
+        "200":
+          description: project with given projectId
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description: Project with given projectId not found
+  /api/repository/{repositoryName}/projects/{projectId}/messages:
+    get:
+      tags: [ Lyra ]
+      operationId: getMessages
+      summary: List messages for a project id with its translations in all languages there exists a translation
+      parameters:
+        - $ref: "#/components/parameters/repositoryName"
+          example: app.zetkin.org
+        - $ref: "#/components/parameters/projectId"
+          example: 1
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ published, submitted, part_of_pull_request ]
+          description: Filter translations by state. Only translations with the given state are included in the response.
+        - name: offset
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 0
+          description: Number of items to skip
+        - name: lang
+          in: query
+          required: true
+          description: the language, which is used for sorting. All messages that do not include a translation for the given language are on top.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 50
+          description: Maximum number of items to return
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: >
+            When provided, filters messages to those whose i18nKey, defaultText, or translation
+            for the given language contains this value. Untranslated messages are returned first.
+      responses:
+        "200":
+          description: >
+            Paged list of `Message` items with all available translations per item.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedMessages"
+
+  /api/repository/{repositoryName}/projects/{projectId}/messages/{messageId}:
+    get:
+      tags: [ Lyra ]
+      operationId: getMessagesWithMessageId
+      summary: Get all messages that include or equal the given messageId, optionally with a specific language translation
+      parameters:
+        - $ref: "#/components/parameters/repositoryName"
+          example: app.zetkin.org
+        - $ref: "#/components/parameters/projectId"
+          example: 1
+        - $ref: "#/components/parameters/messageId"
+          example: feat.views.columnDialog.choices.localText.columnTitle
+        - name: offset
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 0
+          description: Number of items to skip
+        - name: lang
+          in: query
+          required: true
+          schema:
+            type: string
+          description: the language, which is used for sorting. All messages that do not include a translation for the given language are on top.
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+            default: 50
+          description: Maximum number of items to return
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ published, submitted, part_of_pull_request ]
+          description: Filter translations by state. Only translations with the given state are included in the response.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: >
+            When provided, filters messages to those whose i18nKey, defaultText, or translation
+            for the given language contains this value. Untranslated messages are returned first.
+      responses:
+        "200":
+          description: >
+            Returns `Message` with all its existent translations where the messageId is the i18nKey or starts with it
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedMessages"
+        "404":
+          description: Message not found
+    post:
+      tags: [ Lyra ]
+      operationId: submitTranslation
+      summary: Submit or update a translation for a message
+      parameters:
+        - $ref: "#/components/parameters/repositoryName"
+          example: app.zetkin.org
+        - $ref: "#/components/parameters/projectId"
+          example: 1
+        - $ref: "#/components/parameters/i18nKey"
+          example: feat.views.columnDialog.choices.localText.columnTitle
+        - name: lang
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "de"
+          description: ISO 639-1 language code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslationRequest"
+      responses:
+        "200":
+          description: Updated message with the new translation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          description: Missing lang query parameter or language not supported for this project
+        "404":
+          description: Message not found
+
+  /api/repository/{repositoryName}/pull-request:
+    post:
+      tags: [ Lyra ]
+      operationId: createPullRequest
+      summary: Create a pull request for all submitted translations
+      parameters:
+        - $ref: "#/components/parameters/repositoryName"
+          example: app.zetkin.org
+      responses:
+        "201":
+          description: Pull request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePrResponse"
+        "404":
+          description: Repository not found
+        "500":
+          description: GitHub token not found for repository
+
+components:
+  parameters:
+    repositoryName:
+      name: repositoryName
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Repository name as configured in repositories.yaml
+    projectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: ID of the project. There can be multiple projects (defined by paths) within one repository.
+    i18nKey:
+      name: i18nKey
+      in: path
+      required: true
+      schema:
+        type: string
+      description: the full i18nKey identifying a unique message
+    messageId:
+      name: messageId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: the messageId which is either the full i18nKey or a substring of it and identifies one or multiple messages (e.g. feat.home.activityList.actions.areaAssignment or feat.home)
+
+  schemas:
+    Repo:
+      type: object
+      required: [ id, name, baseBranch, host, owner ]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Repository name (also used as identifier in API routes)
+        baseBranch:
+          type: string
+          description: The base branch of the repository
+        host:
+          type: string
+          example: "github.com"
+        owner:
+          type: string
+          description: The owner (user or organisation) of the repository
+
+    LanguageDetails:
+      type: object
+      required: [ name, amountTranslations ]
+      properties:
+        name:
+          type: string
+          description: Language name in English
+        amountTranslations:
+          type: integer
+          description: Amount of already translated languages
+
+    Project:
+      type: object
+      required: [ id, messageCount, repository, projectPath, supportedLanguages ]
+      properties:
+        id:
+          type: integer
+        repository:
+          type: string
+        projectPath:
+          type: string
+          description: Path to the project root within the repository
+        messageCount:
+          type: integer
+          description: the amount of messages (different i18nKeys) in this project
+        supportedLanguages:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/LanguageDetails"
+          description: Map of language code → language details
+
+    MessageTranslation:
+      type: object
+      required: [ text, lang, state ]
+      properties:
+        text:
+          type: string
+          description: The translated text
+        lang:
+          type: string
+          description: ISO 639-1 language code
+        state:
+          $ref: "#/components/schemas/TranslationState"
+
+    Message:
+      type: object
+      required: [ id, i18nKey, defaultText, params, projectId, translations ]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+          description: The id of the project this message belongs to
+        i18nKey:
+          type: string
+          description: The i18n key (e.g. "welcome.greeting")
+        defaultText:
+          type: string
+          description: The default (source language) text
+        params:
+          type: array
+          items:
+            type: string
+          description: Named parameters used in the message text
+        translations:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/MessageTranslation"
+          description: Map of language code → translation
+    TranslationState:
+      type: string
+      enum:
+        - PUBLISHED
+        - SUBMITTED
+        - PART_OF_PULL_REQUEST
+      description: >
+        PUBLISHED: translation is live on the base branch.
+        SUBMITTED: submitted by a user via the Lyra UI, not yet in a pull request.
+        PART_OF_PULL_REQUEST: included in an open pull request.
+
+    PagedMessages:
+      type: object
+      required: [ items, total, offset, limit ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        total:
+          type: integer
+          description: Total number of messages in the project (unpaged)
+        offset:
+          type: integer
+        limit:
+          type: integer
+
+    TranslationRequest:
+      type: object
+      required: [ text ]
+      properties:
+        text:
+          type: string
+          description: The translated text to submit
+
+    CreatePrResponse:
+      type: object
+      required: [ url, prNumber ]
+      properties:
+        url:
+          type: string
+          description: The URL of the created pull request
+        prNumber:
+          type: integer
+          description: The pull request number on the hosting platform
