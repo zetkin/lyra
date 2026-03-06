@@ -12,6 +12,7 @@
     ]
   },
   "scripts": {
+    "generate:client": "cd backend && gradlew openApiGenerate",
     "build": "npm run --workspaces build",
     "test": "npm run --workspaces test",
     "lint:formatting": "npm run --workspaces lint:formatting",
