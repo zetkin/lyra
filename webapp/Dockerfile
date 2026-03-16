@@ -6,8 +6,8 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy only the necessary files for install
-COPY package.json package-lock.json ./
-COPY webapp/package.json webapp/
+COPY ../package.json package-lock.json ./
+COPY package.json webapp/
 
 # Install dependencies in a single layer to leverage caching
 # npm ci is better for reproducible builds than npm install

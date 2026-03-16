@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Image 'lyra-backend'
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
           fi
 
       - name: Build and tag image
-        run: docker build -t ghcr.io/zetkin/lyra:${{ env.VERSION }} .
+        run: cd ./backend && ./gradlew dockerBuild
 
       - name: Push image
-        run: docker push ghcr.io/zetkin/lyra:${{ env.VERSION }}
+        run: docker push ghcr.io/zetkin/lyra-backend:${{ env.VERSION }}

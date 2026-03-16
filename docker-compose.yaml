@@ -1,16 +1,31 @@
 services:
-  lyra:
-    container_name: lyra
+  frontend:
+    container_name: lyra-frontend
     build:
-      context: .
+      context: ./webapp
     ports:
       - "3000:3000"
     environment:
-      - GIT_USER_EMAIL=lyra@zetk.in
-      - GIT_USER_NAME="Lyra Translator Bot"
+      BACKEND_URL: http://lyra-backend:8080
+  backend:
+    container_name: lyra-backend
+    #build:
+    #  context: ./backend
+    image: lyra-backend:0.9.0
+    ports:
+      - "8080:8080"
+    environment:
+      LYRA_BACKEND_PORT: ${LYRA_BACKEND_PORT:-8080}
+      SSH_KEY_FILE: ${SSH_KEY_FILE:-id_rsa}
+      GIT_USER_NAME: ${GIT_USER_NAME:-"Lyra Translator Bot"}
+      GIT_USER_EMAIL: ${GIT_USER_EMAIL:-lyra@zetkin.org}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-300}
+      REPOS_DIR: /app/lyra-repos
     volumes:
-      # note: adjust the path to the ssh key you want to use to access the git repositories
-      - ~/.ssh/id_rsa:/home/nodeuser/.ssh/id_rsa:ro
-      # note: adjust the path to the lyra-store-file you want to use
-      - ~/lyra-store.json:/app/webapp/store.json
-      - ./config:/app/config
+      - data:/app/data
+      - repos:/app/lyra-repos
+      - ./repositories.yaml:/app/repositories.yaml:ro
+      - ~/.ssh/$SSH_KEY_FILE:/app/.ssh/$SSH_KEY_FILE:ro
+volumes:
+  data:
+  repos:

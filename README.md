@@ -1,20 +1,18 @@
-# Lyra web app
+# Lyra
 
 Lyra is a translation management system that integrates with
 source code repositories of internationalized applications.
 
-- Lyra can extract messages and translations
-  from source code repositories.
+- Lyra can extract messages and translations from source code repositories.
 - Lyra is an editor for translating messages.
-- Lyra can create pull requests to merge updated
-  translations into the source code repository.
+- Lyra can create pull requests to merge updated translations into the source code repository.
 
 > [!WARNING]
 > A party who controls a source code repository branch
 > which Lyra is set up to translate will also have
 > a lot of control over the Lyra process. That control
 > probably includes reading files from the operating system
-> and possibly includes arbitrary code exection.
+> and possibly includes arbitrary code execution.
 
 For each repository Lyra is set up to translate,
 Lyra needs control over a file system directory.
@@ -46,21 +44,20 @@ Install the recommended extension `Prettier - Code formatter`.
 
 ## Running in development
 
-In the root folder (outside webapp) create file `./config/projects.yaml`
+In the root folder (outside webapp) create file `./repositories.yaml`
 with example content:
 
 ```yaml
-projects:
-  - name: example-unique-name
+repositories:
+  - name: my-project        # used as the repo identifier in all API routes
     base_branch: main
-    project_path: . # relative path of the project from repository root
-    owner: amerharb
-    repo: zetkin.app.zetkin.org
-    host: github.com
-    github_token: << github token >>
+    owner: github-org
+    host: github.com        # optional, defaults to github.com
+    github_token: ghp_...   # GitHub PAT with repo read/write permissions
+    ssh_url: git@github.com:github-org/my-project.git
 ```
 
-⚠️  Note that `repo` must not have the same value for two different projects.
+⚠️  Note that `name` must not have the same value for two different projects.
 
 Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
@@ -219,12 +216,39 @@ You can copy this via `cp ./webapp/store.json ~/lyra-store.json` to this locatio
 
 ### Release a new container image
 
-The GitHub Actions workflow [`build-and-push-image.yaml`](.github/workflows/build-and-push-image.yaml) is designed to
-automate the process of building, tagging, and pushing a Docker image to the GitHub Container Registry (ghcr.io)
-whenever a new tag is pushed to the repository.
-The tags must follow semantic versioning, while release candidates are supported as well.
+Releases are managed with [Changesets](https://github.com/changesets/changesets).
+The release flow is fully automated via CI — you only need to describe your changes as you go.
 
-Do not forget to document your changes within the [`CHANGELOG.md`](./webapp/CHANGELOG.md) file and adjusting the version within the [`./webapp/package.json`](./webapp/package.json) file.
+#### 1. Add a changeset while working on a feature or fix
+
+After making your changes, run:
+
+```bash
+npx changeset add
+```
+
+The CLI will ask you to:
+- Select the bump type: `patch` (bug fix), `minor` (new feature), or `major` (breaking change)
+- Write a short summary of what changed
+
+This creates a small Markdown file under `.changeset/`. Commit it together with your code changes.
+
+#### 2. Merge your PR
+
+Once your PR is merged into `main`, the [Release workflow](.github/workflows/release.yaml) automatically:
+- Collects all pending changesets
+- Creates (or updates) a **"Version Packages" pull request** that bumps `webapp/package.json`,
+  mirrors the version to `backend/build.gradle.kts`, and updates `CHANGELOG.md`
+
+#### 3. Merge the "Version Packages" PR to publish
+
+Merging the "Version Packages" PR triggers the release workflow again. This time it:
+- Creates a git tag (e.g. `v1.2.0`)
+- Pushes the tag, which triggers the two build workflows:
+  - [`build-and-push-backend.yaml`](.github/workflows/build-and-push-backend.yaml) — builds and pushes `ghcr.io/zetkin/lyra-backend:<version>`
+  - [`build-and-push-frontend.yaml`](.github/workflows/build-and-push-frontend.yaml) — builds and pushes `ghcr.io/zetkin/lyra-frontend:<version>`
+
+Release candidates (`1.2.3-rc.0`) are supported by the same tag-based trigger.
 
 ### Use built image from the container registry
 
