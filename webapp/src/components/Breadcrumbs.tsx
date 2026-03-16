@@ -4,7 +4,8 @@ import { Breadcrumbs as MuiBreadcrumbs, Link } from '@mui/material';
 type BreadcrumbsProps = {
   languageName: string;
   messageId?: string;
-  projectName: string;
+  projectId: number;
+  repositoryName: string;
 };
 
 type Breadcrumb = {
@@ -16,21 +17,21 @@ type Breadcrumb = {
 const Breadcrumbs: FC<BreadcrumbsProps> = ({
   languageName,
   messageId,
-  projectName,
+  projectId,
+  repositoryName,
 }) => {
   const breadcrumbs: Breadcrumb[] = useMemo(() => {
     const parts = messageId?.split('.') || [];
     return parts.map((part, i) => {
-      const href = `/projects/${projectName}/${languageName}/${parts
-        .slice(0, i + 1)
-        .join('.')}`;
+      const i18nKey = parts.slice(0, i + 1).join('.');
+      const href = `/repository/${repositoryName}/projects/${projectId}/${i18nKey}/${languageName}`;
       return {
         href,
         last: i === parts.length - 1,
         text: part,
       };
     });
-  }, [languageName, messageId, projectName]);
+  }, [languageName, messageId, projectId, repositoryName]);
 
   return (
     <MuiBreadcrumbs

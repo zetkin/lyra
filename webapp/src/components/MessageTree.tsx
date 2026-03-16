@@ -1,16 +1,16 @@
 'use client';
 
-import { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view';
 import { TreeItem2 } from '@mui/x-tree-view/TreeItem2';
 
-import { MessageData } from '@/utils/adapters';
 import { type UnflattenObject, unflattenObject } from '@/utils/unflattenObject';
+import { Message } from '@/api/generated';
 
 type MessageTreeProps = {
   messageId?: string;
-  messages: MessageData[];
+  messages: Message[];
   onItemSelectionToggle: (
     e: React.SyntheticEvent,
     id: string,
@@ -26,7 +26,7 @@ const MessageTree: FC<MessageTreeProps> = ({
   const tree = useMemo(() => {
     const record = messages.reduce(
       (acc, msg) => {
-        acc[msg.id] = msg.id;
+        acc[msg.i18nKey] = msg.i18nKey;
         return acc;
       },
       {} as Record<string, string>,
@@ -54,21 +54,34 @@ const MessageTree: FC<MessageTreeProps> = ({
     return recurse(unflattened, '');
   }, [messages]);
 
-  const defaultExpandedItems = useMemo(() => {
-    if (!messageId) {
-      return [];
-    }
-    const parts = messageId.split('.');
+  const ancestorsOf = (id: string): string[] => {
+    const parts = id.split('.');
     for (let i = 1; i < parts.length; i++) {
       parts[i] = `${parts[i - 1]}.${parts[i]}`;
     }
     return parts;
+  };
+
+  const [expandedItems, setExpandedItems] = useState<string[]>(() =>
+    messageId ? ancestorsOf(messageId) : [],
+  );
+
+  useEffect(() => {
+    if (!messageId) {
+      return;
+    }
+    const ancestors = ancestorsOf(messageId);
+    setExpandedItems((prev) => {
+      const missing = ancestors.filter((a) => !prev.includes(a));
+      return missing.length ? [...prev, ...missing] : prev;
+    });
   }, [messageId]);
 
   return (
     <RichTreeView
-      defaultExpandedItems={defaultExpandedItems}
+      expandedItems={expandedItems}
       items={tree}
+      onExpandedItemsChange={(_e, items) => setExpandedItems(items)}
       onItemSelectionToggle={onItemSelectionToggle}
       slots={{ item: TreeItem2 }}
       sx={{ overflowY: 'auto' }}

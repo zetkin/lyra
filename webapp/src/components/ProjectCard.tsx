@@ -3,45 +3,8 @@
 import { FC } from 'react';
 import { Box, LinearProgress, Link, Typography, useTheme } from '@mui/material';
 
-export type ProjectCardProps = {
-  /**
-   * The URL of the project page.
-   */
-  href: string;
-
-  /**
-   * The project's languages and their translation progress.
-   */
-  languages: {
-    /**
-     * The URL of the page containing the project's messages in this language.
-     */
-
-    href: string;
-
-    /**
-     * The name of the language.
-     */
-    language: string;
-
-    /**
-     * The percentage of messages translated in this language. 0 means none, 100
-     * means all of them.
-     */
-    progress: number;
-  }[];
-
-  /**
-   * The number of messages in the project.
-   */
-  messageCount: number;
-
-  /**
-   * The name of the project.
-   */
-  name: string;
-};
-
+import { Project } from '@/api/generated';
+import LanguageCard from '@/components/LanguageCard';
 /**
  * Project cards are the primary navigation element on the home screen. They
  * display information about the project, and clicking them takes the user to
@@ -52,13 +15,9 @@ export type ProjectCardProps = {
  * employs the [Inclusive Components "pseudo-content trick"](https://inclusive-components.design/cards/).
  *
  */
-const ProjectCard: FC<ProjectCardProps> = ({
-  href,
-  languages,
-  name,
-  messageCount,
-}) => {
+const ProjectCard: FC<Project> = (project: Project) => {
   const theme = useTheme();
+
   return (
     <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
       <Box
@@ -84,7 +43,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
       >
         <Typography component="h2" fontWeight="bold">
           <Link
-            href={href}
+            href={`/repositories/${project.repository}/projects/${project.id}`}
             sx={{
               '::after': {
                 bottom: 0,
@@ -103,10 +62,11 @@ const ProjectCard: FC<ProjectCardProps> = ({
               textDecoration: 'none',
             }}
           >
-            {name}
+            {project.repository}/{project.projectPath}{' '}
+            {project.projectPath === '.' && '(repository root)'}
           </Link>
+          <Typography>Messages: {project.messageCount}</Typography>
         </Typography>
-        <Typography>{messageCount} messages</Typography>
         <Box
           columnGap={1}
           component="ul"
@@ -115,56 +75,22 @@ const ProjectCard: FC<ProjectCardProps> = ({
           padding={0}
           rowGap={1}
           sx={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(30px, 120px));',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr));',
             width: '100%',
           }}
         >
-          {languages.map(({ href, language, progress }) => (
-            <Box
-              key={language}
-              bgcolor="#e9f3fd"
-              borderRadius={2}
-              component="li"
-              position="relative"
-              sx={{
-                ':focus-within, :hover': {
-                  outlineColor: theme.palette.primary.main,
-                  outlineStyle: 'solid',
-                  outlineWidth: 1,
-                },
-                listStyleType: 'none',
-              }}
-            >
-              <Box display="flex" flexDirection="column" px={3} py={2}>
-                <Link
-                  href={href}
-                  sx={{
-                    '::after': {
-                      bottom: 0,
-                      content: '""',
-                      left: 0,
-                      position: 'absolute',
-                      right: 0,
-                      top: 0,
-                      width: '100%',
-                    },
-                    ':hover, :focus': {
-                      outline: 'none',
-                    },
-                    position: 'inherit',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {language}
-                </Link>
-                <LinearProgress
-                  sx={{ backgroundColor: '#ffffff' }}
-                  value={Math.min(progress, 100)}
-                  variant="determinate"
-                />
-              </Box>
-            </Box>
-          ))}
+          {Object.entries(project.supportedLanguages).map(
+            ([lang, langDetails]) => (
+              <LanguageCard
+                key={lang}
+                details={langDetails}
+                languageKey={lang}
+                projectId={project.id}
+                repositoryName={project.repository}
+                totalMessages={project.messageCount ?? 0}
+              />
+            ),
+          )}
         </Box>
       </Box>
     </Box>

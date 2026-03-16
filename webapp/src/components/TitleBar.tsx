@@ -5,13 +5,19 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 import HomeIcon from '@/components/HomeIcon';
+import { langToFlagEmoji } from '@/utils/stringUtils';
 
 type TitleBarProps = {
   languageName: string;
-  projectName: string;
+  projectId: number;
+  repositoryName: string;
 };
 
-const TitleBar: FC<TitleBarProps> = ({ languageName, projectName }) => {
+const TitleBar: FC<TitleBarProps> = ({
+  languageName,
+  projectId,
+  repositoryName,
+}) => {
   const theme = useTheme();
   return (
     <Box
@@ -44,8 +50,12 @@ const TitleBar: FC<TitleBarProps> = ({ languageName, projectName }) => {
           justifyContent: 'space-between',
         }}
       >
-        <Box component="span">{projectName}</Box>
-        <Box component="span">{languageName}</Box>
+        <Box component="span">
+          {repositoryName}/{projectId}
+        </Box>
+        <Box component="span">
+          {langToFlagEmoji(languageName)} {languageName}
+        </Box>
       </Typography>
     </Box>
   );

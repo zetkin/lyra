@@ -6,6 +6,8 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 import theme from '../theme';
+import HomeIcon from '@/components/HomeIcon';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] });
 

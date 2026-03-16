@@ -12,16 +12,20 @@
     ]
   },
   "scripts": {
-    "generate:client": "cd backend && gradlew openApiGenerate",
+    "generate:client": "cd backend && ./gradlew openApiGenerate",
+    "build:backendImage": "cd backend && ./gradlew dockerBuild",
     "build": "npm run --workspaces build",
     "test": "npm run --workspaces test",
     "lint:formatting": "npm run --workspaces lint:formatting",
-    "lint:eslint": "npm run --workspaces lint:eslint"
+    "lint:eslint": "npm run --workspaces lint:eslint",
+    "version:bump": "changeset version && node scripts/sync-version.js",
+    "version:publish": "node scripts/publish-version.js"
   },
   "keywords": [
     "lyra"
   ],
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
     "@types/mock-fs": "^4.13.4",
     "@types/node": "^22",
     "@types/react": "~18.3.3",

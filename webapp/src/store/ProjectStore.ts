@@ -1,110 +1,55 @@
-import {
-  IMessageAdapter,
-  ITranslationAdapter,
-  MessageData,
-  MessageMap,
-  TranslateState,
-  TranslationMap,
-} from '@/utils/adapters';
-import { StoreData } from './types';
-import mergeStoreData from './mergeStoreData';
+import { create } from 'zustand';
 
-export class ProjectStore {
-  private data: StoreData;
-  private readonly translationAdapter: ITranslationAdapter;
-  private readonly messageAdapter: IMessageAdapter;
+import { Project } from '@/api/generated';
+import { api } from '@/api';
 
-  constructor(
-    messageAdapter: IMessageAdapter,
-    translationAdapter: ITranslationAdapter,
-    initialState?: StoreData,
-  ) {
-    this.data = initialState || {
-      languages: {},
-      messages: [],
-    };
+type ProjectState = {
+  addProject(project: Project): void;
+  addProjects(projects: Project[]): void;
+  fetchAllProjects: (repoName: string) => Promise<void>;
+  findProject: (
+    repoName: string,
+    projectId: number,
+  ) => Promise<Project | undefined>;
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  fetched: boolean;
+  projects: Project[];
+};
 
-    this.translationAdapter = translationAdapter;
-    this.messageAdapter = messageAdapter;
-  }
-
-  async getLanguageData(): Promise<TranslationMap> {
-    await this.refresh();
-
-    const output: TranslationMap = {};
-    for await (const lang of Object.keys(this.data.languages)) {
-      output[lang] = await this.getTranslations(lang);
+export const useProjectStore = create<ProjectState>((set, get) => ({
+  addProject: (project: Project) => {
+    if (
+      get().projects.find(
+        (p) => p.repository === project.repository && p.id === project.id,
+      )
+    ) {
+      return;
     }
-
-    return output;
-  }
-
-  async getTranslations(lang: string): Promise<MessageMap> {
-    const language = this.data.languages[lang];
-
-    const output: MessageMap = {};
-    Object.entries(language ?? {}).forEach(([key, messageTranslation]) => {
-      output[key] = { ...messageTranslation };
-    });
-
-    return output;
-  }
-
-  async getMessages(): Promise<MessageData[]> {
-    return this.data.messages;
-  }
-
-  toJSON(): StoreData {
-    return this.data;
-  }
-
-  async updateTranslation(lang: string, id: string, text: string) {
-    if (!this.data.languages[lang]) {
-      this.data.languages[lang] = {};
+    set((state) => ({
+      ...state,
+      projects: [...state.projects, project],
+    }));
+  },
+  addProjects: (projects: Project[]) => {
+    projects.forEach((project) => get().addProject(project));
+  },
+  fetchAllProjects: async (repositoryName: string) => {
+    if (get().fetched) {
+      return;
     }
-
-    const existingTranslation = this.data.languages[lang][id];
-    if (!existingTranslation) {
-      const sourceFile = this.generateSourceFile(lang, id);
-      this.data.languages[lang][id] = {
-        sourceFile,
-        state: TranslateState.UPDATED,
-        text,
-        timestamp: Date.now(),
-      };
-    } else {
-      existingTranslation.text = text;
-      existingTranslation.state = TranslateState.UPDATED;
-      existingTranslation.timestamp = Date.now();
+    set({ fetched: true });
+    const projects = await api.getProjects({ repositoryName });
+    get().addProjects(projects);
+  },
+  findProject: async (repoName: string, projectId: number) => {
+    if (!get().fetched) {
+      await get().fetchAllProjects(repoName);
     }
-  }
-
-  public async refresh() {
-    const fromRepo: StoreData = {
-      languages: await this.translationAdapter.getTranslations(),
-      messages: await this.messageAdapter.getMessages(),
-    };
-
-    this.data = mergeStoreData(this.data, fromRepo);
-  }
-
-  /** get the source file from the default en language otherwise generate one from locale root*/
-  private generateSourceFile(lang: string, messageId: string): string {
-    const enSourceFile = this.data.languages?.['en']?.[messageId]?.sourceFile;
-    if (!enSourceFile) {
-      return `${lang}.yml`;
-    }
-    /** for example if lang = sv then replace "en" to "sv" ex. "folder1/en.yaml" -> "folder1/sv.yaml" */
-    const enSourceFileArr = enSourceFile.split('/');
-    const enShortFileName = enSourceFileArr.pop();
-    if (!enShortFileName) {
-      return `${lang}.yml`;
-    }
-    const langFileName = enShortFileName.replace(
-      /^en\.(.+\.)*(ya?ml)$/g,
-      `${lang}.$1$2`,
+    return get().projects.find(
+      (project) => project.id === projectId && project.repository === repoName,
     );
-    enSourceFileArr.push(langFileName);
-    return enSourceFileArr.join('/');
-  }
-}
+  },
+  // eslint-disable-next-line sort-keys
+  fetched: false,
+  projects: [],
+}));

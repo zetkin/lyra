@@ -4,22 +4,28 @@ import { FC, useEffect, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
-import ProjectCard, { ProjectCardProps } from '@/components/ProjectCard';
+import ProjectCard from '@/components/ProjectCard';
+import { useRepoStore } from '@/store/repoStore';
+import { useProjectStore } from '@/store/ProjectStore';
 
 const HomeDashboard: FC = () => {
-  const [projects, setProjects] = useState<ProjectCardProps[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ready'>('loading');
+  const [loadingState, setLoadingState] = useState<'loading' | 'ready'>(
+    'loading',
+  );
+  const fetchAllRepos = useRepoStore((state) => state.fetchAllRepos);
+  const fetchAllProjects = useProjectStore((state) => state.fetchAllProjects);
+  const projects = useProjectStore((state) => state.projects);
 
   useEffect(() => {
-    fetch('/api/projects')
-      .then((r) => r.json())
-      .then((p) => {
-        setProjects(p);
-        setStatus('ready');
-      });
-  }, []);
+    fetchAllRepos().then(() => {
+      const { repos } = useRepoStore.getState();
+      Promise.all(
+        repos.map((repo) => fetchAllProjects(repo.name)),
+      ).then(() => setLoadingState('ready'));
+    });
+  }, [fetchAllRepos, fetchAllProjects]);
 
-  if (status === 'loading') {
+  if (loadingState === 'loading') {
     return (
       <Box
         alignItems="center"
@@ -39,8 +45,11 @@ const HomeDashboard: FC = () => {
       display="flex"
       flexDirection="column"
       justifyContent="center"
+      maxWidth="1100px"
       minHeight="97vh"
+      mx="auto"
       p={2}
+      width="100%"
     >
       <CardGrid
         heading={

@@ -3,7 +3,7 @@
 import { FC } from 'react';
 import { Box, Typography } from '@mui/material';
 
-import { splitTextOnQuery, textMatchesQuery } from '@/utils/search';
+import { splitTextOnQuery, textMatchesQuery } from '@/utils/searchUtils';
 
 type HighlightSearchQueryProps = {
   query: string;

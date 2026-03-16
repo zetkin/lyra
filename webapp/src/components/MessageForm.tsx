@@ -13,10 +13,9 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import {
+import React, {
   FC,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -24,11 +23,10 @@ import {
 } from 'react';
 import { useTheme } from '@mui/material';
 
-import { type TranslationState } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/[messageId]/route';
-import { type MessageData } from '@/utils/adapters';
-import { SearchContext } from '@/components/SearchContext';
 import HighlightSearchQuery from './HighlightSearchQuery';
-import { textIncludesQuery } from '@/utils/search';
+import { Message } from '@/api/generated';
+import { useSearchStore } from '@/store/searchStore';
+import { titleCaseWord } from '@/utils/stringUtils';
 
 export type MessageFormLayout = 'linear' | 'grid';
 
@@ -36,110 +34,152 @@ export function messageFormHeight(layout: MessageFormLayout): number {
   return layout === 'linear' ? 300 : 220;
 }
 
+export type TranslationSuccess = {
+  status: 'success';
+  translationText: string;
+};
+
+type TranslationError = {
+  errorMessage: string;
+  original: string;
+  status: 'error';
+  translationText: string;
+};
+
+type TranslationMissing = {
+  status: 'missing';
+  translationText: string;
+};
+
+type TranslationPublished = {
+  status: 'published';
+  translationText: string;
+};
+
+type TranslationUpdated = {
+  status: 'updated';
+  translationText: string;
+};
+
+type TranslationInvalid = {
+  original: string;
+  status: 'invalid';
+  translationText: string;
+  validationError: string;
+};
+
+type TranslationUpdating = {
+  original: string;
+  status: 'updating';
+  translationText: string;
+};
+
+type TranslationModified = {
+  original: string;
+  status: 'modified';
+  translationText: string;
+};
+
+export type FrontendTranslationState =
+  | TranslationPublished
+  | TranslationUpdated
+  | TranslationMissing
+  | TranslationInvalid
+  | TranslationUpdating
+  | TranslationSuccess
+  | TranslationModified
+  | TranslationError;
+
 type MessageFormProps = {
+  frontendTranslationState: FrontendTranslationState;
   languageName: string;
   layout: MessageFormLayout;
-  message: MessageData;
-  projectName: string;
-  translation: TranslationState;
+  message: Message;
+  onSaveTranslation: (translation: string) => Promise<Message | undefined>;
 };
 
 const MessageForm: FC<MessageFormProps> = ({
+  frontendTranslationState,
   languageName,
   layout,
   message,
-  projectName,
-  translation,
+  onSaveTranslation,
 }) => {
   const theme = useTheme();
-  const resetValue = useRef(translation);
+  const searchStore = useSearchStore();
+  const resetValue = useRef(frontendTranslationState);
   const lg = useMediaQuery(theme.breakpoints.up('lg'));
-  const search = useContext(SearchContext);
-  const [state, setState] = useState<TranslationState>(translation);
+  const [translationState, setTranslationState] =
+    useState<FrontendTranslationState>(frontendTranslationState);
 
   useEffect(() => {
-    resetValue.current = translation;
-  }, [translation]);
+    resetValue.current = translationState;
+  }, [translationState]);
 
   const onChange = useCallback(
     (ev: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (state.translationStatus === 'updating') {
+      if (translationState.status === 'updating') {
         return;
       }
       try {
         parse(ev.target.value);
       } catch (e) {
         if (e instanceof Error) {
-          setState({
+          setTranslationState({
             original: resetValue.current.translationText,
-            translationStatus: 'invalid',
+            status: 'invalid',
             translationText: ev.target.value,
             validationError: e.toString(),
           });
           return;
         }
       }
-      setState({
+      setTranslationState({
         original: resetValue.current.translationText,
-        translationStatus: 'modified',
+        status: 'modified',
         translationText: ev.target.value,
       });
     },
-    [state.translationStatus],
+    [translationState.status],
   );
 
   const onSave = useCallback(async () => {
     if (
-      state.translationStatus !== 'modified' &&
-      state.translationStatus !== 'error'
+      translationState.status !== 'modified' &&
+      translationState.status !== 'error'
     ) {
       return;
     }
-    setState({
-      original: state.original,
-      translationStatus: 'updating',
-      translationText: state.translationText,
+    setTranslationState({
+      original: translationState.original,
+      status: 'updating',
+      translationText: translationState.translationText,
     });
-
-    /**
-     * Note that setState only affects the following renders,
-     * not the current one. Our variable state will still have
-     * its old values in the following lines, not updated by
-     * setState in the lines above.
-     *
-     * Please be careful if you change setState above to affect
-     * its use below, or if you change our use below to be
-     * affected by setState above.
-     */
-    const url = `/api/projects/${projectName}/languages/${languageName}/messages/${message.id}`;
-    const body = {
-      original: state.original,
-      translation: state.translationText,
-    };
-    const response = await fetch(url, {
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-    const json = await response.json();
-
-    if (json.translationStatus === 'success') {
-      resetValue.current = json.translationText;
+    const updatedMessage = await onSaveTranslation(
+      translationState.translationText,
+    );
+    if (updatedMessage) {
+      resetValue.current = {
+        ...resetValue.current,
+        status: 'published',
+        translationText: updatedMessage.translations[languageName].text,
+      };
+      setTranslationState({
+        ...translationState,
+        status: 'success',
+      });
     }
-    setState(json);
-  }, [languageName, message.id, projectName, state]);
+  }, [translationState, onSaveTranslation, languageName]);
 
   const onReset = useCallback(() => {
-    setState((s): TranslationState => {
+    setTranslationState((s): FrontendTranslationState => {
       if (
-        s.translationStatus === 'modified' ||
-        s.translationStatus === 'invalid' ||
-        s.translationStatus === 'error'
+        s.status === 'modified' ||
+        s.status === 'invalid' ||
+        s.status === 'error'
       ) {
         return {
-          translationStatus: s.original ? 'missing' : 'updated',
+          status: s.original ? 'missing' : 'updated',
           translationText: s.original,
         };
       }
@@ -148,17 +188,17 @@ const MessageForm: FC<MessageFormProps> = ({
   }, []);
 
   const onDismissSnackbar = useCallback(() => {
-    setState((s) => {
-      if (s.translationStatus === 'error') {
+    setTranslationState((s) => {
+      if (s.status === 'error') {
         return {
           original: s.original,
-          translationStatus: 'modified',
+          status: 'modified',
           translationText: s.translationText,
         };
       }
-      if (s.translationStatus === 'success') {
+      if (s.status === 'success') {
         return {
-          translationStatus: 'updated',
+          status: 'updated',
           translationText: s.translationText,
         };
       }
@@ -166,7 +206,10 @@ const MessageForm: FC<MessageFormProps> = ({
     });
   }, []);
 
-  const messageIdParts = useMemo(() => message.id.split('.'), [message.id]);
+  const messageIdParts = useMemo(
+    () => message.i18nKey.split('.'),
+    [message.i18nKey],
+  );
 
   return (
     <>
@@ -208,7 +251,7 @@ const MessageForm: FC<MessageFormProps> = ({
             overflow: 'hidden',
           }}
         >
-          {state.translationStatus !== 'invalid' ? (
+          {translationState.status !== 'invalid' ? (
             <>
               <Typography
                 component="h2"
@@ -218,11 +261,11 @@ const MessageForm: FC<MessageFormProps> = ({
                 whiteSpace="nowrap"
                 width="100%"
               >
-                {search.status === 'busy' &&
-                textIncludesQuery(message.id, search.query) ? (
+                {searchStore.isBusy() &&
+                searchStore.textIncludesQuery(message.i18nKey) ? (
                   <HighlightSearchQuery
-                    query={search.query}
-                    text={message.id}
+                    query={searchStore.query}
+                    text={message.i18nKey}
                   />
                 ) : (
                   messageIdParts.map((part, i) => (
@@ -243,15 +286,15 @@ const MessageForm: FC<MessageFormProps> = ({
               </Typography>
 
               <Box>
-                {search.status === 'busy' &&
-                textIncludesQuery(message.defaultMessage, search.query) ? (
+                {searchStore.isBusy() &&
+                searchStore.textIncludesQuery(message.defaultText) ? (
                   <HighlightSearchQuery
-                    query={search.query}
-                    text={message.defaultMessage}
+                    query={searchStore.query}
+                    text={message.defaultText}
                   />
                 ) : (
                   <Typography color="text.primary">
-                    {message.defaultMessage}
+                    {message.defaultText}
                   </Typography>
                 )}
               </Box>
@@ -285,8 +328,8 @@ const MessageForm: FC<MessageFormProps> = ({
                 }}
               >
                 {lg
-                  ? state.validationError
-                  : state.validationError
+                  ? translationState.validationError
+                  : translationState.validationError
                       .split('\n')
                       .filter((l) => !!l)
                       .join('\n')}
@@ -303,11 +346,13 @@ const MessageForm: FC<MessageFormProps> = ({
           }}
         >
           <TextField
-            aria-readonly={state.translationStatus === 'updating'}
-            error={state.translationStatus === 'invalid'}
+            aria-readonly={translationState.status === 'updating'}
+            error={translationState.status === 'invalid'}
             fullWidth
             InputLabelProps={{ shrink: true }}
-            InputProps={{ readOnly: state.translationStatus === 'updating' }}
+            InputProps={{
+              readOnly: translationState.status === 'updating',
+            }}
             label="Translation"
             maxRows={4}
             minRows={4}
@@ -316,27 +361,26 @@ const MessageForm: FC<MessageFormProps> = ({
             sx={{
               '& .MuiInputLabel-root': {
                 backgroundColor:
-                  textIncludesQuery(
-                    translation.translationText,
-                    search.query,
-                  ) && search.status === 'busy'
+                  searchStore.textIncludesQuery(
+                    translationState.translationText,
+                  ) && searchStore.isBusy()
                     ? 'yellow'
                     : undefined,
               },
               flexGrow: 1,
             }}
-            value={state.translationText}
+            value={translationState.translationText}
           />
           <ButtonGroup
             aria-label="Translation actions"
             sx={{ justifyContent: 'flex-end' }}
           >
-            {(state.translationStatus === 'modified' ||
-              state.translationStatus === 'invalid' ||
-              state.translationStatus === 'error' ||
-              state.translationStatus === 'updating') && (
+            {(translationState.status === 'modified' ||
+              translationState.status === 'invalid' ||
+              translationState.status === 'error' ||
+              translationState.status === 'updating') && (
               <Button
-                disabled={state.translationStatus === 'updating'}
+                disabled={translationState.status === 'updating'}
                 onClick={onReset}
                 startIcon={<RestartAlt />}
               >
@@ -345,34 +389,26 @@ const MessageForm: FC<MessageFormProps> = ({
             )}
             <LoadingButton
               disabled={
-                state.translationStatus === 'missing' ||
-                state.translationStatus === 'published' ||
-                state.translationStatus === 'updated' ||
-                state.translationStatus === 'invalid' ||
-                state.translationStatus === 'success'
+                translationState.status === 'missing' ||
+                translationState.status === 'published' ||
+                translationState.status === 'updated' ||
+                translationState.status === 'invalid' ||
+                translationState.status === 'success'
               }
-              loading={state.translationStatus === 'updating'}
+              loading={translationState.status === 'updating'}
               loadingPosition="start"
               onClick={onSave}
               startIcon={
-                state.translationStatus === 'missing' ? <MuiError /> : <Check />
+                translationState.status === 'missing' ? <MuiError /> : <Check />
               }
               sx={{ minWidth: 'max-content' }}
             >
-              {state.translationStatus === 'published'
-                ? 'Published'
-                : state.translationStatus === 'updated'
-                  ? 'Updated'
-                  : state.translationStatus === 'missing'
-                    ? 'Missing'
-                    : state.translationStatus === 'success'
-                      ? 'Updated'
-                      : 'Save'}
+              {titleCaseWord(translationState.status)}
             </LoadingButton>
           </ButtonGroup>
         </Box>
 
-        {state.translationStatus === 'success' && (
+        {translationState.status === 'success' && (
           <Snackbar open sx={{ position: 'absolute' }}>
             <Alert
               onClose={onDismissSnackbar}
@@ -384,7 +420,7 @@ const MessageForm: FC<MessageFormProps> = ({
             </Alert>
           </Snackbar>
         )}
-        {state.translationStatus === 'error' && (
+        {translationState.status === 'error' && (
           <Snackbar open sx={{ position: 'absolute' }}>
             <Alert
               onClose={onDismissSnackbar}
@@ -392,7 +428,7 @@ const MessageForm: FC<MessageFormProps> = ({
               sx={{ width: '100%' }}
               variant="filled"
             >
-              {state.errorMessage}
+              {translationState.errorMessage}
             </Alert>
           </Snackbar>
         )}

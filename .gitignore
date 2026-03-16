@@ -4,3 +4,8 @@ config/
 
 # macOS
 .DS_Store
+
+# env variables
+.env
+# repository configuration (contains sensitive data)
+repositories.yaml

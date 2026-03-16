@@ -1,31 +1,53 @@
 'use client';
 
 import { ListItem, useMediaQuery, useTheme } from '@mui/material';
-import { FC, useCallback, useEffect, useState } from 'react';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { FixedSizeList, ListChildComponentProps, ListOnItemsRenderedProps } from 'react-window';
 
-import MessageForm, { messageFormHeight } from '@/components/MessageForm';
-import { MessageData, TranslateIdTextState } from '@/utils/adapters';
+import MessageForm, {
+  FrontendTranslationState,
+  messageFormHeight,
+} from '@/components/MessageForm';
+import { Message, MessageTranslation } from '@/api/generated';
+import { useMessageStore } from '@/store/messageStore';
 
 type MessageListProps = {
   languageName: string;
-  messages: MessageData[];
-  projectName: string;
-  translations: TranslateIdTextState;
+  messages: Message[];
+  onLoadMore?: () => void;
+  projectId: number;
+  repoName: string;
+};
+
+const mapToFrontendTranslationState = (
+  translation: MessageTranslation | undefined,
+): FrontendTranslationState => {
+  if (!translation) {
+    return { status: 'missing', translationText: '' };
+  }
+
+  switch (translation.state) {
+    case 'SUBMITTED':
+      return { status: 'updated', translationText: translation.text };
+    case 'PUBLISHED':
+    case 'PART_OF_PULL_REQUEST':
+      return { status: 'published', translationText: translation.text };
+  }
 };
 
 const MessageList: FC<MessageListProps> = ({
   languageName,
   messages,
-  projectName,
-  translations,
+  onLoadMore,
+  projectId,
+  repoName,
 }) => {
   const theme = useTheme();
   const [height, setHeight] = useState<number | undefined>(undefined);
 
   const lg = useMediaQuery(theme.breakpoints.up('lg'));
   const layout = lg ? 'grid' : 'linear';
-
+  const saveTranslation = useMessageStore((state) => state.saveTranslation);
   const onResize = useCallback(() => {
     const headerHeight = parseInt(
       getComputedStyle(document.documentElement).getPropertyValue(
@@ -43,35 +65,43 @@ const MessageList: FC<MessageListProps> = ({
     }
   }, [onResize]);
 
+  const onItemsRendered = useCallback(
+    ({ visibleStopIndex }: ListOnItemsRenderedProps) => {
+      if (onLoadMore && visibleStopIndex >= messages.length - 10) {
+        onLoadMore();
+      }
+    },
+    [messages.length, onLoadMore],
+  );
+
   const renderRow = useCallback(
-    (props: ListChildComponentProps): JSX.Element => {
+    (props: ListChildComponentProps): React.ReactElement => {
       const { index, style } = props;
       const message = messages[index];
+      const translation = message.translations?.[languageName];
       return (
         <ListItem component="div" disablePadding style={style}>
           <MessageForm
+            frontendTranslationState={mapToFrontendTranslationState(
+              translation,
+            )}
             languageName={languageName}
             layout={layout}
             message={message}
-            projectName={projectName}
-            translation={
-              translations[message.id]
-                ? translations[message.id].state === 'UPDATED'
-                  ? {
-                      translationStatus: 'updated',
-                      translationText: translations[message.id].text,
-                    }
-                  : {
-                      translationStatus: 'published',
-                      translationText: translations[message.id].text,
-                    }
-                : { translationStatus: 'missing', translationText: '' }
+            onSaveTranslation={(translation: string) =>
+              saveTranslation({
+                i18nKey: message.i18nKey,
+                lang: languageName,
+                projectId,
+                repositoryName: repoName,
+                translation,
+              })
             }
           />
         </ListItem>
       );
     },
-    [languageName, layout, messages, projectName, translations],
+    [languageName, layout, messages, projectId, repoName, saveTranslation],
   );
 
   return (
@@ -81,6 +111,7 @@ const MessageList: FC<MessageListProps> = ({
           height={height}
           itemCount={messages.length}
           itemSize={messageFormHeight(layout)}
+          onItemsRendered={onItemsRendered}
           overscanCount={5}
           width="100%"
         >

@@ -5,58 +5,39 @@ import Link from 'next/link';
 import ErrorIcon from '@mui/icons-material/Error';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
-import { CardGrid } from '@/components/CardGrid';
-import LanguageCard from '@/components/LanguageCard';
 import HomeIcon from '@/components/HomeIcon';
-import { ProjectResponse } from '@/app/api/projects/[projectName]/route';
-
+import { error } from '@/utils/log';
+import { useProjectStore } from '@/store/ProjectStore';
+import { Project } from '@/api/generated';
+import ProjectCard from '@/components/ProjectCard';
 type ProjectDashboardProps = {
-  projectName: string;
-};
-
-type ProjectLoadingState = {
-  project: undefined;
-  status: 'loading';
-};
-
-type ProjectNotFoundState = {
-  project: undefined;
-  status: 'not-found';
-};
-
-type ProjectReadyState = {
-  project: ProjectResponse;
-  status: 'ready';
+  projectId: number;
+  repositoryName: string;
 };
 
 type ProjectState =
-  | ProjectLoadingState
-  | ProjectNotFoundState
-  | ProjectReadyState;
+  | { status: 'loading' }
+  | { project: Project; status: 'ready' }
+  | { status: 'not-found' };
 
-const ProjectDashboard: FC<ProjectDashboardProps> = ({ projectName }) => {
+const ProjectDashboard: FC<ProjectDashboardProps> = ({
+  projectId,
+  repositoryName,
+}) => {
   const [state, setProjectState] = useState<ProjectState>({
-    project: undefined,
     status: 'loading',
   });
+  const projectStore = useProjectStore();
 
   useEffect(() => {
-    fetch(`/api/projects/${projectName}`)
-      .then((r) => r.json())
-      .then((p) => {
-        if (p.errorMessage) {
-          setProjectState({
-            project: undefined,
-            status: 'not-found',
-          });
-          return;
-        }
-        setProjectState({
-          project: p,
-          status: 'ready',
-        });
-      });
-  }, [projectName]);
+    projectStore.findProject(repositoryName, projectId).then((project) => {
+      if (project) {
+        return setProjectState({ project, status: 'ready' });
+      }
+      setProjectState({ status: 'not-found' });
+      error(`Project for ${repositoryName}/${projectId} not found`);
+    });
+  }, [projectId, repositoryName, projectStore]);
 
   return (
     <Box
@@ -87,6 +68,7 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({ projectName }) => {
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'center',
+          maxWidth: '1100px',
           width: '100%',
         }}
       >
@@ -100,26 +82,7 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({ projectName }) => {
               </Typography>
             </>
           )}
-          {state.status === 'ready' && (
-            <>
-              <CardGrid
-                heading={
-                  <>
-                    <Typography component="h1" fontWeight="bold">
-                      {projectName}
-                    </Typography>
-                    <Typography>
-                      {state.project.messageCount} messages
-                    </Typography>
-                  </>
-                }
-              >
-                {state.project.languages.map((language, i) => (
-                  <LanguageCard key={i} {...language} />
-                ))}
-              </CardGrid>
-            </>
-          )}
+          {state.status === 'ready' && <ProjectCard {...state.project} />}
         </>
       </Box>
     </Box>

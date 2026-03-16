@@ -1,30 +1,17 @@
 'use client';
 
 import { FC } from 'react';
-import { Box, LinearProgress, Link, Typography, useTheme } from '@mui/material';
+import { Box, Link, LinearProgress, Typography, useTheme } from '@mui/material';
+
+import { LanguageDetails } from '@/api/generated';
+import { langToFlagEmoji } from '@/utils/stringUtils';
 
 export type LanguageCardProps = {
-  /**
-   * The URL of the page containing the project's messages in this language.
-   */
-
-  href: string;
-
-  /**
-   * The name of the language.
-   */
-  language: string;
-
-  /**
-   * The number of messages left to translate in this language.
-   */
-  messagesLeft: number;
-
-  /**
-   * The percentage of messages translated in this language. 0 means none, 100
-   * means all of them.
-   */
-  progress: number;
+  details: LanguageDetails;
+  languageKey: string;
+  projectId: number;
+  repositoryName: string;
+  totalMessages: number;
 };
 
 /**
@@ -33,14 +20,21 @@ export type LanguageCardProps = {
  * and some brief statistics about how complete the translation is.
  */
 const LanguageCard: FC<LanguageCardProps> = ({
-  href,
-  language,
-  messagesLeft,
-  progress,
+  details,
+  languageKey,
+  projectId,
+  repositoryName,
+  totalMessages,
 }) => {
   const theme = useTheme();
+  const messagesLeft = totalMessages - details.amountTranslations;
+  const progress = (100.0 * details.amountTranslations) / totalMessages;
   return (
-    <Box component="li" sx={{ listStyleType: 'none' }} width="100%">
+    <Box
+      component="li"
+      sx={{ height: '300px', listStyleType: 'none' }}
+      width="100%"
+    >
       <Box
         sx={{
           ':focus-within, :hover': {
@@ -62,37 +56,41 @@ const LanguageCard: FC<LanguageCardProps> = ({
           rowGap: theme.spacing(1),
         }}
       >
-        <Typography component="h2" fontWeight="bold">
-          <Link
-            href={href}
-            sx={{
-              '::after': {
-                bottom: 0,
-                content: '""',
-                left: 0,
-                position: 'absolute',
-                right: 0,
-                top: 0,
-                width: '100%',
-              },
-              ':hover, :focus': {
-                outline: 'none',
-                textDecoration: 'none',
-              },
-              color: 'inherit',
-              position: 'inherit',
-            }}
-          >
-            {language}
-          </Link>
-          <LinearProgress
-            sx={{ backgroundColor: '#ffffff' }}
-            value={Math.min(progress, 100)}
-            variant="determinate"
-          />
+        <Link
+          href={`/repositories/${repositoryName}/projects/${projectId}/${languageKey}`}
+          sx={{
+            '::after': {
+              bottom: 0,
+              content: '""',
+              left: 0,
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              width: '100%',
+            },
+            ':hover, :focus': {
+              outline: 'none',
+              textDecoration: 'none',
+            },
+            color: 'inherit',
+            height: '3em',
+            overflow: 'hidden',
+            position: 'inherit',
+          }}
+        >
+          <Typography component="h2" fontWeight="bold" fontSize={17}>
+            {langToFlagEmoji(languageKey)} {details.name} ({languageKey})
+          </Typography>
+        </Link>
+        <Box sx={{ flexGrow: 1 }} />
+        <LinearProgress
+          sx={{ backgroundColor: '#ffffff' }}
+          value={Math.min(progress, 100)}
+          variant="determinate"
+        />
+        <Typography color="text.secondary" variant="body2">
+          {messagesLeft} messages to translate ({(100 - progress).toFixed(0)}%)
         </Typography>
-
-        <Typography>{messagesLeft} messages to translate</Typography>
       </Box>
     </Box>
   );
