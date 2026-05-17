@@ -1,4 +1,4 @@
-type LanguageWithProgress = {
+export type LanguageWithProgress = {
   /**
    * The name of the language.
    */
