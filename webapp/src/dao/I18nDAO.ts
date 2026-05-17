@@ -5,7 +5,8 @@ export class I18nDAO extends BaseDAO {
   static findByPath(pathId: number): I18nKey[] {
     return BaseDAO.db
       .prepare(
-        'SELECT id, path, value, default_text, params FROM i18n_key WHERE path = ?',
+        `SELECT id, path, value, default_text, params
+                FROM i18n_key WHERE path = ?`,
       )
       .all(pathId) as I18nKey[];
   }
