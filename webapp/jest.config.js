@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  projects: ['<rootDir>'],
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1',
   },
