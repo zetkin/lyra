@@ -155,6 +155,43 @@ describe('mergeStoreData()', () => {
       sv: {},
     });
   });
+
+  it('updates present timeOfLastMerge', () => {
+    const before = new Date();
+    const result = mergeStoreData(
+      {
+        languages: {},
+        messages: [],
+        timeOfLastMerge: new Date(0),
+      },
+      {
+        languages: {},
+        messages: [],
+      },
+    );
+    expect(result.timeOfLastMerge).toBeDefined();
+    expect(result.timeOfLastMerge?.getTime()).toBeGreaterThanOrEqual(
+      before.getTime(),
+    );
+  });
+
+  it('updates absent timeOfLastMerge', () => {
+    const before = new Date();
+    const result = mergeStoreData(
+      {
+        languages: {},
+        messages: [],
+      },
+      {
+        languages: {},
+        messages: [],
+      },
+    );
+    expect(result.timeOfLastMerge).toBeDefined();
+    expect(result.timeOfLastMerge?.getTime()).toBeGreaterThanOrEqual(
+      before.getTime(),
+    );
+  });
 });
 
 const mockTranslation = (
