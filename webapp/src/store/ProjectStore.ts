@@ -8,6 +8,7 @@ import {
 } from '@/utils/adapters';
 import { StoreData } from './types';
 import mergeStoreData from './mergeStoreData';
+import { debug } from '@/utils/log';
 
 export class ProjectStore {
   private data: StoreData;
@@ -84,10 +85,11 @@ export class ProjectStore {
     if (last === undefined) {
       return false;
     }
-    return last.getTime() >= time.getTime();
+    return last >= time.getTime();
   }
 
   public async refresh() {
+    debug('refresh');
     const fromRepo: StoreData = {
       languages: await this.translationAdapter.getTranslations(),
       messages: await this.messageAdapter.getMessages(),

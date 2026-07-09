@@ -37,6 +37,6 @@ export default function mergeStoreData(
     });
   });
 
-  output.timeOfLastMerge = new Date();
+  output.timeOfLastMerge = new Date().getTime();
   return output;
 }

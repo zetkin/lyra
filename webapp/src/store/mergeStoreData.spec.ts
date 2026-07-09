@@ -157,12 +157,12 @@ describe('mergeStoreData()', () => {
   });
 
   it('updates present timeOfLastMerge', () => {
-    const before = new Date();
+    const before = new Date().getTime();
     const result = mergeStoreData(
       {
         languages: {},
         messages: [],
-        timeOfLastMerge: new Date(0),
+        timeOfLastMerge: 0,
       },
       {
         languages: {},
@@ -170,13 +170,11 @@ describe('mergeStoreData()', () => {
       },
     );
     expect(result.timeOfLastMerge).toBeDefined();
-    expect(result.timeOfLastMerge?.getTime()).toBeGreaterThanOrEqual(
-      before.getTime(),
-    );
+    expect(result.timeOfLastMerge).toBeGreaterThanOrEqual(before);
   });
 
   it('updates absent timeOfLastMerge', () => {
-    const before = new Date();
+    const before = new Date().getTime();
     const result = mergeStoreData(
       {
         languages: {},
@@ -188,9 +186,7 @@ describe('mergeStoreData()', () => {
       },
     );
     expect(result.timeOfLastMerge).toBeDefined();
-    expect(result.timeOfLastMerge?.getTime()).toBeGreaterThanOrEqual(
-      before.getTime(),
-    );
+    expect(result.timeOfLastMerge).toBeGreaterThanOrEqual(before);
   });
 });
 
