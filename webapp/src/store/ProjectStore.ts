@@ -79,6 +79,14 @@ export class ProjectStore {
     }
   }
 
+  public hasMergedSince(time: Date): boolean {
+    const last = this.data.timeOfLastMerge;
+    if (last === undefined) {
+      return false;
+    }
+    return last.getTime() >= time.getTime();
+  }
+
   public async refresh() {
     const fromRepo: StoreData = {
       languages: await this.translationAdapter.getTranslations(),

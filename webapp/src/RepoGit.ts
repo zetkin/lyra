@@ -31,7 +31,7 @@ export class RepoGit {
   } = {};
 
   private lyraConfig?: LyraConfig;
-  private lastPullTime: Date;
+  public lastPullTime: Date;
 
   private constructor(
     private readonly spConfig: ServerProjectConfig,
@@ -108,7 +108,7 @@ export class RepoGit {
    * Fetch then checkout origin/<base branch>
    * @returns true if we fetched, false if we skipped fetch
    */
-  public async fetchAndCheckoutOriginBase(): Promise<boolean> {
+  public async fetchAndCheckoutOriginBase() {
     const now = new Date();
     const age = now.getTime() - this.lastPullTime.getTime();
     if (age > this.GIT_FETCH_TTL) {
@@ -119,9 +119,7 @@ export class RepoGit {
       await this.git.fetch();
       await this.git.checkout(this.spConfig.originBaseBranch);
       this.lastPullTime = now;
-      return true;
     }
-    return false;
   }
 
   public async saveLanguageFiles(projectPath: string): Promise<string[]> {
