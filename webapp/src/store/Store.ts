@@ -65,7 +65,9 @@ export class Store {
     const json = JSON.stringify(payload);
 
     // Enqueue the new write, as concurrent writeFile is unsafe.
-    store.writes = store.writes.finally(() => fs.writeFile(FILE_PATH, json));
+    store.writes = store.writes.finally(() =>
+      fs.writeFile(FILE_PATH, json, { flush: true }),
+    );
 
     // Await the end of the queue, which is our write, to resolve.
     await store.writes;

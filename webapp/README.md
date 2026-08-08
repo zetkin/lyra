@@ -89,6 +89,7 @@ projects:
     languages: # list of language codes supported in the project
       - sv
       - de
+    base_branch: main # optional default to 'main'
 ```
 
 Start the server with `npm run dev` in `webapp`.

@@ -26,6 +26,7 @@ describe('ServerConfig', () => {
       expect(config.projects[0].name).toEqual('foo');
       expect(config.projects[0].repoPath).toEqual('/path/to/repo');
       expect(config.projects[0].baseBranch).toEqual('fooBranch');
+      expect(config.projects[0].originBaseBranch).toEqual('origin/fooBranch');
       expect(config.projects[0].projectPath).toEqual('project'); // Note: path changed after normalization
       expect(config.projects[0].owner).toEqual('owner');
       expect(config.projects[0].repo).toEqual('app.zetkin.org');
@@ -103,6 +104,7 @@ describe('ServerConfig', () => {
       const projectConfig = await ServerConfig.getProjectConfig('bar');
       expect(projectConfig.repoPath).toEqual('/path/to/repo');
       expect(projectConfig.baseBranch).toEqual('main'); // Note: default value when missed in config
+      expect(projectConfig.originBaseBranch).toEqual('origin/main'); // Note: default value when missed in config
       expect(projectConfig.projectPath).toEqual('project2');
     });
 
