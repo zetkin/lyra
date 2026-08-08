@@ -1,6 +1,8 @@
 export function debug(msg: string) {
-  // eslint-disable-next-line no-console
-  console.debug('[DEBUG] ' + msg);
+  if (process.env.DEBUG === '1') {
+    // eslint-disable-next-line no-console
+    console.debug('[DEBUG] ' + msg);
+  }
 }
 
 export function info(msg: string) {
