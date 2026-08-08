@@ -5,6 +5,7 @@ import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
 import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
 import { LyraProjectConfig } from '@/utils/lyraConfig';
 import { StoreData } from './types';
+import { error } from '@/utils/log';
 
 const FILE_PATH = './store.json';
 
@@ -25,10 +26,10 @@ export class Store {
         const newStore = new Store();
         globalThis.store = newStore
           .loadFromDisk()
-          // TODO: this catch will never happened, since loadFromDisk catch all
           .catch((reason) => {
             // Forget the promise, so that the next call will retry.
             globalThis.store = null;
+            error(`Failed to initialize lyra store: ${reason}`);
             throw reason;
           })
           .then(() => newStore);
@@ -98,12 +99,9 @@ export class Store {
     return projectStore;
   }
 
-  public async loadFromDisk(): Promise<void> {
-    try {
-      const json = await fs.readFile(FILE_PATH);
-      this.initialState = JSON.parse(json.toString());
-    } catch (err) {
-      // Do nothing. It's fine to start from scratch sometimes.
-    }
+  private async loadFromDisk(): Promise<void> {
+    await fs.access(FILE_PATH);
+    const json = await fs.readFile(FILE_PATH, 'utf-8');
+    this.initialState = JSON.parse(json);
   }
 }

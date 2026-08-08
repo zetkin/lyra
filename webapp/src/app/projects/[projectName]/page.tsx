@@ -4,15 +4,18 @@ import { notFound } from 'next/navigation';
 import { accessProject } from '@/dataAccess';
 import { Promises } from '@/utils/Promises';
 import ProjectDashboard from '@/components/ProjectDashboard';
+import { info, toHex, warn } from '@/utils/log';
 
 const ProjectPage: NextPage<{
   params: { projectName: string };
 }> = async ({ params }) => {
   const project = await accessProject(params.projectName);
   if (!project) {
+    warn(`Project with name code units ${toHex(params.projectName)} not found`);
     return notFound();
   }
   const { name, messages, languagesWithTranslations } = project;
+  info(`Accessing project '${name}'`);
   const languages = await Promises.of(languagesWithTranslations)
     .map(({ lang, translations }) => ({
       href: `/projects/${name}/${lang}`,
@@ -23,6 +26,9 @@ const ProjectPage: NextPage<{
         : 0,
     }))
     .all();
+  info(
+    `Found ${languages.length} languages for project '${project.name}': ${languages.map((l) => l.language).join(', ')}`,
+  );
 
   return (
     <ProjectDashboard
