@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
+import { error } from '@/utils/log';
 
 /** used to prevent multiple requests from running at the same time */
 const syncLock = new Map<string, boolean>();
@@ -99,6 +100,7 @@ export async function POST(
       pullRequestUrl,
     });
   } catch (e) {
+    error(`Error while creating pull request: ${e}`);
     return NextResponse.json({
       errorMessage: 'Error while creating pull request',
       pullRequestStatus: 'error',

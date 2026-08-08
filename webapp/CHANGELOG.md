@@ -2,6 +2,16 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+# [0.4.0] - 2025-06-06
+
+### Added
+
+- Containerization
+
+### Changed
+
+- rename `lyra.yml` to `.lyra.yaml`
+
 ## [0.3.0]
 
 ### Added

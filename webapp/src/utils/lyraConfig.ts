@@ -33,22 +33,6 @@ const lyraConfigSchema = z.object({
   ),
 });
 
-async function getLyraConfigPath(repoPath: string): Promise<string> {
-  const yamlFilepath = path.join(repoPath, 'lyra.yaml');
-  const ymlFilepath = path.join(repoPath, 'lyra.yml');
-  try {
-    await fs.access(yamlFilepath);
-    return yamlFilepath;
-  } catch {
-    try {
-      await fs.access(ymlFilepath);
-      return ymlFilepath;
-    } catch (e) {
-      throw new LyraConfigReadingError('lyra.yml or lyra.yaml', e);
-    }
-  }
-}
-
 export class LyraConfig {
   private constructor(public readonly projects: LyraProjectConfig[]) {}
 
@@ -64,7 +48,7 @@ export class LyraConfig {
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
     // TODO: cache this call with TTL
-    const lyraConfigPath = await getLyraConfigPath(repoPath);
+    const lyraConfigPath = path.join(repoPath, '.lyra.yaml');
 
     try {
       const ymlBuf = await fs.readFile(lyraConfigPath);

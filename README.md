@@ -53,7 +53,7 @@ with example content:
 projects:
   - name: example-unique-name
     base_branch: main
-    project_path: . # relative path of project from repository root
+    project_path: . # relative path of the project from repository root
     owner: amerharb
     repo: zetkin.app.zetkin.org
     host: github.com
@@ -65,10 +65,11 @@ projects:
 Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
 The project repository (client repository) will be cloned locally (if it does not exist yet) and needs to have a lyra configuration file
-`lyra.yml` or `lyra.yaml` in the root of the repository.
+`.lyra.yaml` in the root of the repository.
 This lyra configuration file looks like this:
 
 ```yaml
+version: 1 # version of the lyra configuration file
 projects:
   - path: . # relative path to project in repo
     messages:
@@ -79,7 +80,7 @@ projects:
     languages: # list of language codes supported in the project
       - sv
       - de
-    base_branch: main # optional default to 'main'
+      - en
 ```
 
 Start the server with `npm run dev` in `webapp`.
