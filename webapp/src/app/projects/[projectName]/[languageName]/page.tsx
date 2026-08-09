@@ -39,8 +39,8 @@ const MessagesPage: NextPage<{
   }
 
   filteredMessages.sort((m0, m1) => {
-    const trans0 = translations[m0.id]?.trim() ?? '';
-    const trans1 = translations[m1.id]?.trim() ?? '';
+    const trans0 = translations[m0.id]?.text.trim() ?? '';
+    const trans1 = translations[m1.id]?.text.trim() ?? '';
 
     if (!trans0) {
       return -1;

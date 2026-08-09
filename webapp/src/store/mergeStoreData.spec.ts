@@ -2,7 +2,11 @@ import { describe, expect, it } from '@jest/globals';
 
 import mergeStoreData from './mergeStoreData';
 import { StoreData } from './types';
-import { MessageData, MessageTranslation } from '@/utils/adapters';
+import {
+  MessageData,
+  MessageTranslation,
+  TranslateState,
+} from '@/utils/adapters';
 
 describe('mergeStoreData()', () => {
   it('returns empty when both arguments are empty', () => {
@@ -156,6 +160,7 @@ const mockTranslation = (
   sourceFile: MessageTranslation['sourceFile'] = 'thefile.yml',
 ) => ({
   sourceFile,
+  state: TranslateState.PUBLISHED,
   text,
 });
 

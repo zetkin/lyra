@@ -2,7 +2,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from '@/store/ProjectStore';
 import { Store } from './Store';
-import { IMessageAdapter } from '@/utils/adapters';
+import { IMessageAdapter, TranslateState } from '@/utils/adapters';
 
 describe('Store', () => {
   const mockMsgAdapter: jest.Mocked<IMessageAdapter> = {
@@ -19,6 +19,7 @@ describe('Store', () => {
           de: {
             'greeting.headline': {
               sourceFile: '',
+              state: TranslateState.PUBLISHED,
               text: 'Hallo',
             },
           },
@@ -44,6 +45,7 @@ describe('Store', () => {
           de: {
             'greeting.headline': {
               sourceFile: '',
+              state: TranslateState.PUBLISHED,
               text: 'Hallo',
             },
           },

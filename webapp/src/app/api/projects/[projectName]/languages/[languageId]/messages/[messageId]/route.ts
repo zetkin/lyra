@@ -17,8 +17,18 @@ type TranslationError = {
   translationText: string;
 };
 
-type TranslationIdle = {
-  translationStatus: 'idle';
+type TranslationMissing = {
+  translationStatus: 'missing';
+  translationText: string;
+};
+
+type TranslationPublished = {
+  translationStatus: 'published';
+  translationText: string;
+};
+
+type TranslationUpdated = {
+  translationStatus: 'updated';
   translationText: string;
 };
 
@@ -42,7 +52,9 @@ type TranslationModified = {
 };
 
 export type TranslationState =
-  | TranslationIdle
+  | TranslationPublished
+  | TranslationUpdated
+  | TranslationMissing
   | TranslationInvalid
   | TranslationUpdating
   | TranslationSuccess
