@@ -48,32 +48,33 @@ export class LyraConfig {
 
   static async readFromDir(repoPath: string): Promise<LyraConfig> {
     // TODO: cache this call with TTL
-    const filename = path.join(repoPath, 'lyra.yml');
+    const lyraConfigPath = path.join(repoPath, '.lyra.yaml');
+
     try {
-      const ymlBuf = await fs.readFile(filename);
+      const ymlBuf = await fs.readFile(lyraConfigPath);
       const configData = parse(ymlBuf.toString());
 
       const parsed = lyraConfigSchema.parse(configData);
 
       return new LyraConfig(
         parsed.projects.map((project) => {
-          LyraConfig.valdidateLanguages(project.languages);
-          return new LyraProjectConfig(
-            repoPath,
-            project.path,
-            KIND_BY_FORMAT_VALUE[project.messages.format],
-            project.messages.path,
-            project.translations.path,
-            project.languages ?? ['en'], // default language to be english if not provided
-          );
+          LyraConfig.validateLanguages(project.languages);
+          return new LyraProjectConfig({
+            languages: project.languages ?? ['en'], // default language to be english if not provided
+            messageKind: KIND_BY_FORMAT_VALUE[project.messages.format],
+            messagesPath: project.messages.path,
+            path: project.path,
+            repoPath: repoPath,
+            translationsPath: project.translations.path,
+          });
         }),
       );
     } catch (e) {
-      throw new LyraConfigReadingError(filename, e);
+      throw new LyraConfigReadingError(lyraConfigPath, e);
     }
   }
 
-  private static valdidateLanguages(languages?: string[]) {
+  private static validateLanguages(languages?: string[]) {
     if (languages === undefined) {
       return;
     }
@@ -87,23 +88,45 @@ export class LyraConfig {
   }
 }
 
-export class LyraProjectConfig {
-  constructor(
-    private readonly repoPath: string,
-    private readonly path: string,
-    public readonly messageKind: string,
-    private readonly messagesPath: string,
-    private readonly translationsPath: string,
+export type LyraProjectConfigProps = {
+  languages: string[];
+  messageKind: string;
+  messagesPath: string;
+  path: string;
+  repoPath: string;
+  translationsPath: string;
+};
 
+export class LyraProjectConfig {
+  private readonly repoPath: string;
+  private readonly path: string;
+  public readonly messageKind: string;
+  private readonly messagesPath: string;
+  private readonly translationsPath: string;
+  public readonly languages: string[];
+
+  constructor({
+    repoPath,
+    path,
+    messageKind,
+    messagesPath,
+    translationsPath,
+    languages,
+  }: LyraProjectConfigProps) {
+    this.repoPath = repoPath;
+    this.path = path;
+    this.messageKind = messageKind;
+    this.messagesPath = messagesPath;
+    this.translationsPath = translationsPath;
     /*
      * Lyra was written primarily for Zetkin Generation 3
-     * which uses react-intl from FromatJS to format messages.
+     * which uses react-intl from FormatJS to format messages.
      *
      * FormatJS documents that it uses "locale code" defined in UTS LDML.
      *
      * https://formatjs.io/docs/core-concepts/basic-internationalization-principles
      *
-     * Unicode Technical Standard Locale Data Marmkup Language
+     * Unicode Technical Standard Locale Data Markup Language
      * does not define any locale code
      * but they do define locale identifiers.
      *
@@ -129,8 +152,8 @@ export class LyraProjectConfig {
      * However, english is usually the language of default messages
      * and Lyra has no support for translating default messages.
      */
-    public readonly languages: string[],
-  ) {}
+    this.languages = languages;
+  }
 
   get absPath(): string {
     return path.join(this.repoPath, this.path);

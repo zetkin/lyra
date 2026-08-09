@@ -1,14 +1,38 @@
-import { FC } from 'react';
-import { Box, Typography } from '@mui/material';
+'use client';
+
+import { FC, useEffect, useState } from 'react';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
 import ProjectCard, { ProjectCardProps } from '@/components/ProjectCard';
 
-type HomeDashboardProps = {
-  projects: ProjectCardProps[];
-};
+const HomeDashboard: FC = () => {
+  const [projects, setProjects] = useState<ProjectCardProps[]>([]);
+  const [status, setStatus] = useState<'loading' | 'ready'>('loading');
 
-const HomeDashboard: FC<HomeDashboardProps> = ({ projects }) => {
+  useEffect(() => {
+    fetch('/api/projects')
+      .then((r) => r.json())
+      .then((p) => {
+        setProjects(p);
+        setStatus('ready');
+      });
+  }, []);
+
+  if (status === 'loading') {
+    return (
+      <Box
+        alignItems="center"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        minHeight="97vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box
       alignItems="center"

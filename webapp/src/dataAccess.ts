@@ -1,6 +1,6 @@
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
-import { getTranslationsIdText } from './utils/translationObjectUtil';
+import { getTranslationsIdTextState } from './utils/translationObjectUtil';
 import { LanguageNotSupported } from './errors';
 import { Store } from '@/store/Store';
 
@@ -37,12 +37,14 @@ export async function accessLanguage(
     return null;
   }
 
-  await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
-  await repoGit.checkoutBaseAndPull();
+  const repoGit = await RepoGit.get(project);
+  const fetched = await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const projectStore = await Store.getProjectStore(projectConfig);
+  if (fetched) {
+    await projectStore.refresh();
+  }
   const messages = await projectStore.getMessages();
 
   if (!projectConfig.isLanguageSupported(languageName)) {
@@ -52,7 +54,7 @@ export async function accessLanguage(
   const translationsWithFilePath =
     await projectStore.getTranslations(languageName);
 
-  const translations = getTranslationsIdText(translationsWithFilePath);
+  const translations = getTranslationsIdTextState(translationsWithFilePath);
 
   return {
     messages,
@@ -61,12 +63,17 @@ export async function accessLanguage(
 }
 
 async function readProject(project: ServerProjectConfig) {
-  await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
-  await repoGit.checkoutBaseAndPull();
+  if (!(await RepoGit.cloneIfNotExist(project))) {
+    return { languagesWithTranslations: [], messages: [], name: project.name };
+  }
+  const repoGit = await RepoGit.get(project);
+  const fetched = await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const store = await Store.getProjectStore(projectConfig);
+  if (fetched) {
+    await store.refresh();
+  }
   const messages = await store.getMessages();
   const languagesWithTranslations = projectConfig.languages.map(
     async (lang) => {

@@ -1,6 +1,7 @@
 'use client';
 
-import { Check, Error, RestartAlt } from '@mui/icons-material';
+import { parse } from '@messageformat/parser';
+import { Check, Error as MuiError, RestartAlt } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -9,15 +10,25 @@ import {
   Snackbar,
   TextField,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTheme } from '@mui/material';
 
-import updateTranslation, {
-  TranslationState,
-} from '@/actions/updateTranslation';
+import { type TranslationState } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/[messageId]/route';
 import { type MessageData } from '@/utils/adapters';
+import { SearchContext } from '@/components/SearchContext';
+import HighlightSearchQuery from './HighlightSearchQuery';
+import { textIncludesQuery } from '@/utils/search';
 
 export type MessageFormLayout = 'linear' | 'grid';
 
@@ -30,7 +41,7 @@ type MessageFormProps = {
   layout: MessageFormLayout;
   message: MessageData;
   projectName: string;
-  translation: string;
+  translation: TranslationState;
 };
 
 const MessageForm: FC<MessageFormProps> = ({
@@ -42,11 +53,9 @@ const MessageForm: FC<MessageFormProps> = ({
 }) => {
   const theme = useTheme();
   const resetValue = useRef(translation);
-
-  const [state, setState] = useState<TranslationState>({
-    translationStatus: 'idle',
-    translationText: translation,
-  });
+  const lg = useMediaQuery(theme.breakpoints.up('lg'));
+  const search = useContext(SearchContext);
+  const [state, setState] = useState<TranslationState>(translation);
 
   useEffect(() => {
     resetValue.current = translation;
@@ -57,8 +66,21 @@ const MessageForm: FC<MessageFormProps> = ({
       if (state.translationStatus === 'updating') {
         return;
       }
+      try {
+        parse(ev.target.value);
+      } catch (e) {
+        if (e instanceof Error) {
+          setState({
+            original: resetValue.current.translationText,
+            translationStatus: 'invalid',
+            translationText: ev.target.value,
+            validationError: e.toString(),
+          });
+          return;
+        }
+      }
       setState({
-        original: resetValue.current,
+        original: resetValue.current.translationText,
         translationStatus: 'modified',
         translationText: ev.target.value,
       });
@@ -89,28 +111,35 @@ const MessageForm: FC<MessageFormProps> = ({
      * its use below, or if you change our use below to be
      * affected by setState above.
      */
-    const response = await updateTranslation(
-      projectName,
-      languageName,
-      message.id,
-      state.translationText,
-      state.original,
-    );
+    const url = `/api/projects/${projectName}/languages/${languageName}/messages/${message.id}`;
+    const body = {
+      original: state.original,
+      translation: state.translationText,
+    };
+    const response = await fetch(url, {
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    });
+    const json = await response.json();
 
-    if (response.translationStatus === 'success') {
-      resetValue.current = response.translationText;
+    if (json.translationStatus === 'success') {
+      resetValue.current = json.translationText;
     }
-    setState(response);
+    setState(json);
   }, [languageName, message.id, projectName, state]);
 
   const onReset = useCallback(() => {
     setState((s): TranslationState => {
       if (
         s.translationStatus === 'modified' ||
+        s.translationStatus === 'invalid' ||
         s.translationStatus === 'error'
       ) {
         return {
-          translationStatus: 'idle',
+          translationStatus: s.original ? 'missing' : 'updated',
           translationText: s.original,
         };
       }
@@ -129,7 +158,7 @@ const MessageForm: FC<MessageFormProps> = ({
       }
       if (s.translationStatus === 'success') {
         return {
-          translationStatus: 'idle',
+          translationStatus: 'updated',
           translationText: s.translationText,
         };
       }
@@ -171,31 +200,99 @@ const MessageForm: FC<MessageFormProps> = ({
               }),
         }}
       >
-        <Box sx={{ flex: 1, maxWidth: '100%', overflow: 'hidden' }}>
-          <Typography
-            component="h2"
-            maxWidth="100%"
-            overflow="hidden"
-            textOverflow="ellipsis"
-            whiteSpace="nowrap"
-            width="100%"
-          >
-            {messageIdParts.map((part, i) => (
+        <Box
+          sx={{
+            flex: 1,
+            maxWidth: '100%',
+            minHeight: '3rem',
+            overflow: 'hidden',
+          }}
+        >
+          {state.translationStatus !== 'invalid' ? (
+            <>
               <Typography
-                key={part}
-                color={
-                  i === messageIdParts.length - 1
-                    ? 'text.primary'
-                    : 'text.secondary'
-                }
-                component="span"
+                component="h2"
+                maxWidth="100%"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+                width="100%"
               >
-                {part}
-                {i < messageIdParts.length - 1 && '.'}
+                {search.status === 'busy' &&
+                textIncludesQuery(message.id, search.query) ? (
+                  <HighlightSearchQuery
+                    query={search.query}
+                    text={message.id}
+                  />
+                ) : (
+                  messageIdParts.map((part, i) => (
+                    <Typography
+                      key={part}
+                      color={
+                        i === messageIdParts.length - 1
+                          ? 'text.primary'
+                          : 'text.secondary'
+                      }
+                      component="span"
+                    >
+                      {part}
+                      {i < messageIdParts.length - 1 && '.'}
+                    </Typography>
+                  ))
+                )}
               </Typography>
-            ))}
-          </Typography>
-          <Typography color="text.primary">{message.defaultMessage}</Typography>
+
+              <Box>
+                {search.status === 'busy' &&
+                textIncludesQuery(message.defaultMessage, search.query) ? (
+                  <HighlightSearchQuery
+                    query={search.query}
+                    text={message.defaultMessage}
+                  />
+                ) : (
+                  <Typography color="text.primary">
+                    {message.defaultMessage}
+                  </Typography>
+                )}
+              </Box>
+            </>
+          ) : (
+            <Box
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                maxHeight: lg ? undefined : '3rem',
+                minHeight: lg ? undefined : '3rem',
+                overflowY: 'auto',
+                rowGap: '0.5rem',
+              }}
+            >
+              {lg && (
+                <Typography color="red" variant="subtitle2">
+                  Mistake detected in translation string
+                </Typography>
+              )}
+              <Typography
+                color="red"
+                component="pre"
+                sx={{
+                  flex: 1,
+                  fontFamily: 'monospace',
+                  fontSize: '0.8rem',
+                  margin: 0,
+                  padding: 0,
+                }}
+              >
+                {lg
+                  ? state.validationError
+                  : state.validationError
+                      .split('\n')
+                      .filter((l) => !!l)
+                      .join('\n')}
+              </Typography>
+            </Box>
+          )}
         </Box>
         <Box
           sx={{
@@ -207,6 +304,7 @@ const MessageForm: FC<MessageFormProps> = ({
         >
           <TextField
             aria-readonly={state.translationStatus === 'updating'}
+            error={state.translationStatus === 'invalid'}
             fullWidth
             InputLabelProps={{ shrink: true }}
             InputProps={{ readOnly: state.translationStatus === 'updating' }}
@@ -215,7 +313,18 @@ const MessageForm: FC<MessageFormProps> = ({
             minRows={4}
             multiline
             onChange={onChange}
-            sx={{ flexGrow: 1 }}
+            sx={{
+              '& .MuiInputLabel-root': {
+                backgroundColor:
+                  textIncludesQuery(
+                    translation.translationText,
+                    search.query,
+                  ) && search.status === 'busy'
+                    ? 'yellow'
+                    : undefined,
+              },
+              flexGrow: 1,
+            }}
             value={state.translationText}
           />
           <ButtonGroup
@@ -223,6 +332,7 @@ const MessageForm: FC<MessageFormProps> = ({
             sx={{ justifyContent: 'flex-end' }}
           >
             {(state.translationStatus === 'modified' ||
+              state.translationStatus === 'invalid' ||
               state.translationStatus === 'error' ||
               state.translationStatus === 'updating') && (
               <Button
@@ -235,29 +345,29 @@ const MessageForm: FC<MessageFormProps> = ({
             )}
             <LoadingButton
               disabled={
-                state.translationStatus === 'idle' ||
+                state.translationStatus === 'missing' ||
+                state.translationStatus === 'published' ||
+                state.translationStatus === 'updated' ||
+                state.translationStatus === 'invalid' ||
                 state.translationStatus === 'success'
               }
               loading={state.translationStatus === 'updating'}
               loadingPosition="start"
               onClick={onSave}
               startIcon={
-                state.translationStatus === 'idle' &&
-                state.translationText === '' ? (
-                  <Error />
-                ) : (
-                  <Check />
-                )
+                state.translationStatus === 'missing' ? <MuiError /> : <Check />
               }
               sx={{ minWidth: 'max-content' }}
             >
-              {state.translationStatus === 'idle'
-                ? state.translationText
-                  ? 'Published'
-                  : 'Missing'
-                : state.translationStatus === 'success'
+              {state.translationStatus === 'published'
+                ? 'Published'
+                : state.translationStatus === 'updated'
                   ? 'Updated'
-                  : 'Save'}
+                  : state.translationStatus === 'missing'
+                    ? 'Missing'
+                    : state.translationStatus === 'success'
+                      ? 'Updated'
+                      : 'Save'}
             </LoadingButton>
           </ButtonGroup>
         </Box>

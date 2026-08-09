@@ -1,10 +1,9 @@
-'use server';
-
-import { notFound } from 'next/navigation';
+import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 
 import { RepoGit } from '@/RepoGit';
 import { ServerConfig, ServerProjectConfig } from '@/utils/serverConfig';
+import { error } from '@/utils/log';
 
 /** used to prevent multiple requests from running at the same time */
 const syncLock = new Map<string, boolean>();
@@ -34,14 +33,19 @@ export type PullRequestState =
   | PullRequestCreated
   | PullRequestError;
 
-export default async function sendPullRequest(
-  projectName: string,
-): Promise<PullRequestState> {
+export async function POST(
+  req: NextRequest,
+  context: { params: { projectName: string } },
+): Promise<NextResponse<PullRequestState>> {
+  const projectName = context.params.projectName;
   let serverProjectConfig: ServerProjectConfig;
   try {
     serverProjectConfig = await ServerConfig.getProjectConfig(projectName);
   } catch (e) {
-    return notFound();
+    return NextResponse.json(
+      { errorMessage: 'Not Found', pullRequestStatus: 'error' },
+      { status: 404 },
+    );
   }
   const repoPath = serverProjectConfig.repoPath;
 
@@ -50,25 +54,26 @@ export default async function sendPullRequest(
   }
 
   if (syncLock.get(repoPath) === true) {
-    return {
+    return NextResponse.json({
       errorMessage: `Another Request in progress for project: ${projectName} or a project that share same git repository`,
       pullRequestStatus: 'error',
-    };
+    });
   }
 
   try {
     syncLock.set(repoPath, true);
-    const repoGit = await RepoGit.getRepoGit(serverProjectConfig);
-    const baseBranch = await repoGit.checkoutBaseAndPull();
+    const repoGit = await RepoGit.get(serverProjectConfig);
+    await repoGit.fetchAndCheckoutOriginBase();
     const langFilePaths = await repoGit.saveLanguageFiles(
       serverProjectConfig.projectPath,
     );
 
     if (!(await repoGit.statusChanged())) {
-      return {
+      const baseBranch = serverProjectConfig.originBaseBranch;
+      return NextResponse.json({
         errorMessage: `There are no changes in ${baseBranch} branch`,
         pullRequestStatus: 'error',
-      };
+      });
     }
 
     const nowIso = new Date().toISOString().replace(/:/g, '').split('.')[0];
@@ -81,25 +86,26 @@ export default async function sendPullRequest(
       `Lyra translate: ${nowIso}-${uuidSnippet}`,
     );
 
-    const pullRequestUrl = await repoGit.createPR(
-      branchName,
-      'LYRA Translate PR: ' + nowIso,
-      'Created by LYRA at: ' + nowIso,
-      serverProjectConfig.owner,
-      serverProjectConfig.repo,
-      serverProjectConfig.githubToken,
-    );
-    await repoGit.checkoutBaseAndPull();
-    return {
+    const pullRequestUrl = await repoGit.createPR({
+      body: 'Created by LYRA at: ' + nowIso,
+      branchName: branchName,
+      githubOwner: serverProjectConfig.owner,
+      githubRepo: serverProjectConfig.repo,
+      githubToken: serverProjectConfig.githubToken,
+      title: 'LYRA Translate PR: ' + nowIso,
+    });
+    await repoGit.fetchAndCheckoutOriginBase();
+    return NextResponse.json({
       branchName,
       pullRequestStatus: 'success',
       pullRequestUrl,
-    };
+    });
   } catch (e) {
-    return {
+    error(`Error while creating pull request: ${e}`);
+    return NextResponse.json({
       errorMessage: 'Error while creating pull request',
       pullRequestStatus: 'error',
-    };
+    });
   } finally {
     syncLock.set(repoPath, false);
   }

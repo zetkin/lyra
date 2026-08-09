@@ -1,9 +1,9 @@
-'use server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { RepoGit } from '@/RepoGit';
-import { Store } from '@/store/Store';
 import { ServerConfig } from '@/utils/serverConfig';
-import { MessageNotFound } from '@/errors';
+import { error, info } from '@/utils/log';
+import { Store } from '@/store/Store';
 
 export type TranslationSuccess = {
   translationStatus: 'success';
@@ -17,9 +17,26 @@ type TranslationError = {
   translationText: string;
 };
 
-type TranslationIdle = {
-  translationStatus: 'idle';
+type TranslationMissing = {
+  translationStatus: 'missing';
   translationText: string;
+};
+
+type TranslationPublished = {
+  translationStatus: 'published';
+  translationText: string;
+};
+
+type TranslationUpdated = {
+  translationStatus: 'updated';
+  translationText: string;
+};
+
+type TranslationInvalid = {
+  original: string;
+  translationStatus: 'invalid';
+  translationText: string;
+  validationError: string;
 };
 
 type TranslationUpdating = {
@@ -35,20 +52,23 @@ type TranslationModified = {
 };
 
 export type TranslationState =
-  | TranslationIdle
+  | TranslationPublished
+  | TranslationUpdated
+  | TranslationMissing
+  | TranslationInvalid
   | TranslationUpdating
   | TranslationSuccess
   | TranslationModified
   | TranslationError;
 
-export default async function updateTranslation(
-  projectName: string,
-  languageName: string,
-  messageId: string,
-  translation: string,
-  original: string,
-): Promise<TranslationState> {
-  'use server';
+export async function POST(
+  req: NextRequest,
+  context: {
+    params: { languageId: string; messageId: string; projectName: string };
+  },
+): Promise<NextResponse<TranslationState>> {
+  const { languageId, messageId, projectName } = context.params;
+  const { original, translation } = await req.json();
 
   const serverConfig = await ServerConfig.read();
   const project = serverConfig.projects.find(
@@ -56,53 +76,58 @@ export default async function updateTranslation(
   );
 
   if (!project) {
-    return {
+    return NextResponse.json({
       errorMessage: `Project not found: ${projectName}`,
       original,
       translationStatus: 'error',
       translationText: translation,
-    };
+    });
   }
 
-  await RepoGit.cloneIfNotExist(project);
-  const repoGit = await RepoGit.getRepoGit(project);
+  const repoGit = await RepoGit.get(project);
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
 
-  if (!projectConfig.isLanguageSupported(languageName)) {
-    return {
-      errorMessage: `Language not supported: ${languageName}`,
+  if (!projectConfig.isLanguageSupported(languageId)) {
+    return NextResponse.json({
+      errorMessage: `Language not supported: ${languageId}`,
       original,
       translationStatus: 'error',
       translationText: translation,
-    };
+    });
   }
 
   const projectStore = await Store.getProjectStore(projectConfig);
 
+  await projectStore.refresh();
   const messages = await projectStore.getMessages();
   const messageIds = messages.map((message) => message.id);
   const foundId = messageIds.find((id) => id == messageId);
 
   if (foundId === undefined) {
-    return {
+    return NextResponse.json({
       errorMessage: 'Message Id not found',
       original,
       translationStatus: 'error',
       translationText: translation,
-    };
+    });
   }
 
   try {
-    await projectStore.updateTranslation(languageName, messageId, translation);
+    await projectStore.updateTranslation(languageId, messageId, translation);
     await Store.persistToDisk();
+    info(`Updated '${languageId}' translation for '${messageId}'`);
   } catch (e) {
-    return {
+    error(`Failed to update translation: ${e}`);
+    return NextResponse.json({
       errorMessage: 'Failed to update translation',
       original,
       translationStatus: 'error',
       translationText: translation,
-    };
+    });
   }
-  return { translationStatus: 'success', translationText: translation };
+  return NextResponse.json({
+    translationStatus: 'success',
+    translationText: translation,
+  });
 }

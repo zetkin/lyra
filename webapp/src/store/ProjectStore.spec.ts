@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 
 import { ProjectStore } from './ProjectStore';
-import { IMessageAdapter } from '@/utils/adapters';
+import { IMessageAdapter, TranslateState } from '@/utils/adapters';
 
 function mockMsgAdapter(): jest.Mocked<IMessageAdapter> {
   return {
@@ -39,21 +39,28 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
         sv: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hej',
           },
         },
       }),
     });
 
+    await projectStore.refresh();
     const actual = await projectStore.getTranslations('de');
     expect(actual).toEqual({
-      'greeting.headline': { sourceFile: '', text: 'Hallo' },
+      'greeting.headline': {
+        sourceFile: '',
+        state: TranslateState.PUBLISHED,
+        text: 'Hallo',
+      },
     });
   });
 
@@ -84,26 +91,35 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
       }),
     });
+    await projectStore.refresh();
 
     const before = await projectStore.getTranslations('de');
+
+    await projectStore.refresh();
     await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
+
+    await projectStore.refresh();
     const after = await projectStore.getTranslations('de');
 
     expect(before).toEqual({
       'greeting.headline': {
         sourceFile: '',
+        state: TranslateState.PUBLISHED,
         text: 'Hallo',
       },
     });
     expect(after).toEqual({
       'greeting.headline': {
         sourceFile: '',
+        state: TranslateState.UPDATED,
         text: 'Hallo!',
+        timestamp: expect.any(Number),
       },
     });
   });
@@ -123,19 +139,25 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
       }),
     });
 
+    await projectStore.refresh();
     await projectStore.updateTranslation('de', 'greeting.headline', 'Hallo!');
+
+    await projectStore.refresh();
     const actual = await projectStore.getTranslations('de');
 
     expect(actual).toEqual({
       'greeting.headline': {
         sourceFile: '',
+        state: TranslateState.UPDATED,
         text: 'Hallo!',
+        timestamp: expect.any(Number),
       },
     });
   });
@@ -157,6 +179,7 @@ describe('ProjectStore', () => {
             en: {
               'core.click': {
                 sourceFile: 'en.yml',
+                state: TranslateState.PUBLISHED,
                 text: 'Click',
               },
             },
@@ -185,12 +208,14 @@ describe('ProjectStore', () => {
         de: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hallo',
           },
         },
         sv: {
           'greeting.headline': {
             sourceFile: '',
+            state: TranslateState.PUBLISHED,
             text: 'Hej',
           },
         },
@@ -202,12 +227,14 @@ describe('ProjectStore', () => {
       de: {
         'greeting.headline': {
           sourceFile: '',
+          state: TranslateState.PUBLISHED,
           text: 'Hallo',
         },
       },
       sv: {
         'greeting.headline': {
           sourceFile: '',
+          state: TranslateState.PUBLISHED,
           text: 'Hej',
         },
       },

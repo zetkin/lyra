@@ -3,14 +3,13 @@ name: Task
 about: Features, improvements, etc.
 title: ''
 labels: ''
+type: Task
 assignees: ''
 ---
 
 ## Description
 
 A user should be able to...
-
-## Relevant Job Stories
 
 ## Estimated size (S, M, L)
 

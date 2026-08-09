@@ -3,6 +3,7 @@ import {
   ITranslationAdapter,
   MessageData,
   MessageMap,
+  TranslateState,
   TranslationMap,
 } from '@/utils/adapters';
 import { StoreData } from './types';
@@ -39,8 +40,6 @@ export class ProjectStore {
   }
 
   async getTranslations(lang: string): Promise<MessageMap> {
-    await this.refresh();
-
     const language = this.data.languages[lang];
 
     const output: MessageMap = {};
@@ -52,7 +51,6 @@ export class ProjectStore {
   }
 
   async getMessages(): Promise<MessageData[]> {
-    await this.refresh();
     return this.data.messages;
   }
 
@@ -61,21 +59,27 @@ export class ProjectStore {
   }
 
   async updateTranslation(lang: string, id: string, text: string) {
-    await this.refresh();
-
     if (!this.data.languages[lang]) {
       this.data.languages[lang] = {};
     }
 
-    if (!this.data.languages[lang][id]) {
+    const existingTranslation = this.data.languages[lang][id];
+    if (!existingTranslation) {
       const sourceFile = this.generateSourceFile(lang, id);
-      this.data.languages[lang][id] = { sourceFile, text };
+      this.data.languages[lang][id] = {
+        sourceFile,
+        state: TranslateState.UPDATED,
+        text,
+        timestamp: Date.now(),
+      };
+    } else {
+      existingTranslation.text = text;
+      existingTranslation.state = TranslateState.UPDATED;
+      existingTranslation.timestamp = Date.now();
     }
-
-    this.data.languages[lang][id].text = text;
   }
 
-  private async refresh() {
+  public async refresh() {
     const fromRepo: StoreData = {
       languages: await this.translationAdapter.getTranslations(),
       messages: await this.messageAdapter.getMessages(),

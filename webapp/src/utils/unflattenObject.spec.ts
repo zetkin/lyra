@@ -7,14 +7,17 @@ describe('unflattenObject()', () => {
     const actual = unflattenObject({});
     expect(actual).toEqual({});
   });
+
   it('unflat obj one string property', () => {
     const actual = unflattenObject({ a: 'b' });
     expect(actual).toEqual({ a: 'b' });
   });
+
   it('unflat simple obj one object property', () => {
     const actual = unflattenObject({ 'a.b.c': 'd' });
     expect(actual).toEqual({ a: { b: { c: 'd' } } });
   });
+
   it('unflat two properties obj', () => {
     const actual = unflattenObject({
       'a.b.c': 'd',
@@ -30,6 +33,7 @@ describe('unflattenObject()', () => {
     };
     expect(actual).toEqual(expected);
   });
+
   it('unflat four properties obj', () => {
     const actual = unflattenObject({
       'a.b.c': 'v1',
@@ -52,6 +56,7 @@ describe('unflattenObject()', () => {
     };
     expect(actual).toEqual(expected);
   });
+
   it('unflat properties string and obj', () => {
     const actual = unflattenObject({
       'a.b.c': 'd',

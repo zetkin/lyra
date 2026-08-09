@@ -1,5 +1,4 @@
-import fs from 'fs';
-import fsp from 'fs/promises';
+import fs from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
 import { stringify } from 'yaml';
@@ -9,34 +8,50 @@ import { LyraConfig } from '@/utils/lyraConfig';
 import packageJson from '../package.json';
 import { ServerProjectConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
-import { unflattenObject } from '@/utils/unflattenObject';
-import { debug, info, warn } from '@/utils/log';
+import { unflattenTranslateIdTextState } from '@/utils/unflattenObject';
+import { debug, error, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { type TranslationMap } from '@/utils/adapters';
 import { getTranslationsBySourceFile } from '@/utils/translationObjectUtil';
 import { Store } from '@/store/Store';
 
+export type CreatePRProps = {
+  body: string;
+  branchName: string;
+  githubOwner: string;
+  githubRepo: string;
+  githubToken: string;
+  title: string;
+};
+
 export class RepoGit {
+  private readonly GIT_FETCH_TTL = 30_000; // 30 sec before fetch again
   private static repositories: {
     [name: string]: Promise<RepoGit>;
   } = {};
 
-  private readonly git: IGit;
   private lyraConfig?: LyraConfig;
   private lastPullTime: Date;
 
-  private constructor(private readonly spConfig: ServerProjectConfig) {
-    this.git = new SimpleGitWrapper(spConfig.repoPath);
+  private constructor(
+    private readonly spConfig: ServerProjectConfig,
+    private readonly git: IGit,
+  ) {
     this.lastPullTime = new Date(0);
   }
 
-  static async getRepoGit(spConfig: ServerProjectConfig): Promise<RepoGit> {
+  static async get(spConfig: ServerProjectConfig): Promise<RepoGit> {
+    if (!(await RepoGit.cloneIfNotExist(spConfig))) {
+      throw new Error(`Failed to clone repository: ${spConfig.repoPath}`);
+    }
     const key = spConfig.repoPath;
     if (key in RepoGit.repositories) {
       return RepoGit.repositories[key];
     }
-    const repository = new RepoGit(spConfig);
-    const work = repository.checkoutBaseAndPull();
+    debug(`Found git repo at ${spConfig.repoPath}`);
+    const simpleGitWrapper = SimpleGitWrapper.of(spConfig.repoPath);
+    const repository = new RepoGit(spConfig, simpleGitWrapper);
+    const work = repository.fetchAndCheckoutOriginBase();
     const promise = work.then(() => repository);
     RepoGit.repositories[key] = promise;
 
@@ -45,39 +60,68 @@ export class RepoGit {
 
   public static async cloneIfNotExist(
     spConfig: ServerProjectConfig,
-  ): Promise<void> {
-    if (!fs.existsSync(spConfig.repoPath)) {
-      await RepoGit.clone(spConfig);
+  ): Promise<boolean> {
+    const isGitFolderExists = await RepoGit.isGitFolderExists(
+      spConfig.repoPath,
+    );
+    if (!isGitFolderExists) {
+      info(
+        `Cloning because there is not .git folder in [${spConfig.repoPath}] or that path itself does not exist`,
+      );
+      return await RepoGit.clone(spConfig);
+    }
+    if (!(await SimpleGitWrapper.isGitRepo(spConfig.repoPath))) {
+      error(`Path ${spConfig.repoPath} is not a valid git repository`);
+      return false;
+    }
+    return true;
+  }
+
+  private static async isGitFolderExists(folderPath: string): Promise<boolean> {
+    try {
+      const gitFolderStat = await fs.stat(path.join(folderPath, '.git'));
+      return gitFolderStat.isDirectory();
+    } catch {
+      return false;
     }
   }
 
-  private static async clone(spConfig: ServerProjectConfig): Promise<void> {
-    debug(`create directory: ${spConfig.repoPath} ...`);
-    await fsp.mkdir(spConfig.repoPath, { recursive: true });
-    const git = new SimpleGitWrapper(spConfig.repoPath);
-    debug(`Cloning repo: ${spConfig.repoPath} ...`);
-    await git.clone(spConfig.cloneUrl, spConfig.repoPath);
-    debug(`Cloned repo: ${spConfig.repoPath}`);
-    debug(`Checkout base branch: ${spConfig.baseBranch} ...`);
-    await git.checkout(spConfig.baseBranch);
-    debug(`Checked out base branch: ${spConfig.baseBranch}`);
+  private static async clone(spConfig: ServerProjectConfig): Promise<boolean> {
+    try {
+      debug(`create directory: ${spConfig.repoPath} ...`);
+      await fs.mkdir(spConfig.repoPath, { recursive: true });
+      const git = SimpleGitWrapper.of(spConfig.repoPath);
+      debug(`Cloning repo: ${spConfig.repoPath} ...`);
+      await git.clone(spConfig.cloneUrl, spConfig.repoPath);
+      debug(`Cloned repo: ${spConfig.repoPath}`);
+      debug(`Checkout base branch: ${spConfig.originBaseBranch} ...`);
+      await git.checkout(spConfig.originBaseBranch);
+      debug(`Checked out base branch: ${spConfig.originBaseBranch}`);
+      return true;
+    } catch (e) {
+      error(`Failed to clone repo: ${spConfig.cloneUrl} - ${e}`);
+      return false;
+    }
   }
 
   /**
-   * Checkout base branch and pull
-   * @returns base branch name
+   * Fetch then checkout origin/<base branch>
+   * @returns true if we fetched, false if we skipped fetch
    */
-  public async checkoutBaseAndPull(): Promise<string> {
-    await this.git.checkout(this.spConfig.baseBranch);
-
+  public async fetchAndCheckoutOriginBase(): Promise<boolean> {
     const now = new Date();
     const age = now.getTime() - this.lastPullTime.getTime();
-    if (age > 30000) {
-      // We only pull if old
-      await this.git.pull();
+    if (age > this.GIT_FETCH_TTL) {
+      // We only fetch if old
+      debug(
+        `Fetching repo '${this.spConfig.repo}' origin base branch '${this.spConfig.originBaseBranch}' because it's older than ${this.GIT_FETCH_TTL / 1000} seconds`,
+      );
+      await this.git.fetch();
+      await this.git.checkout(this.spConfig.originBaseBranch);
       this.lastPullTime = now;
+      return true;
     }
-    return this.spConfig.baseBranch;
+    return false;
   }
 
   public async saveLanguageFiles(projectPath: string): Promise<string[]> {
@@ -101,22 +145,22 @@ export class RepoGit {
     addFiles: string[],
     commitMsg: string,
   ): Promise<void> {
-    await this.git.newBranch(branchName, this.spConfig.baseBranch);
+    await this.git.newBranch(branchName, this.spConfig.originBaseBranch);
+    info(
+      `Created new branch '${branchName}' from '${this.spConfig.originBaseBranch}'`,
+    );
     await this.git.add(addFiles);
+    info(`Added files to commit:`);
+    addFiles.forEach((f) => info(`\t- ${f}`));
     await this.git.commit(commitMsg);
+    info(`Committed with message: '${commitMsg}'`);
     await this.git.push(branchName);
+    info(`Pushed branch '${branchName}'`);
   }
 
-  public async createPR(
-    branchName: string,
-    prTitle: string,
-    prBody: string,
-    githubOwner: string,
-    githubRepo: string,
-    githubToken: string,
-  ): Promise<string> {
+  public async createPR(props: CreatePRProps): Promise<string> {
     const octokit = new Octokit({
-      auth: githubToken,
+      auth: props.githubToken,
       baseUrl: 'https://api.github.com',
       log: {
         debug: debug,
@@ -135,19 +179,23 @@ export class RepoGit {
 
     const response = await octokit.rest.pulls.create({
       base: this.spConfig.baseBranch,
-      body: prBody,
-      head: branchName,
-      owner: githubOwner,
-      repo: githubRepo,
-      title: prTitle,
+      body: props.body,
+      head: props.branchName,
+      owner: props.githubOwner,
+      repo: props.githubRepo,
+      title: props.title,
     });
 
     return response.data.html_url;
   }
 
   async getLyraConfig(): Promise<LyraConfig> {
-    if (this.lyraConfig === undefined) {
-      await RepoGit.cloneIfNotExist(this.spConfig);
+    if (!this.lyraConfig) {
+      if (!(await RepoGit.cloneIfNotExist(this.spConfig))) {
+        throw new Error(
+          `Failed to clone repository: ${this.spConfig.repoPath}`,
+        );
+      }
       this.lyraConfig = await LyraConfig.readFromDir(this.spConfig.repoPath);
     }
     return this.lyraConfig;
@@ -168,12 +216,16 @@ export class RepoGit {
           Object.entries(translationsBySourceFile).map(
             async ([sourceFile, translation]) => {
               const yamlPath = path.join(translationsPath, sourceFile);
-              const yamlOutput = stringify(unflattenObject(translation), {
-                doubleQuotedAsJSON: true,
-                singleQuote: true,
-              });
+              const yamlOutput = stringify(
+                unflattenTranslateIdTextState(translation),
+                {
+                  doubleQuotedAsJSON: true,
+                  singleQuote: true,
+                },
+              );
               try {
-                await fsp.writeFile(yamlPath, yamlOutput);
+                await fs.writeFile(yamlPath, yamlOutput, { flush: true });
+                info(`Successfully wrote to: ${yamlPath}`);
               } catch (e) {
                 throw new WriteLanguageFileError(yamlPath, e);
               }
