@@ -2,6 +2,12 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
+# [0.7.0] - 2025-10-25
+
+### Added
+
+- Translation syntax validation
+
 # [0.6.0] - 2025-06-08
 
 ### Added
