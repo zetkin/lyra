@@ -5,21 +5,38 @@ import { IGit } from './IGit';
 export class SimpleGitWrapper implements IGit {
   private readonly git: SimpleGit;
 
-  public constructor(public readonly repoPath: string) {
-    const options: Partial<SimpleGitOptions> = {
+  private constructor(public readonly repoPath: string) {
+    this.git = simpleGit(SimpleGitWrapper.getSimpleGitOptions(repoPath));
+  }
+
+  public static of(repoPath: string): SimpleGitWrapper {
+    return new SimpleGitWrapper(repoPath);
+  }
+
+  public static async isGitRepo(repoPath: string): Promise<boolean> {
+    try {
+      const options = SimpleGitWrapper.getSimpleGitOptions(repoPath);
+      await simpleGit(options).status();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private static getSimpleGitOptions(
+    repoPath: string,
+  ): Partial<SimpleGitOptions> {
+    return {
       baseDir: repoPath,
       binary: 'git',
-
       /**
        * We disable symlinks to reduce risk of access to files
        * outside of the local repository.
        */
       config: ['core.symlinks=false'],
-
       maxConcurrentProcesses: 1,
       trimmed: false,
     };
-    this.git = simpleGit(options);
   }
 
   public async clone(repoPath: string, localPath: string): Promise<void> {

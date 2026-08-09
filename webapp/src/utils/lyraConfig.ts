@@ -58,7 +58,7 @@ export class LyraConfig {
 
       return new LyraConfig(
         parsed.projects.map((project) => {
-          LyraConfig.valdidateLanguages(project.languages);
+          LyraConfig.validateLanguages(project.languages);
           return new LyraProjectConfig({
             languages: project.languages ?? ['en'], // default language to be english if not provided
             messageKind: KIND_BY_FORMAT_VALUE[project.messages.format],
@@ -74,7 +74,7 @@ export class LyraConfig {
     }
   }
 
-  private static valdidateLanguages(languages?: string[]) {
+  private static validateLanguages(languages?: string[]) {
     if (languages === undefined) {
       return;
     }

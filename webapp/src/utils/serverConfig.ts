@@ -67,6 +67,10 @@ export class ServerConfig {
       const ymlBuf = await fs.readFile(projectsConfigPath);
       const configData = parse(ymlBuf.toString());
 
+      if (!configData) {
+        // empty config file
+        return new ServerConfig([]);
+      }
       const parsed = serverConfigSchema.parse(configData);
 
       return new ServerConfig(
@@ -83,7 +87,7 @@ export class ServerConfig {
           });
         }),
       );
-    } catch (e) {
+    } catch {
       throw new ServerConfigReadingError(path.basename(projectsConfigPath));
     }
   }
