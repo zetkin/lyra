@@ -1,24 +1,63 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Box, Typography } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { CardGrid } from '@/components/CardGrid';
-import LanguageCard, { LanguageCardProps } from '@/components/LanguageCard';
+import LanguageCard from '@/components/LanguageCard';
 import HomeIcon from '@/components/HomeIcon';
+import { ProjectResponse } from '@/app/api/projects/[projectName]/route';
 
 type ProjectDashboardProps = {
-  languages: LanguageCardProps[];
-  messageCount: number;
-  project: string;
+  projectName: string;
 };
 
-const ProjectDashboard: FC<ProjectDashboardProps> = ({
-  languages,
-  messageCount,
-  project,
-}) => {
+type ProjectLoadingState = {
+  project: undefined;
+  status: 'loading';
+};
+
+type ProjectNotFoundState = {
+  project: undefined;
+  status: 'not-found';
+};
+
+type ProjectReadyState = {
+  project: ProjectResponse;
+  status: 'ready';
+};
+
+type ProjectState =
+  | ProjectLoadingState
+  | ProjectNotFoundState
+  | ProjectReadyState;
+
+const ProjectDashboard: FC<ProjectDashboardProps> = ({ projectName }) => {
+  const [state, setProjectState] = useState<ProjectState>({
+    project: undefined,
+    status: 'loading',
+  });
+
+  useEffect(() => {
+    fetch(`/api/projects/${projectName}`)
+      .then((r) => r.json())
+      .then((p) => {
+        if (p.errorMessage) {
+          setProjectState({
+            project: undefined,
+            status: 'not-found',
+          });
+          return;
+        }
+        setProjectState({
+          project: p,
+          status: 'ready',
+        });
+      });
+  }, [projectName]);
+
   return (
     <Box
       alignItems="center"
@@ -51,20 +90,37 @@ const ProjectDashboard: FC<ProjectDashboardProps> = ({
           width: '100%',
         }}
       >
-        <CardGrid
-          heading={
+        <>
+          {state.status === 'loading' && <CircularProgress />}
+          {state.status === 'not-found' && (
             <>
+              <ErrorIcon />
               <Typography component="h1" fontWeight="bold">
-                {project}
+                Not Found
               </Typography>
-              <Typography>{messageCount} messages</Typography>
             </>
-          }
-        >
-          {languages.map((language, i) => (
-            <LanguageCard key={i} {...language} />
-          ))}
-        </CardGrid>
+          )}
+          {state.status === 'ready' && (
+            <>
+              <CardGrid
+                heading={
+                  <>
+                    <Typography component="h1" fontWeight="bold">
+                      {projectName}
+                    </Typography>
+                    <Typography>
+                      {state.project.messageCount} messages
+                    </Typography>
+                  </>
+                }
+              >
+                {state.project.languages.map((language, i) => (
+                  <LanguageCard key={i} {...language} />
+                ))}
+              </CardGrid>
+            </>
+          )}
+        </>
       </Box>
     </Box>
   );
