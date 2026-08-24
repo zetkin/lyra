@@ -8,7 +8,7 @@ import { LyraConfig } from '@/utils/lyraConfig';
 import packageJson from '../package.json';
 import { ServerProjectConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
-import { unflattenTranslateIdTextState } from '@/utils/unflattenObject';
+import { unflattenObject } from '@/utils/unflattenObject';
 import { debug, error, info, warn } from '@/utils/log';
 import { WriteLanguageFileError, WriteLanguageFileErrors } from '@/errors';
 import { type TranslationMap } from '@/utils/adapters';
@@ -216,13 +216,14 @@ export class RepoGit {
           Object.entries(translationsBySourceFile).map(
             async ([sourceFile, translation]) => {
               const yamlPath = path.join(translationsPath, sourceFile);
-              const yamlOutput = stringify(
-                unflattenTranslateIdTextState(translation),
-                {
-                  doubleQuotedAsJSON: true,
-                  singleQuote: true,
-                },
-              );
+              const textById: Record<string, string> = {};
+              Object.entries(translation).forEach(([id, textState]) => {
+                textById[id] = textState.text;
+              });
+              const yamlOutput = stringify(unflattenObject(textById), {
+                doubleQuotedAsJSON: true,
+                singleQuote: true,
+              });
               try {
                 await fs.writeFile(yamlPath, yamlOutput, { flush: true });
                 info(`Successfully wrote to: ${yamlPath}`);
