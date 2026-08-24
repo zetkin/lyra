@@ -1,0 +1,66 @@
+import fs from 'fs/promises';
+import path from 'path';
+
+import flattenObject from '../flattenObject';
+import { ITranslationAdapter, TranslateState, type TranslationMap } from '.';
+
+export default class JsonTranslationAdapter implements ITranslationAdapter {
+  private readonly basePath: string;
+
+  constructor(basePath: string) {
+    this.basePath = basePath;
+  }
+
+  async getTranslations(): Promise<TranslationMap> {
+    const matcher = (path: string) => path.endsWith('.json');
+
+    const map: TranslationMap = {};
+
+    for await (const fullPath of findFiles(this.basePath, matcher)) {
+      const sourceFilePath = path.relative(this.basePath, fullPath);
+      const fileName = path.basename(fullPath);
+      const pathWithoutFile = sourceFilePath.slice(0, -fileName.length);
+      const jsonBuf = await fs.readFile(fullPath);
+      const data = JSON.parse(jsonBuf.toString());
+      const flattened = flattenObject(data);
+
+      const lang = fileName.split('.')[0];
+      if (!map[lang]) {
+        map[lang] = {};
+      }
+
+      Object.entries(flattened).forEach(([key, value]) => {
+        const elements = [
+          ...pathWithoutFile.split('/'),
+          ...key.split('.'),
+        ].filter((elem) => !!elem);
+
+        const id = elements.join('.');
+
+        map[lang][id] = {
+          sourceFile: sourceFilePath,
+          state: TranslateState.PUBLISHED,
+          text: value,
+          timestamp: undefined, // maybe in future we can add a timestamp of file change
+        };
+      });
+    }
+
+    return map;
+  }
+}
+
+async function* findFiles(
+  dir: string,
+  matches: (fullFilePath: string) => boolean,
+): AsyncIterable<string> {
+  const dirEnts = await fs.readdir(dir, { withFileTypes: true });
+  for (const dirEnt of dirEnts) {
+    const fullFilePath = path.resolve(dir, dirEnt.name);
+    if (dirEnt.isDirectory()) {
+      yield* findFiles(fullFilePath, matches);
+    } else if (matches(fullFilePath)) {
+      yield fullFilePath;
+    }
+  }
+}

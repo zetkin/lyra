@@ -1,11 +1,11 @@
 import fs from 'fs/promises';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
-import { stringify } from 'yaml';
 
 import { IGit } from '@/utils/git/IGit';
 import { LyraConfig } from '@/utils/lyraConfig';
 import packageJson from '../package.json';
+import serializeTranslationFile from '@/utils/serializeTranslationFile';
 import { ServerProjectConfig } from '@/utils/serverConfig';
 import { SimpleGitWrapper } from '@/utils/git/SimpleGitWrapper';
 import { unflattenObject } from '@/utils/unflattenObject';
@@ -215,22 +215,22 @@ export class RepoGit {
         const resultSourceFile = await Promise.allSettled(
           Object.entries(translationsBySourceFile).map(
             async ([sourceFile, translation]) => {
-              const yamlPath = path.join(translationsPath, sourceFile);
+              const filePath = path.join(translationsPath, sourceFile);
               const textById: Record<string, string> = {};
               Object.entries(translation).forEach(([id, textState]) => {
                 textById[id] = textState.text;
               });
-              const yamlOutput = stringify(unflattenObject(textById), {
-                doubleQuotedAsJSON: true,
-                singleQuote: true,
-              });
+              const fileOutput = serializeTranslationFile(
+                unflattenObject(textById),
+                filePath,
+              );
               try {
-                await fs.writeFile(yamlPath, yamlOutput, { flush: true });
-                info(`Successfully wrote to: ${yamlPath}`);
+                await fs.writeFile(filePath, fileOutput, { flush: true });
+                info(`Successfully wrote to: ${filePath}`);
               } catch (e) {
-                throw new WriteLanguageFileError(yamlPath, e);
+                throw new WriteLanguageFileError(filePath, e);
               }
-              paths.push(yamlPath);
+              paths.push(filePath);
             },
           ),
         );
