@@ -226,7 +226,7 @@ describe('ProjectStore', () => {
       expect(actual['core.click'].sourceFile).toEqual('sv.json');
     });
 
-    it('falls back to the configured file extension for a brand new language', async () => {
+    it('falls back to the configured file extension for a brand new message', async () => {
       const store = new ProjectStore(
         {
           getMessages: async () => [
