@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-03
+
+### Added
+
+- JSON translation file support
+
+### Fixed
+
+- Fix a bug that would serialize the state into pull requests
+
 ## [0.9.0] - 2026-03-01
 
 ### Fixed
@@ -18,7 +28,7 @@
 - `/projects/[projectName]/[language]` is now a static page powered by REST API endpoints
 - `/projects/[projectName]/[language]/[messageId]` is now a static page powered by REST API endpoints
 
-### Add
+### Added
 
 - Search
 - `GET /api/projects` endpoint
