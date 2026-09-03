@@ -10,9 +10,22 @@ export enum MessageKind {
   YAML = 'yaml',
 }
 
+export enum TranslationKind {
+  YAML = 'yaml',
+  JSON = 'json',
+}
+
 const KIND_BY_FORMAT_VALUE: Record<'ts' | 'yaml', MessageKind> = {
   ts: MessageKind.TS,
   yaml: MessageKind.YAML,
+};
+
+const TRANSLATION_KIND_BY_FORMAT_VALUE: Record<
+  'yaml' | 'json',
+  TranslationKind
+> = {
+  json: TranslationKind.JSON,
+  yaml: TranslationKind.YAML,
 };
 
 const lyraConfigSchema = z.object({
@@ -27,6 +40,9 @@ const lyraConfigSchema = z.object({
       }),
       path: z.string(),
       translations: z.object({
+        // defaults to 'yaml' to remain backwards compatible with configs
+        // written before JSON translation files were supported
+        format: z.optional(z.enum(['yaml', 'json'])),
         path: z.string(),
       }),
     }),
@@ -65,6 +81,10 @@ export class LyraConfig {
             messagesPath: project.messages.path,
             path: project.path,
             repoPath: repoPath,
+            translationKind:
+              TRANSLATION_KIND_BY_FORMAT_VALUE[
+                project.translations.format ?? 'yaml'
+              ],
             translationsPath: project.translations.path,
           });
         }),
@@ -94,6 +114,7 @@ export type LyraProjectConfigProps = {
   messagesPath: string;
   path: string;
   repoPath: string;
+  translationKind?: TranslationKind;
   translationsPath: string;
 };
 
@@ -103,6 +124,7 @@ export class LyraProjectConfig {
   public readonly messageKind: string;
   private readonly messagesPath: string;
   private readonly translationsPath: string;
+  public readonly translationKind: TranslationKind;
   public readonly languages: string[];
 
   constructor({
@@ -110,6 +132,7 @@ export class LyraProjectConfig {
     path,
     messageKind,
     messagesPath,
+    translationKind,
     translationsPath,
     languages,
   }: LyraProjectConfigProps) {
@@ -117,6 +140,7 @@ export class LyraProjectConfig {
     this.path = path;
     this.messageKind = messageKind;
     this.messagesPath = messagesPath;
+    this.translationKind = translationKind ?? TranslationKind.YAML;
     this.translationsPath = translationsPath;
     /*
      * Lyra was written primarily for Zetkin Generation 3
@@ -169,6 +193,11 @@ export class LyraProjectConfig {
 
   get absTranslationsPath(): string {
     return path.join(this.repoPath, this.path, this.translationsPath);
+  }
+
+  /** file extension (without leading dot) used when a new translation file is created */
+  get translationFileExtension(): string {
+    return this.translationKind === TranslationKind.JSON ? 'json' : 'yml';
   }
 
   isLanguageSupported(lang: string): boolean {

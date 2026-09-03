@@ -13,11 +13,13 @@ export class ProjectStore {
   private data: StoreData;
   private readonly translationAdapter: ITranslationAdapter;
   private readonly messageAdapter: IMessageAdapter;
+  private readonly newFileExtension: string;
 
   constructor(
     messageAdapter: IMessageAdapter,
     translationAdapter: ITranslationAdapter,
     initialState?: StoreData,
+    newFileExtension: string = 'yml',
   ) {
     this.data = initialState || {
       languages: {},
@@ -26,6 +28,7 @@ export class ProjectStore {
 
     this.translationAdapter = translationAdapter;
     this.messageAdapter = messageAdapter;
+    this.newFileExtension = newFileExtension;
   }
 
   async getLanguageData(): Promise<TranslationMap> {
@@ -92,16 +95,16 @@ export class ProjectStore {
   private generateSourceFile(lang: string, messageId: string): string {
     const enSourceFile = this.data.languages?.['en']?.[messageId]?.sourceFile;
     if (!enSourceFile) {
-      return `${lang}.yml`;
+      return `${lang}.${this.newFileExtension}`;
     }
     /** for example if lang = sv then replace "en" to "sv" ex. "folder1/en.yaml" -> "folder1/sv.yaml" */
     const enSourceFileArr = enSourceFile.split('/');
     const enShortFileName = enSourceFileArr.pop();
     if (!enShortFileName) {
-      return `${lang}.yml`;
+      return `${lang}.${this.newFileExtension}`;
     }
     const langFileName = enShortFileName.replace(
-      /^en\.(.+\.)*(ya?ml)$/g,
+      /^en\.(.+\.)*(ya?ml|json)$/g,
       `${lang}.$1$2`,
     );
     enSourceFileArr.push(langFileName);
