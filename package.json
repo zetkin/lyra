@@ -14,6 +14,11 @@
   "scripts": {
     "build": "npm run --workspaces build",
     "test": "npm run --workspaces test",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:enter-pre-release": "changeset pre enter rc",
+    "changeset:exit-pre-release": "changeset pre exit",
+    "changeset:tag": "changeset tag",
     "lint:formatting": "npm run --workspaces lint:formatting",
     "lint:eslint": "npm run --workspaces lint:eslint"
   },
@@ -21,6 +26,7 @@
     "lyra"
   ],
   "devDependencies": {
+    "@changesets/cli": "^2.29.4",
     "@types/mock-fs": "^4.13.4",
     "@types/node": "^22",
     "@types/react": "~18.3.3",
