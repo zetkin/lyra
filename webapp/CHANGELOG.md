@@ -2,9 +2,9 @@
 
 <!-- https://keepachangelog.com/en/1.0.0/ -->
 
-## [Unreleased]
+## Unreleased
 
-## [0.9.0] - 2026-03-01
+## 0.9.0 - 2026-03-01
 
 ### Fixed
 
@@ -25,43 +25,43 @@
 - `GET /api/projects/[projectName]` endpoint
 - `GET /api/projects/[projectName]/languages/[languageId]/messages` endpoint
 
-## [0.8.1] - 2025-11-23
+## 0.8.1 - 2025-11-23
 
 ### Changed
 
 - npm audit fix
 
-## [0.8.0] - 2025-11-22
+## 0.8.0 - 2025-11-22
 
 ### Added
 
 - Translation state now saved in store and send this states to FE, so FE can show the correct state [PUBLISHED, UPDATED]
 
-## [0.7.0] - 2025-10-25
+## 0.7.0 - 2025-10-25
 
 ### Added
 
 - Translation syntax validation
 
-## [0.6.0] - 2025-06-08
+## 0.6.0 - 2025-06-08
 
 ### Added
 
 - Layout file for messages tree
 
-## [0.5.0] - 2025-06-07
+## 0.5.0 - 2025-06-07
 
 ### Removed
 
 - Publish button from webapp
 
-## [0.4.1] - 2025-06-07
+## 0.4.1 - 2025-06-07
 
 ### Added
 
 - Debug logging flagged with env var
 
-## [0.4.0] - 2025-06-06
+## 0.4.0 - 2025-06-06
 
 ### Added
 
@@ -71,7 +71,7 @@
 
 - rename `lyra.yml` to `.lyra.yaml`
 
-## [0.3.0]
+## 0.3.0
 
 ### Added
 
@@ -96,32 +96,32 @@
   http://example.com/projects/<projectName>/sv
   ```
 
-## [0.2.5] 2023-12-20
+## 0.2.5 2023-12-20
 
 ### Changed
 
 - remove error logging
 
-## [0.2.4] 2023-12-20
+## 0.2.4 2023-12-20
 
 ### Changed
 
 - Web page only load 50 messages at a time
 
-## [0.2.3] 2023-12-19
+## 0.2.3 2023-12-19
 
 ### Changed
 
 - Become part of npm workspaces package
 - Move devDependencies to root package
 
-## [0.2.2] 2023-12-16
+## 0.2.2 2023-12-16
 
 ### Fixed
 
 - Bug: adapter is not loading `en` language
 
-## [0.2.1] 2023-12-05
+## 0.2.1 2023-12-05
 
 ### Added
 
@@ -132,26 +132,26 @@
 
 - Rename classes name YAMLTranslate to YamlTranslate and TSMessage to TsMessage to follow naming convention
 
-## [0.2.0] 2023-12-04
+## 0.2.0 2023-12-04
 
 ### Added
 
 - adaptor
 - Unit test
 
-## [0.1.3] 2023-12-01
+## 0.1.3 2023-12-01
 
 ### Fixed
 
 - Bug: The case when there is more than one variable in message-id
 
-## [0.1.2] 2023-12-01
+## 0.1.2 2023-12-01
 
 ### Changed
 
 - in memory translate object become flat object of message id and text
 
-## [0.1.1] 2023-11-24
+## 0.1.1 2023-11-24
 
 ### Changed
 
