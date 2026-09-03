@@ -38,11 +38,11 @@ export async function accessLanguage(
   }
 
   const repoGit = await RepoGit.get(project);
-  const fetched = await repoGit.fetchAndCheckoutOriginBase();
+  await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const projectStore = await Store.getProjectStore(projectConfig);
-  if (fetched) {
+  if (!projectStore.hasMergedSince(repoGit.lastPullTime)) {
     await projectStore.refresh();
   }
   const messages = await projectStore.getMessages();
@@ -67,11 +67,11 @@ async function readProject(project: ServerProjectConfig) {
     return { languagesWithTranslations: [], messages: [], name: project.name };
   }
   const repoGit = await RepoGit.get(project);
-  const fetched = await repoGit.fetchAndCheckoutOriginBase();
+  await repoGit.fetchAndCheckoutOriginBase();
   const lyraConfig = await repoGit.getLyraConfig();
   const projectConfig = lyraConfig.getProjectConfigByPath(project.projectPath);
   const store = await Store.getProjectStore(projectConfig);
-  if (fetched) {
+  if (!store.hasMergedSince(repoGit.lastPullTime)) {
     await store.refresh();
   }
   const messages = await store.getMessages();

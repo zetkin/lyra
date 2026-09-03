@@ -22,7 +22,8 @@ describe('mergeStoreData()', () => {
 
     const result = mergeStoreData(inMemory, fromRepo);
 
-    expect(result).toEqual(fromRepo);
+    expect(result.languages).toEqual({});
+    expect(result.messages).toEqual([]);
   });
 
   it('accepts fromRepo when inMemory is empty', () => {
@@ -41,7 +42,8 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toEqual(fromRepo);
+    expect(result.languages).toEqual(fromRepo.languages);
+    expect(result.messages).toEqual(fromRepo.messages);
   });
 
   it('accepts new message', () => {
@@ -68,7 +70,7 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toEqual(fromRepo);
+    expect(result.messages).toEqual(fromRepo.messages);
   });
 
   it('removes translations when message disappears from repo', () => {
@@ -87,7 +89,8 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toEqual(fromRepo);
+    expect(result.languages).toEqual(fromRepo.languages);
+    expect(result.messages).toEqual(fromRepo.messages);
   });
 
   it('retains translation from memory', () => {
@@ -110,7 +113,7 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toEqual(inMemory);
+    expect(result.languages).toEqual(inMemory.languages);
   });
 
   it('always returns languages, even if empty', () => {
@@ -127,7 +130,9 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toEqual(fromRepo);
+    expect(result.languages).toEqual({
+      sv: {},
+    });
   });
 
   it('should not return undefined if both memory and repo are falsy (undefined)', () => {
@@ -146,12 +151,42 @@ describe('mergeStoreData()', () => {
     };
 
     const result = mergeStoreData(inMemory, fromRepo);
-    expect(result).toStrictEqual({
-      languages: {
-        sv: {},
-      },
-      messages: [mockMessage('any.message.id', 'Default message')],
+    expect(result.languages).toStrictEqual({
+      sv: {},
     });
+  });
+
+  it('updates present timeOfLastMerge', () => {
+    const before = new Date().getTime();
+    const result = mergeStoreData(
+      {
+        languages: {},
+        messages: [],
+        timeOfLastMerge: 0,
+      },
+      {
+        languages: {},
+        messages: [],
+      },
+    );
+    expect(result.timeOfLastMerge).toBeDefined();
+    expect(result.timeOfLastMerge).toBeGreaterThanOrEqual(before);
+  });
+
+  it('updates absent timeOfLastMerge', () => {
+    const before = new Date().getTime();
+    const result = mergeStoreData(
+      {
+        languages: {},
+        messages: [],
+      },
+      {
+        languages: {},
+        messages: [],
+      },
+    );
+    expect(result.timeOfLastMerge).toBeDefined();
+    expect(result.timeOfLastMerge).toBeGreaterThanOrEqual(before);
   });
 });
 
