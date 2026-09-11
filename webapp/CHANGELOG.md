@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix Lyra not loading messages or translations on first clone
+
 ## [1.0.0] - 2026-09-03
 
 ### Added
@@ -18,8 +22,8 @@
 
 ### Fixed
 
-- Reduce load times by not refreshing ProjectStore if we skipped fetch.
-- Reduce load times by not refreshing ProjectStore many times per page load.
+- Reduce load times by not refreshing ProjectStore if we skipped fetch
+- Reduce load times by not refreshing ProjectStore many times per page load
 
 ### Changed
 
