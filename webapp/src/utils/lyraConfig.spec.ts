@@ -1,7 +1,7 @@
 import mock from 'mock-fs';
 import { afterEach, describe, expect, it } from '@jest/globals';
 
-import { LyraConfig, MessageKind } from './lyraConfig';
+import { LyraConfig, MessageKind, TranslationKind } from './lyraConfig';
 import { LyraConfigReadingError, ProjectPathNotFoundError } from '@/errors';
 
 describe('LyraConfig', () => {
@@ -54,6 +54,41 @@ describe('LyraConfig', () => {
         '/path/to/repo/locale',
       );
       expect(config.projects[0].languages).toEqual(['en']); // default value
+    });
+
+    it('defaults translationKind to yaml when format is omitted', async () => {
+      mock({
+        '/path/to/repo/.lyra.yaml': [
+          'projects:',
+          '- path: .',
+          '  messages:',
+          '    format: yaml',
+          '    path: locale',
+          '  translations:',
+          '    path: locale',
+        ].join('\n'),
+      });
+      const config = await LyraConfig.readFromDir('/path/to/repo');
+      expect(config.projects[0].translationKind).toEqual(TranslationKind.YAML);
+      expect(config.projects[0].translationFileExtension).toEqual('yml');
+    });
+
+    it('reads translations.format: json from .lyra.yaml', async () => {
+      mock({
+        '/path/to/repo/.lyra.yaml': [
+          'projects:',
+          '- path: .',
+          '  messages:',
+          '    format: ts',
+          '    path: src',
+          '  translations:',
+          '    format: json',
+          '    path: locale',
+        ].join('\n'),
+      });
+      const config = await LyraConfig.readFromDir('/path/to/repo');
+      expect(config.projects[0].translationKind).toEqual(TranslationKind.JSON);
+      expect(config.projects[0].translationFileExtension).toEqual('json');
     });
 
     it('combines project path with messages path', async () => {
