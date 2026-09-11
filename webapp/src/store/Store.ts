@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 
 import { ProjectStore } from '@/store/ProjectStore';
 import MessageAdapterFactory from '@/utils/adapters/MessageAdapterFactory';
-import YamlTranslationAdapter from '@/utils/adapters/YamlTranslationAdapter';
+import TranslationAdapterFactory from '@/utils/adapters/TranslationAdapterFactory';
 import { LyraProjectConfig } from '@/utils/lyraConfig';
 import { StoreData } from './types';
 import { error } from '@/utils/log';
@@ -45,8 +45,9 @@ export class Store {
 
       const projectStore = new ProjectStore(
         MessageAdapterFactory.createAdapter(lyraProjectConfig),
-        new YamlTranslationAdapter(lyraProjectConfig.absTranslationsPath),
+        TranslationAdapterFactory.createAdapter(lyraProjectConfig),
         initialProjectState,
+        lyraProjectConfig.translationFileExtension,
       );
       store.addProjectStore(lyraProjectConfig.absPath, projectStore);
     }
