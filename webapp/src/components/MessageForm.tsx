@@ -227,7 +227,7 @@ const MessageForm: FC<MessageFormProps> = ({
                 ) : (
                   messageIdParts.map((part, i) => (
                     <Typography
-                      key={part}
+                      key={i}
                       color={
                         i === messageIdParts.length - 1
                           ? 'text.primary'
