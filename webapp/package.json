@@ -23,7 +23,7 @@
     "next": "14.2.35",
     "react": "~18.3.1",
     "react-dom": "~18.3.1",
-    "react-window": "^1.8.10",
+    "react-window": "^1.8.11",
     "simple-git": "^3.27.0",
     "yaml": "^2.6.1",
     "zod": "^3.23.8"
