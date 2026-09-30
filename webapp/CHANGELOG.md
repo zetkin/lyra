@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update react-window from 1.8.10 to 1.8.11
+
 ## [1.0.0] - 2026-09-03
 
 ### Added
@@ -18,8 +22,8 @@
 
 ### Fixed
 
-- Reduce load times by not refreshing ProjectStore if we skipped fetch.
-- Reduce load times by not refreshing ProjectStore many times per page load.
+- Reduce load times by not refreshing ProjectStore if we skipped fetch
+- Reduce load times by not refreshing ProjectStore many times per page load
 
 ### Changed
 
