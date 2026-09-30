@@ -1,0 +1,126 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15" version="27.1.4">
+  <diagram name="Page-1" id="oQrqXVx8weoeLsDm3hYk">
+    <mxGraphModel dx="63" dy="1604" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-104" value="User Workflow" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="884" y="-662" width="1027" height="808" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-61" value="Lyra Production Server (x86)" style="swimlane;whiteSpace=wrap;html=1;" parent="vMTYKPIQD1wyu0-Czhs2-104" vertex="1">
+          <mxGeometry x="29" y="48.5" width="607" height="352" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-62" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-61" source="vMTYKPIQD1wyu0-Czhs2-64" target="vMTYKPIQD1wyu0-Czhs2-70" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="255" y="193" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-63" value="mounts" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" parent="vMTYKPIQD1wyu0-Czhs2-62" vertex="1" connectable="0">
+          <mxGeometry x="-0.2978" y="5" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-64" value="config&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" parent="vMTYKPIQD1wyu0-Czhs2-61" vertex="1">
+          <mxGeometry x="9" y="76" width="175" height="129" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-65" value="Access Key to &lt;br&gt;create Pull Requests" style="points=[[0,0.5,0],[0.24,0,0],[0.5,0.28,0],[0.995,0.475,0],[0.5,0.72,0],[0.24,1,0]];verticalLabelPosition=bottom;sketch=0;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.key;fillColor=#005073;strokeColor=none;" parent="vMTYKPIQD1wyu0-Czhs2-61" vertex="1">
+          <mxGeometry x="65" y="136" width="50" height="22.5" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-66" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-61" source="vMTYKPIQD1wyu0-Czhs2-68" target="vMTYKPIQD1wyu0-Czhs2-70" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-67" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-61" source="vMTYKPIQD1wyu0-Czhs2-68" target="vMTYKPIQD1wyu0-Czhs2-73" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-68" value="docker compose file" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" parent="vMTYKPIQD1wyu0-Czhs2-61" vertex="1">
+          <mxGeometry x="368" y="34" width="156" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-69" value="Docker engine" style="swimlane;whiteSpace=wrap;html=1;" parent="vMTYKPIQD1wyu0-Czhs2-61" vertex="1">
+          <mxGeometry x="293" y="119" width="310" height="222" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-70" value="Container&lt;br&gt;ghcr.io/zetkin/lyra:0.6.0" style="rounded=0;whiteSpace=wrap;html=1;" parent="vMTYKPIQD1wyu0-Czhs2-69" vertex="1">
+          <mxGeometry x="5" y="43" width="137" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-71" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-69" source="vMTYKPIQD1wyu0-Czhs2-73" target="vMTYKPIQD1wyu0-Czhs2-70" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="159" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-72" value="2. forwards traffic" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" parent="vMTYKPIQD1wyu0-Czhs2-71" vertex="1" connectable="0">
+          <mxGeometry x="0.4699" y="-14" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-73" value="nginx reverse proxy&lt;br&gt;Ports 80/443" style="rounded=0;whiteSpace=wrap;html=1;" parent="vMTYKPIQD1wyu0-Czhs2-69" vertex="1">
+          <mxGeometry x="157" y="41" width="137" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-75" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-61" source="vMTYKPIQD1wyu0-Czhs2-77" target="vMTYKPIQD1wyu0-Czhs2-70" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="331" y="261" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-76" value="mounts" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" parent="vMTYKPIQD1wyu0-Czhs2-75" vertex="1" connectable="0">
+          <mxGeometry x="-0.3103" y="11" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-77" value="SSH key to access&lt;div&gt;&amp;nbsp;zetkin repository&lt;/div&gt;" style="points=[[0,0.5,0],[0.24,0,0],[0.5,0.28,0],[0.995,0.475,0],[0.5,0.72,0],[0.24,1,0]];verticalLabelPosition=bottom;sketch=0;html=1;verticalAlign=top;aspect=fixed;align=center;pointerEvents=1;shape=mxgraph.cisco19.key;fillColor=#005073;strokeColor=none;" parent="vMTYKPIQD1wyu0-Czhs2-61" vertex="1">
+          <mxGeometry x="209" y="265" width="50" height="22.5" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-81" value="GitHub" style="swimlane;whiteSpace=wrap;html=1;" parent="vMTYKPIQD1wyu0-Czhs2-104" vertex="1">
+          <mxGeometry x="29" y="441" width="609" height="271" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-91" value="&lt;div&gt;Zetkin Repository&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=38;" parent="vMTYKPIQD1wyu0-Czhs2-81" vertex="1">
+          <mxGeometry x="309" y="31" width="291" height="233" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-93" value="Codebase" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" parent="vMTYKPIQD1wyu0-Czhs2-91" vertex="1">
+          <mxGeometry x="8" y="46" width="63" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-99" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-91" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="101" y="195.5" as="sourcePoint" />
+            <mxPoint x="101" y="195.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-100" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-104" source="vMTYKPIQD1wyu0-Czhs2-70" target="vMTYKPIQD1wyu0-Czhs2-91" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-101" value="3. pulls, pushes, creates PR&#39;s" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" parent="vMTYKPIQD1wyu0-Czhs2-100" vertex="1" connectable="0">
+          <mxGeometry x="0.3567" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-44" value="Lyra User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="vMTYKPIQD1wyu0-Czhs2-104" vertex="1">
+          <mxGeometry x="838" y="291" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-45" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-104" source="vMTYKPIQD1wyu0-Czhs2-44" target="vMTYKPIQD1wyu0-Czhs2-73" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-137" y="328" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-46" value="1. access https://lyra.zetkin.org&lt;br&gt;via browser" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" parent="vMTYKPIQD1wyu0-Czhs2-45" vertex="1" connectable="0">
+          <mxGeometry x="-0.1736" y="4" relative="1" as="geometry">
+            <mxPoint x="-3" y="-23" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-78" value="DNS A&lt;br&gt;Record&lt;br&gt;&lt;b&gt;lyra.zetkin.org&lt;/b&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" parent="vMTYKPIQD1wyu0-Czhs2-104" vertex="1">
+          <mxGeometry x="834" y="36" width="167" height="153" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-79" style="edgeStyle=none;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.904;entryY=0.013;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=12;startSize=8;endSize=8;" parent="vMTYKPIQD1wyu0-Czhs2-104" source="vMTYKPIQD1wyu0-Czhs2-78" target="vMTYKPIQD1wyu0-Czhs2-61" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vMTYKPIQD1wyu0-Czhs2-80" value="points to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=12;" parent="vMTYKPIQD1wyu0-Czhs2-79" vertex="1" connectable="0">
+          <mxGeometry x="0.2343" y="-4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
