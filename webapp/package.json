@@ -10,7 +10,8 @@
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "playwright": "npx playwright test"
   },
   "dependencies": {
     "@messageformat/parser": "^5.1.1",
@@ -23,9 +24,12 @@
     "next": "14.2.35",
     "react": "~18.3.1",
     "react-dom": "~18.3.1",
-    "react-window": "^1.8.10",
+    "react-window": "^1.8.11",
     "simple-git": "^3.27.0",
     "yaml": "^2.6.1",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.2"
   }
 }
