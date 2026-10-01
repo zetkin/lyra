@@ -8,6 +8,10 @@
 
 - Fix warning about message id children having the same key in MessageForm
 
+### Changed
+
+- Update react-window from 1.8.10 to 1.8.11
+
 ## [1.0.0] - 2026-09-03
 
 ### Added
