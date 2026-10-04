@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix Lyra not loading messages or translations on first clone
+
 ### Changed
 
 - Update react-window from 1.8.10 to 1.8.11
