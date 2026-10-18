@@ -7,10 +7,11 @@ import { TreeItem2 } from '@mui/x-tree-view/TreeItem2';
 
 import { MessageData } from '@/utils/adapters';
 import { type UnflattenObject, unflattenObject } from '@/utils/unflattenObject';
+import { MessageDto } from '@/dto/MessageDto';
 
 type MessageTreeProps = {
   messageId?: string;
-  messages: MessageData[];
+  messages: MessageDto[];
   onItemSelectionToggle: (
     e: React.SyntheticEvent,
     id: string,
@@ -26,7 +27,7 @@ const MessageTree: FC<MessageTreeProps> = ({
   const tree = useMemo(() => {
     const record = messages.reduce(
       (acc, msg) => {
-        acc[msg.id] = msg.id;
+        acc[msg.i18nKey] = msg.i18nKey;
         return acc;
       },
       {} as Record<string, string>,

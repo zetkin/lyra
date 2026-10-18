@@ -1,60 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { accessLanguage } from '@/dataAccess';
 import { info, toHex, warn } from '@/utils/log';
-import { MessageData, TranslateIdTextState } from '@/utils/adapters';
+import { MessageDto } from '@/dto/MessageDto';
+import { MessageService } from '@/services/MessageService';
 
-export type LanguageResponse = {
-  messages: MessageData[];
-  translations: TranslateIdTextState;
+export type ErrorDto = {
+  errorMessage: string;
+  status: number;
 };
+
+const messageService = new MessageService();
 
 export async function GET(
   req: NextRequest,
   context: {
     params: { languageId: string; projectName: string };
   },
-): Promise<NextResponse> {
+): Promise<NextResponse<MessageDto[] | ErrorDto>> {
   const { languageId, projectName } = context.params;
-
-  let languageData;
-  try {
-    languageData = await accessLanguage(projectName, languageId);
-  } catch (e) {
-    return NextResponse.json({ errorMessage: 'Not Found' }, { status: 404 });
-  }
-  if (!languageData) {
+  const messageData = messageService.getMessages(projectName, languageId);
+  if (messageData.length == 0) {
     warn(
       `No language data found for project with code units ${toHex(projectName)}`,
     );
-    return NextResponse.json({ errorMessage: 'Not Found' }, { status: 404 });
+    return NextResponse.json({ errorMessage: 'Not Found', status: 404 });
   }
 
   info(
-    `Found ${languageData?.messages.length} messages for language '${languageId}' in project '${projectName}'`,
+    `Found ${messageData.length} messages for language '${languageId}' in project '${projectName}'`,
   );
+  let translationCount = 0;
+  messageData.forEach((message) => {
+    const translationsInLang = message.translations.filter(
+      (t) => t.language === languageId,
+    );
+    translationCount += translationsInLang.length;
+  });
 
-  const { messages, translations } = languageData;
-  const translationCount = Object.keys(translations).length;
-  const percentage = Math.round((100 * translationCount) / messages.length);
+  const percentage = Math.round((100 * translationCount) / messageData.length);
   info(
     `Found ${translationCount} translations (${percentage}%) for language '${languageId}' in project '${projectName}'`,
   );
 
-  messages.sort((m0, m1) => {
-    const trans0 = translations[m0.id]?.text.trim() ?? '';
-    const trans1 = translations[m1.id]?.text.trim() ?? '';
-    if (!trans0) {
+  // ensure to sort untranslated messages first, so that translators can easily find them
+  messageData.sort((m0, m1) => {
+    const trans0 = m0.translations.filter((t) => t.language === languageId);
+    const trans1 = m1.translations.filter((t) => t.language === languageId);
+    if (trans0.length === 0) {
       return -1;
-    } else if (trans1) {
+    } else if (trans1.length > 0) {
       return 1;
     } else {
       return 0;
     }
   });
 
-  return NextResponse.json<LanguageResponse>({
-    messages,
-    translations,
-  });
+  return NextResponse.json(messageData);
 }

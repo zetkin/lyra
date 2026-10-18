@@ -1,3 +1,7 @@
+import { TranslateState } from '@/dao/types';
+
+export { TranslateState };
+
 type TypeID = string;
 
 export type MessageData = {
@@ -8,11 +12,6 @@ export type MessageData = {
     types: TypeID[];
   }[];
 };
-
-export enum TranslateState {
-  UPDATED = 'UPDATED',
-  PUBLISHED = 'PUBLISHED',
-}
 
 export type MessageTranslation = {
   sourceFile: string;

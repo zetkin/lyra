@@ -23,29 +23,15 @@ import MessageTree from '@/components/MessageTree';
 import SidebarContextProvider from '@/components/SidebarContext';
 import Header from '@/components/Header';
 import Main from '@/components/Main';
-import { LanguageResponse } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/route';
+import { ErrorDto } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/route';
 import SearchContextProvider, { SearchState } from '@/components/SearchContext';
+import { MessageDto } from '@/dto/MessageDto';
 import { textIncludesQuery } from '@/utils/search';
 
-type LanguageLoadingState = {
-  language: undefined;
-  status: 'loading';
+type MessagesState = {
+  messageData: MessageDto[];
+  status: 'ready' | 'not-found' | 'loading';
 };
-
-type LanguageNotFoundState = {
-  language: undefined;
-  status: 'not-found';
-};
-
-type LanguageReadyState = {
-  language: LanguageResponse;
-  status: 'ready';
-};
-
-type LanguageState =
-  | LanguageLoadingState
-  | LanguageNotFoundState
-  | LanguageReadyState;
 
 type TabId = 'tree' | 'find';
 
@@ -55,8 +41,8 @@ const MessagesPage: NextPage<{
   const { languageName, projectName } = params;
 
   const [messageId, setMessageId] = useState(params.messageId);
-  const [languageState, setLanguageState] = useState<LanguageState>({
-    language: undefined,
+  const [messagesState, setMessagesState] = useState<MessagesState>({
+    messageData: [],
     status: 'loading',
   });
   const searchParams = useSearchParams();
@@ -77,16 +63,16 @@ const MessagesPage: NextPage<{
   useEffect(() => {
     fetch(`/api/projects/${projectName}/languages/${languageName}/messages`)
       .then((r) => r.json())
-      .then((l) => {
-        if (l.errorMessage) {
-          setLanguageState({
-            language: undefined,
+      .then((l: MessageDto[] | ErrorDto) => {
+        if (!Array.isArray(l)) {
+          setMessagesState({
+            messageData: [],
             status: 'not-found',
           });
           return;
         }
-        setLanguageState({
-          language: l,
+        setMessagesState({
+          messageData: l,
           status: 'ready',
         });
       });
@@ -142,24 +128,26 @@ const MessagesPage: NextPage<{
   );
 
   const messages = useMemo(() => {
-    if (languageState.status !== 'ready') {
+    if (messagesState.status !== 'ready') {
       return [];
     }
 
     if (tab === 'tree' || (tab === 'find' && searchState.status === 'idle')) {
       if (messageId) {
-        return languageState.language.messages.filter((m) =>
-          m.id.startsWith(messageId),
+        return messagesState.messageData.filter((m) =>
+          m.i18nKey.startsWith(messageId),
         );
       }
-      return languageState.language.messages;
+      return messagesState.messageData;
     }
 
     if (tab === 'find') {
-      return languageState.language.messages.filter((m) => {
-        const translation = languageState.language.translations[m.id];
+      return messagesState.messageData.filter((m) => {
+        const translation = m.translations.find(
+          (t) => t.language === languageName,
+        );
         return (
-          textIncludesQuery(m.id, searchState.query) ||
+          textIncludesQuery(m.i18nKey, searchState.query) ||
           textIncludesQuery(m.defaultMessage, searchState.query) ||
           (translation &&
             textIncludesQuery(translation.text, searchState.query))
@@ -169,10 +157,10 @@ const MessagesPage: NextPage<{
 
     return [];
   }, [
-    languageState.language?.messages,
-    languageState.language?.translations,
-    languageState.status,
+    languageName,
     messageId,
+    messagesState.messageData,
+    messagesState.status,
     searchState.query,
     searchState.status,
     tab,
@@ -236,7 +224,7 @@ const MessagesPage: NextPage<{
                 </TabList>
               </Box>
               <TabPanel sx={{ overflowX: 'auto', padding: 0 }} value="tree">
-                {languageState.status === 'loading' && (
+                {messagesState.status === 'loading' && (
                   <Box
                     alignItems="center"
                     display="flex"
@@ -247,10 +235,10 @@ const MessagesPage: NextPage<{
                     <CircularProgress />
                   </Box>
                 )}
-                {languageState.status === 'ready' && (
+                {messagesState.status === 'ready' && (
                   <MessageTree
                     messageId={messageId}
-                    messages={languageState.language.messages}
+                    messages={messagesState.messageData}
                     onItemSelectionToggle={onItemSelectionToggle}
                   />
                 )}
@@ -280,7 +268,7 @@ const MessagesPage: NextPage<{
           </Sidebar>
         </SidebarContextProvider>
         <Main>
-          {languageState.status === 'loading' && (
+          {messagesState.status === 'loading' && (
             <Box
               alignItems="center"
               display="flex"
@@ -291,7 +279,7 @@ const MessagesPage: NextPage<{
               <CircularProgress />
             </Box>
           )}
-          {languageState.status === 'not-found' && (
+          {messagesState.status === 'not-found' && (
             <Box
               alignItems="center"
               display="flex"
@@ -305,7 +293,7 @@ const MessagesPage: NextPage<{
               </Typography>
             </Box>
           )}
-          {languageState.status === 'ready' && (
+          {messagesState.status === 'ready' && (
             <>
               {tab === 'find' &&
               searchState.status === 'busy' &&
@@ -324,10 +312,9 @@ const MessagesPage: NextPage<{
                 </Box>
               ) : (
                 <MessageList
-                  languageName={languageName}
+                  language={languageName}
                   messages={messages}
                   projectName={projectName}
-                  translations={languageState.language.translations}
                 />
               )}
             </>

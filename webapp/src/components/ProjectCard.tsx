@@ -3,44 +3,9 @@
 import { FC } from 'react';
 import { Box, LinearProgress, Link, Typography, useTheme } from '@mui/material';
 
-export type ProjectCardProps = {
-  /**
-   * The URL of the project page.
-   */
-  href: string;
+import { ProjectDto } from '@/dto/ProjectDto';
 
-  /**
-   * The project's languages and their translation progress.
-   */
-  languages: {
-    /**
-     * The URL of the page containing the project's messages in this language.
-     */
-
-    href: string;
-
-    /**
-     * The name of the language.
-     */
-    language: string;
-
-    /**
-     * The percentage of messages translated in this language. 0 means none, 100
-     * means all of them.
-     */
-    progress: number;
-  }[];
-
-  /**
-   * The number of messages in the project.
-   */
-  messageCount: number;
-
-  /**
-   * The name of the project.
-   */
-  name: string;
-};
+export type ProjectCardProps = ProjectDto;
 
 /**
  * Project cards are the primary navigation element on the home screen. They
@@ -53,7 +18,6 @@ export type ProjectCardProps = {
  *
  */
 const ProjectCard: FC<ProjectCardProps> = ({
-  href,
   languages,
   name,
   messageCount,
@@ -84,7 +48,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
       >
         <Typography component="h2" fontWeight="bold">
           <Link
-            href={href}
+            href={`/projects/${name}`}
             sx={{
               '::after': {
                 bottom: 0,
@@ -119,7 +83,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             width: '100%',
           }}
         >
-          {languages.map(({ href, language, progress }) => (
+          {languages.map(({ language, progress }) => (
             <Box
               key={language}
               bgcolor="#e9f3fd"
@@ -137,7 +101,7 @@ const ProjectCard: FC<ProjectCardProps> = ({
             >
               <Box display="flex" flexDirection="column" px={3} py={2}>
                 <Link
-                  href={href}
+                  href={`/projects/${name}/${language}`}
                   sx={{
                     '::after': {
                       bottom: 0,
