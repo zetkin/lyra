@@ -5,15 +5,12 @@ import { Box, GlobalStyles, IconButton, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 import { SidebarContext } from './SidebarContext';
-import Breadcrumbs from './Breadcrumbs';
 
 type HeaderProps = {
-  languageName: string;
-  messageId?: string;
-  projectName: string;
+  children: React.ReactElement;
 };
 
-const Header: FC<HeaderProps> = ({ languageName, messageId, projectName }) => {
+const Header: FC<HeaderProps> = ({ children }) => {
   const theme = useTheme();
   const { isSidebarOpen, setIsSidebarOpen } = useContext(SidebarContext);
   const onResize = useCallback(() => {
@@ -58,11 +55,7 @@ const Header: FC<HeaderProps> = ({ languageName, messageId, projectName }) => {
           },
         }}
       />
-      <Breadcrumbs
-        languageName={languageName}
-        messageId={messageId}
-        projectName={projectName}
-      />
+      {children}
       <IconButton
         aria-label="Menu"
         color="primary"

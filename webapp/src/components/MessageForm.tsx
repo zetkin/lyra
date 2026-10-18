@@ -13,11 +13,22 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTheme } from '@mui/material';
 
 import { type TranslationState } from '@/app/api/projects/[projectName]/languages/[languageId]/messages/[messageId]/route';
 import { type MessageData } from '@/utils/adapters';
+import { SearchContext } from '@/components/SearchContext';
+import HighlightSearchQuery from './HighlightSearchQuery';
+import { textIncludesQuery } from '@/utils/search';
 
 export type MessageFormLayout = 'linear' | 'grid';
 
@@ -43,7 +54,7 @@ const MessageForm: FC<MessageFormProps> = ({
   const theme = useTheme();
   const resetValue = useRef(translation);
   const lg = useMediaQuery(theme.breakpoints.up('lg'));
-
+  const search = useContext(SearchContext);
   const [state, setState] = useState<TranslationState>(translation);
 
   useEffect(() => {
@@ -207,24 +218,43 @@ const MessageForm: FC<MessageFormProps> = ({
                 whiteSpace="nowrap"
                 width="100%"
               >
-                {messageIdParts.map((part, i) => (
-                  <Typography
-                    key={part}
-                    color={
-                      i === messageIdParts.length - 1
-                        ? 'text.primary'
-                        : 'text.secondary'
-                    }
-                    component="span"
-                  >
-                    {part}
-                    {i < messageIdParts.length - 1 && '.'}
+                {search.status === 'busy' &&
+                textIncludesQuery(message.id, search.query) ? (
+                  <HighlightSearchQuery
+                    query={search.query}
+                    text={message.id}
+                  />
+                ) : (
+                  messageIdParts.map((part, i) => (
+                    <Typography
+                      key={part}
+                      color={
+                        i === messageIdParts.length - 1
+                          ? 'text.primary'
+                          : 'text.secondary'
+                      }
+                      component="span"
+                    >
+                      {part}
+                      {i < messageIdParts.length - 1 && '.'}
+                    </Typography>
+                  ))
+                )}
+              </Typography>
+
+              <Box>
+                {search.status === 'busy' &&
+                textIncludesQuery(message.defaultMessage, search.query) ? (
+                  <HighlightSearchQuery
+                    query={search.query}
+                    text={message.defaultMessage}
+                  />
+                ) : (
+                  <Typography color="text.primary">
+                    {message.defaultMessage}
                   </Typography>
-                ))}
-              </Typography>
-              <Typography color="text.primary">
-                {message.defaultMessage}
-              </Typography>
+                )}
+              </Box>
             </>
           ) : (
             <Box
@@ -283,7 +313,18 @@ const MessageForm: FC<MessageFormProps> = ({
             minRows={4}
             multiline
             onChange={onChange}
-            sx={{ flexGrow: 1 }}
+            sx={{
+              '& .MuiInputLabel-root': {
+                backgroundColor:
+                  textIncludesQuery(
+                    translation.translationText,
+                    search.query,
+                  ) && search.status === 'busy'
+                    ? 'yellow'
+                    : undefined,
+              },
+              flexGrow: 1,
+            }}
             value={state.translationText}
           />
           <ButtonGroup

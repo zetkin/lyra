@@ -5,15 +5,20 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 import MessageForm, { messageFormHeight } from '@/components/MessageForm';
+import { TranslateState } from '@/dao/types';
 import { MessageDto } from '@/dto/MessageDto';
 
-type MessageListProps = MessageDto[] & { language: string };
+type MessageListProps = {
+  language: string;
+  messages: MessageDto[];
+  projectName: string;
+};
 
-const MessageList: FC<MessageListProps> = (
-  messages: MessageDto[],
-  language: string,
-  project: string;
-) => {
+const MessageList: FC<MessageListProps> = ({
+  language,
+  messages,
+  projectName,
+}) => {
   const theme = useTheme();
   const [height, setHeight] = useState<number | undefined>(undefined);
 
@@ -41,23 +46,30 @@ const MessageList: FC<MessageListProps> = (
     (props: ListChildComponentProps): JSX.Element => {
       const { index, style } = props;
       const message = messages[index];
+      const translation = message.translations.find(
+        (t) => t.language === language,
+      );
       return (
         <ListItem component="div" disablePadding style={style}>
           <MessageForm
             languageName={language}
             layout={layout}
-            message={message}
+            message={{
+              defaultMessage: message.defaultMessage,
+              id: message.i18nKey,
+              params: message.params,
+            }}
             projectName={projectName}
             translation={
-              translations[message.id]
-                ? translations[message.id].state === 'UPDATED'
+              translation
+                ? translation.state === TranslateState.UPDATED
                   ? {
                       translationStatus: 'updated',
-                      translationText: translations[message.id].text,
+                      translationText: translation.text,
                     }
                   : {
                       translationStatus: 'published',
-                      translationText: translations[message.id].text,
+                      translationText: translation.text,
                     }
                 : { translationStatus: 'missing', translationText: '' }
             }
@@ -65,7 +77,7 @@ const MessageList: FC<MessageListProps> = (
         </ListItem>
       );
     },
-    [languageName, layout, messages, projectName, translations],
+    [language, layout, messages, projectName],
   );
 
   return (

@@ -1,5 +1,7 @@
 import { TranslateState } from '@/dao/types';
 
+export { TranslateState };
+
 type TypeID = string;
 
 export type MessageData = {

@@ -4,20 +4,40 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update react-window from 1.8.10 to 1.8.11
+
+## [1.0.0] - 2026-09-03
+
+### Added
+
+- JSON translation file support
+
 ### Fixed
 
-- Reduce load times by not refreshing ProjectStore if we skipped fetch.
-- Reduce load times by not refreshing ProjectStore many times per page load.
+- Fix a bug that would serialize the state into pull requests
+
+## [0.9.0] - 2026-03-01
+
+### Fixed
+
+- Reduce load times by not refreshing ProjectStore if we skipped fetch
+- Reduce load times by not refreshing ProjectStore many times per page load
 
 ### Changed
 
 - `/` is now a static page powered by REST API endpoints
 - `/projects/[projectName]` is now a static page powered by REST API endpoints
+- `/projects/[projectName]/[language]` is now a static page powered by REST API endpoints
+- `/projects/[projectName]/[language]/[messageId]` is now a static page powered by REST API endpoints
 
-### Add
+### Added
 
+- Search
 - `GET /api/projects` endpoint
 - `GET /api/projects/[projectName]` endpoint
+- `GET /api/projects/[projectName]/languages/[languageId]/messages` endpoint
 
 ## [0.8.1] - 2025-11-23
 

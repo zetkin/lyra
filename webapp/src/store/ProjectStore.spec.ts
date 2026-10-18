@@ -192,6 +192,61 @@ describe('ProjectStore', () => {
       const actual = await store.getTranslations('sv');
       expect(actual['core.click'].sourceFile).toEqual('sv.yml');
     });
+
+    it('uses en source file extension over the configured default', async () => {
+      const store = new ProjectStore(
+        {
+          getMessages: async () => [
+            {
+              defaultMessage: 'Click',
+              id: 'core.click',
+              params: [],
+            },
+          ],
+        },
+        {
+          getTranslations: async () => ({
+            en: {
+              'core.click': {
+                sourceFile: 'en.json',
+                state: TranslateState.PUBLISHED,
+                text: 'Click',
+              },
+            },
+          }),
+        },
+        undefined,
+        'yml',
+      );
+
+      await store.refresh();
+      await store.updateTranslation('sv', 'core.click', 'Klicka');
+
+      const actual = await store.getTranslations('sv');
+      expect(actual['core.click'].sourceFile).toEqual('sv.json');
+    });
+
+    it('falls back to the configured file extension for a brand new message', async () => {
+      const store = new ProjectStore(
+        {
+          getMessages: async () => [
+            {
+              defaultMessage: 'Click',
+              id: 'core.click',
+              params: [],
+            },
+          ],
+        },
+        { getTranslations: async () => ({}) },
+        undefined,
+        'json',
+      );
+
+      await store.updateTranslation('sv', 'core.click', 'Klicka');
+
+      const actual = await store.getTranslations('sv');
+      expect(actual['core.click'].sourceFile).toEqual('sv.json');
+    });
   });
 
   it('gives full access to all languages', async () => {

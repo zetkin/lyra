@@ -57,10 +57,12 @@ projects:
     owner: amerharb
     repo: zetkin.app.zetkin.org
     host: github.com
-    github_token: << github token >>
+    github_token: a github token
 ```
 
 ⚠️  Note that `repo` must not have the same value for two different projects.
+
+The value for github_token should be a github token, not the literal string 'a github token' =)
 
 Multiple projects are supported, and they're all stored within the `lyra-projects` folder on the same level as the lyra repository itself.
 
@@ -76,6 +78,7 @@ projects:
       format: ts
       path: src # relative path of messages folder relative from above project path
     translations:
+      format: yaml # 'yaml' (default) or 'json'
       path: src/locale # relative path of translations folder relative from above project path
     languages: # list of language codes supported in the project
       - sv
